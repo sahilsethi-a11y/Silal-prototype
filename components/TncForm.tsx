@@ -8,18 +8,18 @@ import { isValidPassword } from "@/lib/validationUtils";
 const data = {
     agreement: {
         title: "Agreement Summary",
-        subTitle: "By creating a buyer account on ADPG Auto Marketplace, you agree to:",
+        subTitle: "By creating a buyer account on Silal Marketplace, you agree to:",
         list: [
             "Provide accurate and complete information during registration",
             "Use the platform responsibly and in accordance with our policies",
             "Comply with all applicable laws and regulations",
             "Maintain the security and confidentiality of your account",
-            "Make payments for purchased vehicles through our secure platform",
+            "Make payments for purchased products through our secure platform",
         ],
     },
     keyBenefits: {
         title: "Key Benefits as a Buyer:",
-        list: ["Access to verified vehicles", "Secure payment processing", "Professional vehicle inspections", "Dedicated customer support"],
+        list: ["Access to verified products", "Secure payment processing", "Product quality checks", "Dedicated customer support"],
     },
 };
 
@@ -127,7 +127,7 @@ export default function TncForm({ setStep, finalCallBack, resetError, error }: R
                         <Link href={"/"} className="text-brand-blue hover:underline font-medium">
                             Privacy Policy
                         </Link>{" "}
-                        of ADPG Auto Marketplace.
+                        of Silal Marketplace.
                     </label>
                 </div>
             </div>

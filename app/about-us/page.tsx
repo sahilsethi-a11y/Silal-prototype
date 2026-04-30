@@ -9,7 +9,7 @@ const data = {
         title: "AD PORTS GROUP",
         subTitle: "Our Story",
         description:
-            "Building the UAE's most trusted automotive marketplace with transparency, quality, and exceptional service at our core.",
+            "Building the UAE's trusted marketplace for locally made products with transparency, quality, and exceptional service at our core.",
         image: "/assets/home-banner.avif",
     },
     visions: {
@@ -17,14 +17,14 @@ const data = {
         mission: {
             title: "Mission",
             description:
-                "To revolutionize the automotive marketplace in the UAE by providing a transparent, efficient, and trustworthy platform that connects buyers with verified vehicles and trusted dealers while promoting sustainable transportation solutions.",
+                "To support UAE-made commerce with a transparent, efficient, and trustworthy platform that connects buyers with verified local products and trusted suppliers.",
         },
         vision: {
             title: "Vision",
             description:
-                "To become the most trusted and innovative automotive marketplace in the Middle East, leading the transition to sustainable mobility and setting new standards for transparency, quality, and customer satisfaction in vehicle transactions.",
+                "To become the most trusted marketplace for UAE-made products, setting new standards for supplier transparency, product quality, and customer satisfaction.",
             list: [
-                "Sustainable Transportation",
+                "Local Supply Chains",
                 "Digital Innovation",
                 "Customer-Centric Excellence",
             ],
@@ -33,14 +33,14 @@ const data = {
             {
                 icon: "/assets/shield.svg",
                 title: "0",
-                subTitle: "Verified Vehicles",
-                description: "Verified vehicles currently available",
+                subTitle: "Verified Products",
+                description: "Verified products currently available",
             },
             {
                 icon: "/assets/quality-assurance.svg",
                 title: "0",
-                subTitle: "Trusted Dealers",
-                description: "Trusted dealer partners",
+                subTitle: "Trusted Suppliers",
+                description: "Trusted supplier partners",
             },
             {
                 icon: "/assets/globe.svg",
@@ -71,7 +71,7 @@ const data = {
                 icon: "/assets/quality-assurance.svg",
                 title: "Quality Excellence",
                 description:
-                    "We maintain the highest standards in vehicle quality, service delivery, and customer experience.",
+                    "We maintain high standards in product quality, supplier operations, and customer experience.",
             },
             {
                 icon: "/assets/globe.svg",
@@ -90,7 +90,7 @@ const data = {
     ourJourney: {
         title: "Our Journey",
         description:
-            "Key milestones in our mission to transform the automotive marketplace.",
+            "Key milestones in our mission to transform local product commerce.",
         list: [
             {
                 year: "2024",
@@ -102,25 +102,25 @@ const data = {
                 year: "2023",
                 title: "Regional Expansion",
                 description:
-                    "Expanded operations and became the leading automotive marketplace in the UAE.",
+                    "Expanded operations across UAE-made product categories.",
             },
             {
                 year: "2022",
                 title: "Inspection Network",
                 description:
-                    "Established our professional vehicle inspection network across all seven emirates.",
+                    "Established supplier verification and product quality workflows across all seven emirates.",
             },
             {
                 year: "2021",
                 title: "Platform Launch",
                 description:
-                    "Launched our comprehensive digital platform connecting buyers, sellers, and dealers.",
+                    "Launched our comprehensive digital platform connecting buyers, suppliers, and marketplace operators.",
             },
             {
                 year: "2020",
                 title: "Company Founded",
                 description:
-                    "ADPG Auto was established with a vision to transform the UAE's automotive marketplace.",
+                    "Silal Marketplace was established with a vision to transform UAE-made product commerce.",
             },
         ],
     },
@@ -129,12 +129,12 @@ const data = {
         totalRating: "4.8",
         reviewsCount: "2,487",
         description:
-            "Real experiences from satisfied customers who trust ADPG Auto for their automotive needs.",
+            "Real experiences from satisfied customers who trust Silal Marketplace for local product sourcing.",
         authors: [
             {
                 rating: "4",
                 message:
-                    "ADPG  sdbahsdkasda saskhdksahdkas kashdkjahsdksah ksdhkjahsdkjas kjhsdkjahsdkjhaskdjh kshdkjashkdjhas khkjhAuto made buying my fleet vehicles incredibly easy. The transparency and quality assurance gave me complete confidence in my purchase.",
+                    "Silal Marketplace made sourcing local products easier for our team. The transparency and quality assurance gave me confidence in every purchase.",
                 imgUrl: "/assets/home-banner.avif",
                 name: "Ahmed Al-Rashid",
                 designation: "Business Owner",
@@ -143,7 +143,7 @@ const data = {
             {
                 rating: "3",
                 message:
-                    "The inspection process was thorough and professional. I knew exactly what I was buying, and the car exceeded my expectations.",
+                    "The product checks were thorough and professional. I knew exactly what I was buying, and the order exceeded my expectations.",
                 imgUrl: "/assets/home-banner.avif",
                 name: "Sarah Johnson",
                 designation: "Marketing Executive",
@@ -161,7 +161,7 @@ const data = {
             {
                 rating: "5",
                 message:
-                    "As a first-time car buyer, ADPG Auto guided me through every step. Their customer service is exceptional and truly puts customers first.",
+                    "As a first-time buyer on the platform, Silal Marketplace guided me through every step. Their customer service is exceptional and truly puts customers first.",
                 imgUrl: "/assets/home-banner.avif",
                 name: "Fatima Al-Zahra",
                 designation: "Consultant",

@@ -48,26 +48,26 @@ export default function AddDealerForm({ onClose }: Readonly<{ onClose: () => voi
                         />
                     ) : (
                         <div>
-                            <h2 className="text-lg font-medium mb-4">Add New Dealer</h2>
-                            <p className="text-sm text-gray-500 mb-6">Fill in the dealer&apos;s information below. A temporary password will be generated for their first login.</p>
+                            <h2 className="text-lg font-medium mb-4">Add New Supplier</h2>
+                            <p className="text-sm text-gray-500 mb-6">Fill in the supplier information below. A temporary password will be generated for first login.</p>
                             <div className="mb-3">
                                 <div className="block text-sm font-medium text-gray-700 mb-2">
-                                    Dealer Type <span className="text-red-500">*</span>
+                                    Supplier Type <span className="text-red-500">*</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <button
                                         type="button"
                                         onClick={() => setDealerType("UAE")}
                                         className={`p-4 text-left border-2 rounded-lg ${dealerType === "UAE" ? "border-brand-blue bg-indigo-50" : "border-gray-200"}`}>
-                                        <div className="font-medium">UAE Dealer</div>
-                                        <div className="text-sm text-gray-500">United Arab Emirates dealers</div>
+                                        <div className="font-medium">UAE Supplier</div>
+                                        <div className="text-sm text-gray-500">United Arab Emirates farms, brands, and makers</div>
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setDealerType("China")}
                                         className={`p-4 text-left border-2 rounded-lg ${dealerType === "China" ? "border-brand-blue bg-indigo-50" : "border-gray-200"}`}>
-                                        <div className="font-medium">Chinese Dealer</div>
-                                        <div className="text-sm text-gray-500">China-based dealers</div>
+                                        <div className="font-medium">International Supplier</div>
+                                        <div className="text-sm text-gray-500">Non-UAE supplier profile for admin testing</div>
                                     </button>
                                 </div>
                             </div>

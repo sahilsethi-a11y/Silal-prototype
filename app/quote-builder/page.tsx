@@ -4,9 +4,7 @@ import QuoteBuilderList, { type QuoteItem } from "@/components/buyer/QuoteBuilde
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { LOCAL_AUTH_STORAGE_KEY, type LocalAuthUser } from "@/lib/localAuth";
-import { getClientMarketMode, MARKET_MODE_STORAGE_KEY, normalizeMarketMode, scopedStorageKey, type MarketMode } from "@/lib/marketplace";
-import MarketplaceSwitch from "@/components/MarketplaceSwitch";
-
+import { getClientMarketMode, marketModeLabel, MARKET_MODE_STORAGE_KEY, normalizeMarketMode, scopedStorageKey, type MarketMode } from "@/lib/marketplace";
 export default function QuoteBuilderPage() {
     return (
         <Suspense fallback={<QuoteBuilderFallback />}>
@@ -26,7 +24,7 @@ function QuoteBuilderPageContent() {
         try {
             const raw = window.localStorage.getItem(LOCAL_AUTH_STORAGE_KEY);
             const localUser = raw ? (JSON.parse(raw) as LocalAuthUser) : null;
-            setIsBuyer(localUser?.roleType === "buyer");
+            setIsBuyer(localUser?.roleType === "buyer" && localUser?.buyerType !== "individual");
         } catch {
             setIsBuyer(false);
         }
@@ -88,16 +86,15 @@ function QuoteBuilderPageContent() {
         };
     }, [isBuyer, marketMode]);
 
-    if (isBuyer === false) {
+    if (marketMode !== "zero_km" || isBuyer === false) {
         return (
             <main className="container mx-auto px-4 lg:px-6 py-8">
                 <div className="mb-4">
-                    <h1 className="text-3xl text-brand-blue">Quote Builder</h1>
+                    <h1 className="text-3xl text-brand-blue">RFQ Builder</h1>
                 </div>
-                <MarketplaceSwitch mode={marketMode} compact className="mb-6 max-w-sm" />
                 <div className="flex justify-center">
                     <div className="p-4 border rounded-2xl border-stroke-light">
-                        Quote Builder is available for logged-in buyers only.
+                        {marketMode !== "zero_km" ? "RFQ Builder is available in B2B Wholesale only." : "RFQ Builder is available for logged-in business buyers only."}
                     </div>
                 </div>
             </main>
@@ -108,10 +105,9 @@ function QuoteBuilderPageContent() {
         <main className="container mx-auto px-4 lg:px-6 py-8">
             <div className="mb-4">
                 <h1 className="text-3xl text-brand-blue">
-                    Quote Builder ({marketMode === "zero_km" ? "Zero KM" : "Second-Hand"})
+                    RFQ Builder ({marketModeLabel(marketMode)})
                 </h1>
             </div>
-            <MarketplaceSwitch mode={marketMode} compact className="mb-6 max-w-sm" />
             <QuoteBuilderList list={items} marketMode={marketMode} />
         </main>
     );
@@ -121,9 +117,9 @@ function QuoteBuilderFallback() {
     return (
         <main className="container mx-auto px-4 lg:px-6 py-8">
             <div className="mb-4">
-                <h1 className="text-3xl text-brand-blue">Quote Builder</h1>
+                <h1 className="text-3xl text-brand-blue">RFQ Builder</h1>
             </div>
-            <div className="p-4 border rounded-2xl border-stroke-light">Loading quote builder...</div>
+            <div className="p-4 border rounded-2xl border-stroke-light">Loading RFQ builder...</div>
         </main>
     );
 }

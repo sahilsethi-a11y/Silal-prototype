@@ -2,14 +2,14 @@
 
 import { FilterIcon } from "@/components/Icons";
 import Button from "@/elements/Button";
-import type { Content } from "@/app/vehicles/page";
+import type { Content } from "@/app/products/page";
 import { use, useState } from "react";
 import FilterSidebar from "@/components/FilterSideBar";
 import Select, { type Option } from "@/elements/Select";
 import { Brand } from "@/lib/data";
 import { api } from "@/lib/api/client-request";
 import SortedBy from "@/components/SortedBy";
-import { Data as VehicleData } from "@/app/vehicles/page";
+import { Data as VehicleData } from "@/app/products/page";
 import NoList from "@/components/NoList";
 import VehicleCard from "@/components/VehicleCard";
 import { SearchParams } from "next/dist/server/request/search-params";

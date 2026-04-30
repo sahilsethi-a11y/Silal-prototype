@@ -1,5 +1,5 @@
 import Link from "next/link";
-import footerData, { SiteLink, SocialLink } from "@/data/footerData";
+import footerData, { SiteLink } from "@/data/footerData";
 import { FacebookIcon, XIcon, YoutubeIcon, InstagramIcon } from "@/components/Icons";
 
 export default function Footer() {
@@ -21,7 +21,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className="bg-gray-900 text-gray-300">
+        <footer className="bg-[#102618] text-[#dfe8d9]">
             <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     <div>
@@ -47,11 +47,11 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <h3 className="text-white font-extrabold text-xl mb-4">ADPG Auto Marketplace</h3>
+                        <h3 className="text-white font-extrabold text-xl mb-4">Silal Marketplace</h3>
                         <p className="text-gray-300 leading-relaxed">{footerData.siteDescription}</p>
                     </div>
                 </div>
-                <div className="mt-8 border-t border-gray-700 pt-6">
+                <div className="mt-8 border-t border-white/10 pt-6">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-center justify-center gap-4 text-gray-300">
                             <span className="whitespace-nowrap">Connect:</span>
@@ -71,7 +71,7 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        <div className="text-sm text-gray-400">&copy; {year} ADPG Auto Marketplace. All rights reserved.</div>
+                        <div className="text-sm text-[#b8c9b1]">&copy; {year} Silal Marketplace. All rights reserved.</div>
                     </div>
                 </div>
             </div>

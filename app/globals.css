@@ -3,15 +3,17 @@
 :root {
   --background: #fff;
   --foreground: oklch(0.145 0 0);
-  --brand-blue: #202c4a;
-  --accent: #e9ebef;
-  --primary-hover: #1a2438;
+  --brand-blue: #174f2a;
+  --accent: #eef5e8;
+  --primary-hover: #0f3b1f;
   --stroke-light: #0000001a;
   --destructive: #d4183d;
-  --input-background: #f3f3f5;
-  --muted-foreground: #717182;
-  --accent-foreground: #030213;
-  --muted: #ececf0;
+  --input-background: #f6f8f2;
+  --muted-foreground: #697368;
+  --accent-foreground: #102618;
+  --muted: #edf2e8;
+  --silal-leaf: #75a843;
+  --silal-gold: #c79a2b;
 }
 
 @theme inline {
@@ -27,6 +29,8 @@
   --color-muted: var(--muted);
   --color-input-background: var(--input-background);
   --color-accent-foreground: var(--accent-foreground);
+  --color-silal-leaf: var(--silal-leaf);
+  --color-silal-gold: var(--silal-gold);
 }
 
 /* @media (prefers-color-scheme: dark) {

@@ -8,7 +8,7 @@ export default function VehiclesPrefetchOnMount() {
     const router = useRouter();
     useVehicleBuckets({ sortBy: "price", sortOrder: "asc", page: 1 }, { refreshOnMount: true });
     useEffect(() => {
-        router.prefetch("/vehicles");
+        router.prefetch("/products");
     }, []);
 
     return null;

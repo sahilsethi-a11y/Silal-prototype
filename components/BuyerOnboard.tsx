@@ -13,7 +13,7 @@ import { buyerDocumentSchema } from "@/validation/user-schema";
 const documents = [
     {
         title: "Emirates ID",
-        description: "Valid Emirates ID (front and back)",
+        description: "Valid Emirates ID for individual buyer verification",
         fileName: "emiratesId",
         input: {
             label: "Emirates ID Number",
@@ -22,18 +22,18 @@ const documents = [
         },
     },
     {
-        title: "Passport Copy",
-        description: "Passport copy with UAE entry stamp",
+        title: "Buyer Profile Document",
+        description: "Passport copy or company trade license for B2B buyers",
         fileName: "passportNo",
         input: {
-            label: "Passport Number",
+            label: "Passport / Trade License Number",
             name: "passport",
-            placeholder: "Enter passport number",
+            placeholder: "Enter passport or trade license number",
         },
     },
     {
         title: "UAE Pass Verification",
-        description: "UAE Pass digital identity verification",
+        description: "UAE Pass digital identity verification for secure checkout and RFQs",
         fileName: "uaePassNo",
         input: {
             label: "UAE Pass Number",
@@ -85,6 +85,7 @@ export default function BuyerOnboard() {
                 roleName: "UAE Buyer",
                 phoneNumber: personalData.phoneNumber,
                 roleMetaData: {
+                    buyerType: "B2C/B2B",
                     address: personalData.address,
                     dob: personalData.dateOfBirth,
                     emiratesId: files.emiratesId,

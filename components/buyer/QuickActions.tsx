@@ -18,8 +18,8 @@ export default function QuickActions({
     const actionMenu: Menu[] = [
         {
             type: "Link",
-            href: "/vehicles",
-            label: "Browse Vehicles",
+            href: "/products",
+            label: "Browse Products",
             active: true,
             icon: <SearchIcon className="w-4 h-4 mr-2" />,
         },
@@ -32,7 +32,7 @@ export default function QuickActions({
         {
             type: "link",
             href: "/my-negotiations",
-            label: "Manage Negotiations",
+            label: "Manage RFQs",
             icon: <MessageSquareIcon className="w-4 h-4" />,
         },
     ];

@@ -102,12 +102,12 @@ export default function BuyerForm({ setStep, setpersonalData, personalData }: Re
                                 <Image alt="Buyer Account (UAE)" src="/assets/users.svg" height={20} width={20} className="invert" />
                             </div>
                             <div className="ml-4 text-left">
-                                <h4 className="font-medium text-[#202C4A] text-lg">Buyer Account (UAE)</h4>
-                                <p className="text-gray-600">Browse and purchase vehicles from trusted dealers</p>
+                                <h4 className="font-medium text-brand-blue text-lg">Buyer Account</h4>
+                                <p className="text-gray-600">Shop UAE-made products and build B2B RFQs</p>
                             </div>
                         </div>
-                        <h3 className="text-lg mb-2 text-[#202C4A]">Personal Information</h3>
-                        <p className="text-gray-600 text-sm">Provide your personal details for account verification</p>
+                        <h3 className="text-lg mb-2 text-brand-blue">Buyer Information</h3>
+                        <p className="text-gray-600 text-sm">Provide details for checkout, RFQs, and account verification</p>
                     </div>
                 </div>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -143,7 +143,7 @@ export default function BuyerForm({ setStep, setpersonalData, personalData }: Re
                             name="phoneNumber"
                             value={personalData.phoneNumber || ""}
                             onChange={handleInputChange}
-                            placeholder="784-XXXX-XXX"
+                            placeholder="+971XXXXXXXXX or 05XXXXXXXX"
                             className="w-full px-3 py-1 h-9 border border-transparent outline-none focus-visible:border-black/40 focus-visible:ring-black/20 focus-visible:ring-[3px] bg-accent/40 rounded-md placeholder:text--muted-foreground text-sm text-gray-900"
                             aria-label="Phone Number"
                             required

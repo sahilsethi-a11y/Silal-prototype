@@ -1,9 +1,9 @@
 import SellerOnboard from "@/components/SellerOnboard";
 
 const data = {
-  title: "Create Your Seller Account",
+  title: "Create Your Supplier Account",
   subTitle:
-    "Register as a seller to export vehicles from China to UAE buyers through our secure marketplace platform.",
+    "Register as a UAE supplier to sell food, clothing, games, and other locally made products through B2C and B2B marketplace flows.",
 };
 
 export default function page() {

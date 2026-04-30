@@ -27,7 +27,7 @@ export default function ImageCarousel({
                         width={664}
                         height={372}
                         src={images[currentIndex]}
-                        alt="car-image"
+                        alt="product image"
                         className="w-full h-full object-cover"
                     />
                 )}

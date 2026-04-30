@@ -59,8 +59,8 @@ const statusOptions = [
 const typeOptions = [
     { value: "All", label: "All Types" },
     { value: "Buyer", label: "Buyer" },
-    { value: "Seller", label: "Seller" },
-    { value: "Dealer", label: "Dealer" },
+    { value: "Seller", label: "Supplier" },
+    { value: "Dealer", label: "Legacy Dealer" },
 ];
 
 export const StatusBadge = ({ user: { active, passwordTemporary } }: { user: User }) => {

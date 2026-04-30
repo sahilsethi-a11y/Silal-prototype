@@ -200,7 +200,7 @@ export default function BuyerDashboard() {
           title="Quick Actions"
           actions={[
             {
-              label: "Add New Vehicle",
+              label: "Add New Product",
               variant: "primary",
               icon: <AddIcon className="w-4 h-4" />,
             },

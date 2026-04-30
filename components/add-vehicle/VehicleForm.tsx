@@ -26,16 +26,17 @@ import {
     VehicleInfoSchema,
     type VehicleFormValues,
 } from "@/validation/vehicle-schema";
-import { api } from "@/lib/api/client-request";
 import message from "@/elements/message";
 import Button from "@/elements/Button";
 import { clearFieldError, ZodTreeError } from "@/validation/shared-schema";
+import { getLocalInventoryById, saveLocalInventory } from "@/lib/localInventory";
 
 type PropsT = {
     topSection: JSX.Element;
     brands?: Brand[];
     filterData?: Record<string, unknown>;
     intialData?: FormState;
+    listingId?: string;
     step: string;
     initialMarketType?: MarketType;
 };
@@ -52,6 +53,15 @@ type FormAction = { type: "UPDATE_FIELD"; field: keyof FormState; value: unknown
 
 const initialFormState: FormState = {
     marketType: MarketType.SECOND_HAND,
+    vin: "",
+    vinLookupStatus: "idle",
+    vinLookupMessage: "",
+    vinLookupProvider: "",
+    inspectionSummary: "",
+    inspectionProvider: "",
+    inspectionDateNote: "",
+    vehicleDescription: "",
+    fetchedMileage: undefined,
     brand: "",
     model: "",
     variant: "",
@@ -105,7 +115,7 @@ const steps: Step[] = [
     { label: "Pricing & Options", icon: <DollerIcon className="h-4.5 w-4.5" /> },
 ];
 
-export default function VehicleForm({ topSection, brands, filterData, intialData, step: initialStep, initialMarketType = MarketType.SECOND_HAND }: Readonly<PropsT>) {
+export default function VehicleForm({ topSection, brands, filterData, intialData, listingId, step: initialStep, initialMarketType = MarketType.SECOND_HAND }: Readonly<PropsT>) {
     const [step, setStep] = useState(initialStep ? Number(initialStep) : 1);
     const [formState, dispatch] = useReducer(formReducer, intialData ?? { ...initialFormState, marketType: initialMarketType });
     const [errors, setErrors] = useState<ZodTreeError>();
@@ -132,6 +142,19 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
         if (intialData) return;
         dispatch({ type: "UPDATE_FIELD", field: "marketType", value: initialMarketType });
     }, [initialMarketType, intialData]);
+
+    useEffect(() => {
+        if (intialData || !listingId || typeof window === "undefined") return;
+        const localRecord = getLocalInventoryById(listingId);
+        if (!localRecord) return;
+        dispatch({
+            type: "SET_ALL",
+            fields: {
+                ...initialFormState,
+                ...localRecord.form,
+            },
+        });
+    }, [intialData, listingId]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -182,7 +205,8 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
 
         if (payload.marketType === MarketType.ZERO_KM) {
             const firstUnitPrice = payload.vehicles?.find((v) => Number(v?.unitPrice) > 0)?.unitPrice ?? 0;
-            payload.price = Number(payload.price) > 0 ? Number(payload.price) : Number(firstUnitPrice) || 0;
+            const normalizedPrice = Number(payload.price) > 0 ? Number(payload.price) : Number(firstUnitPrice) || 0;
+            payload.price = normalizedPrice > 0 ? normalizedPrice : undefined;
         }
 
         return payload;
@@ -190,21 +214,12 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
 
     const handleSaveDraft = async () => {
         if (!validateDraft()) return;
+        setDraftLoading(true);
         try {
-            setDraftLoading(true);
             const payload = getPreparedPayload(Status.DRAFT);
-            const res = await api.post<{
-                status: string;
-                message: string;
-                data: {
-                    id: string;
-                };
-            }>("/inventory/api/v1/inventory/create-inventory", { body: payload });
-            if (res.status === "OK") {
-                message.success("Draft saved successfully");
-                router.replace(pathname + "?id=" + res.data.id + "&step=" + step);
-                router.refresh();
-            }
+            const id = saveLocalInventory(payload, Status.DRAFT);
+            message.success("Draft saved locally");
+            router.replace(`${pathname}?id=${id}&step=${step}`);
         } catch {
             message.error("Failed to save draft");
         } finally {
@@ -214,19 +229,15 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
 
     const handlePublish = async () => {
         if (!validateFull()) return;
-
-        const payload = getPreparedPayload(Status.LIVE);
+        setpublishLoading(true);
         try {
-            setpublishLoading(true);
-            const res = await api.post<{ status: string }>("/inventory/api/v1/inventory/create-inventory", { body: payload });
-            if (res.status === "OK") {
-                setTimeout(() => {
-                    setpublishLoading(false);
-                    router.push("/seller/inventory");
-                }, 1000);
-            }
+            const payload = getPreparedPayload(Status.LIVE);
+            saveLocalInventory(payload, Status.LIVE);
+            message.success("Listing published locally");
+            router.push("/seller/products");
         } catch {
-            message.error("Faild to publish");
+            message.error("Failed to publish");
+        } finally {
             setpublishLoading(false);
         }
     };
@@ -316,7 +327,7 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
             case 4:
                 return <ImageForm {...props} handleSubmit={handleImageFormSubmit} />;
             case 5:
-                return <PriceForm {...props} handleSubmit={handlePublish} publishLoading={publishLoading} draftLoading={draftLoading} handleSaveDraft={handleSaveDraft} />;
+                return <PriceForm {...props} updateVehicleField={(vehicles) => updateFormField("vehicles", vehicles)} handleSubmit={handlePublish} publishLoading={publishLoading} draftLoading={draftLoading} handleSaveDraft={handleSaveDraft} />;
             default:
                 return <div>Something went wrong</div>;
         }

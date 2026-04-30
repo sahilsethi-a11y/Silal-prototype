@@ -4,7 +4,6 @@ import { AddIcon, BankCardIcon, EditIcon, MessageSquareIcon } from "@/components
 import { JSX, useState } from "react";
 import Modal from "@/elements/Modal";
 import BankUpdateOtp from "@/components/bank-details/BankUpdateOtp";
-import SelectVehicleAdd from "@/components/SelectVehicleAdd";
 
 type Menu = {
     type: string;
@@ -17,12 +16,11 @@ type Menu = {
 
 export default function QuickActions({ variant = "horizontal" }: Readonly<{ variant?: "horizontal" | "vertical" }>) {
     const [isBankUpdate, setIsBankUpdate] = useState(false);
-    const [isAddVehicle, setIsAddVehicle] = useState(false);
     const actionMenu: Menu[] = [
-        { type: "button", action: () => setIsAddVehicle(true), label: "Add New Vehicle", active: true, icon: <AddIcon className="w-4 h-4" /> },
+        { type: "link", href: "/add-product", label: "Add New Product", active: true, icon: <AddIcon className="w-4 h-4" /> },
         {
             type: "link",
-            href: "/seller/inventory",
+            href: "/seller/products",
             label: "My Listings",
             icon: <EditIcon className="w-4 h-4" />,
         },
@@ -30,7 +28,7 @@ export default function QuickActions({ variant = "horizontal" }: Readonly<{ vari
         {
             type: "link",
             href: "/my-negotiations",
-            label: "Manage Negotiations",
+            label: "Manage RFQs",
             icon: <MessageSquareIcon className="w-4 h-4" />,
         },
     ];
@@ -58,9 +56,6 @@ export default function QuickActions({ variant = "horizontal" }: Readonly<{ vari
             </div>
             <Modal isOpen={isBankUpdate} onClose={() => setIsBankUpdate(false)}>
                 <BankUpdateOtp onClose={() => setIsBankUpdate(false)} />
-            </Modal>
-            <Modal isOpen={isAddVehicle} onClose={() => setIsAddVehicle(false)}>
-                <SelectVehicleAdd onClose={() => setIsAddVehicle(false)} />
             </Modal>
         </div>
     );

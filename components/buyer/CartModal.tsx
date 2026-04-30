@@ -75,12 +75,12 @@ export default function CartModel({ cartData, quantity = 1, onClose, vehicleId, 
             };
             const res = await api.post<{ status: string }>("/inventory/api/v1/inventory/addCart", { body: payload });
             if (res.status === "OK") {
-                message.success("Vehicle added into cart");
+                message.success("Product added into cart");
                 addToCart();
                 onClose();
             }
         } catch {
-            message.error("Failed to add vehicle into cart");
+            message.error("Failed to add product into cart");
         } finally {
             setLoading(false);
         }
@@ -90,13 +90,13 @@ export default function CartModel({ cartData, quantity = 1, onClose, vehicleId, 
         <div className="max-w-md">
             <div className="flex flex-col gap-2 text-center sm:text-left mb-4">
                 <h2 className="text-lg leading-none font-semibold text-brand-blue">Add to Cart</h2>
-                <p className="text-muted-foreground text-sm">Configure your vehicle purchase with payment options, logistics service, and port selections.</p>
+                <p className="text-muted-foreground text-sm">configure your product purchase with payment options, logistics service, and port selections.</p>
             </div>
             <form className="space-y-6 max-h-[70vh] overflow-y-auto">
                 <div className="bg-white text-foreground flex flex-col gap-6 rounded-xl border border-stroke-light">
                     <div className="last:pb-6 p-4">
                         <div className="flex items-center gap-4 flex-wrap">
-                            <Image width={100} height={64} alt="car-img" src={cartData.vehicle.mainImageUrl} className="object-cover rounded-lg w-20" />
+                            <Image width={100} height={64} alt="product image" src={cartData.vehicle.mainImageUrl} className="object-cover rounded-lg w-20" />
                             <div className="flex-1">
                                 <h3 className="text-brand-blue">{cartData.vehicle.name}</h3>
                                 <div className="text-lg text-brand-blue w-full flex-wrap mt-1 flex items-center gap-1">
@@ -165,7 +165,7 @@ export default function CartModel({ cartData, quantity = 1, onClose, vehicleId, 
                                 <div className="flex-1 flex items-center justify-between flex-wrap">
                                     <div>
                                         <h5 className="text-sm text-brand-blue">Full Payment</h5>
-                                        <p className="text-xs text-gray-600">Pay the complete vehicle price now</p>
+                                        <p className="text-xs text-gray-600">Pay the complete product price now</p>
                                     </div>
                                     <div className="text-brand-blue">{formatPrice(cartData.paymentOption?.fullPayment?.price, cartData.vehicle?.price?.currency)}</div>
                                 </div>
@@ -251,7 +251,7 @@ export default function CartModel({ cartData, quantity = 1, onClose, vehicleId, 
                     <h4 className="leading-none text-brand-blue">Order Summary</h4>
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <span> {selectedPayment === "tokenPayment" ? "Vehicle (token):" : "Vehicle (full):"}</span>
+                            <span> {selectedPayment === "tokenPayment" ? "Product (token):" : "Product (full):"}</span>
                             <span className="text-brand-blue">
                                 {formatPrice(
                                     selectedPayment === "tokenPayment" ? cartData.paymentOption.tokenPayment.price : cartData.paymentOption.fullPayment.price,
@@ -276,7 +276,7 @@ export default function CartModel({ cartData, quantity = 1, onClose, vehicleId, 
                         </div>
                         {selectedPayment === "tokenPayment" && cartData.paymentOption.tokenPayment?.remainingVehiclePayment && (
                             <div className="text-sm text-gray-600 mt-2">
-                                Remaining vehicle payment of {formatPrice(cartData.paymentOption?.tokenPayment?.remainingVehiclePayment, cartData.vehicle?.price?.currency)} due on delivery
+                                Remaining product payment of {formatPrice(cartData.paymentOption?.tokenPayment?.remainingVehiclePayment, cartData.vehicle?.price?.currency)} due on delivery
                             </div>
                         )}
                     </div>

@@ -6,7 +6,7 @@ import { ArrowDownIcon } from "@/components/Icons";
 
 const moreMenus = [
     { name: "Home", path: "/" },
-    { name: "Partner Networks", path: "/partner-network" },
+    { name: "Supplier Network", path: "/partner-network" },
     { name: "About Us", path: "/about-us" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact Us", path: "/contact-us" },
@@ -19,12 +19,12 @@ export default function DesktopNav({ isLoggedIn }: Readonly<{ isLoggedIn?: strin
 
     return (
         <nav className="hidden md:flex items-center space-x-8 grow justify-center" aria-label="Primary">
-            <Link href="/vehicles" title="Vehicles" className="inline-block py-2 text-brand-blue text-base">
-                Vehicles
+            <Link href="/products" title="Marketplace" className="inline-block py-2 text-brand-blue text-base">
+                Marketplace
             </Link>
             {!isLoggedIn && (
                 <Link href="/signup" title="Get Started" className="inline-block py-2 text-brand-blue text-base">
-                    Get Started
+                    Join
                 </Link>
             )}
             <div className="relative" ref={ref}>

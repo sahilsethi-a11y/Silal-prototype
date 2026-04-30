@@ -38,7 +38,7 @@ type Options = {
 const documents = [
     { label: "Emirates ID", name: "emiratesId", description: "Valid Emirates ID of the representative" },
     { label: "Company License", name: "companyLicense", description: "Official company registration license" },
-    { label: "Export License", name: "exportLicense", description: "Valid export license for vehicle trade" },
+    { label: "Compliance Document", name: "exportLicense", description: "Origin, Halal, HACCP, textile, age-rating, or product compliance document" },
 ];
 
 export default function UaeDealerForm({ onClose, successCallback }: Readonly<{ onClose: () => void; successCallback: (data: ThankyouData) => void }>) {
@@ -133,7 +133,7 @@ export default function UaeDealerForm({ onClose, successCallback }: Readonly<{ o
                 name: formData.representativeName,
                 emailId: formData.email,
                 phoneNumber: formData.mobileNumber,
-                roleName: "UAE Dealer",
+                roleName: "UAE Supplier",
                 roleMetaData: {
                     emiratesIdUrl: formData.emiratesId.url,
                     companyLicenseUrl: formData.companyLicense.url,
@@ -152,7 +152,7 @@ export default function UaeDealerForm({ onClose, successCallback }: Readonly<{ o
             successCallback(res.data);
         } catch (error) {
             if ((error as FetchError).isFetchError) {
-                setError((error as FetchError<{ message: string }>)?.response?.data?.message || "Faild to create dealer. Please try again later.");
+                setError((error as FetchError<{ message: string }>)?.response?.data?.message || "Failed to create supplier. Please try again later.");
             } else {
                 setError("Something went wrong. Please try again later.");
             }
@@ -174,11 +174,11 @@ export default function UaeDealerForm({ onClose, successCallback }: Readonly<{ o
                 <Input
                     type="text"
                     errors={errors?.properties?.dealershipName?.errors}
-                    label="Dealership Name"
+                    label="Supplier Name"
                     name="dealershipName"
                     value={formData.dealershipName}
                     onChange={handleInputChange}
-                    placeholder="Enter dealership name"
+                    placeholder="Enter company, farm, or brand name"
                     required
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -241,14 +241,14 @@ export default function UaeDealerForm({ onClose, successCallback }: Readonly<{ o
                     labelCls="text-base/5.25 text-brand-blue"
                 />
                 <Input
-                    label="Dealer Address"
+                    label="Supplier Address"
                     errors={errors?.properties?.address?.errors}
                     type="textarea"
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
                     rows={3}
-                    placeholder="Enter complete dealer address"
+                    placeholder="Enter complete supplier address"
                     required
                 />
             </div>
@@ -323,7 +323,7 @@ export default function UaeDealerForm({ onClose, successCallback }: Readonly<{ o
                     Cancel
                 </Button>
                 <Button type="submit" disabled={loading}>
-                    {loading ? "Creating..." : "Create Dealer"}
+                    {loading ? "Creating..." : "Create Supplier"}
                 </Button>
             </div>
         </form>

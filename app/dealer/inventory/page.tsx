@@ -3,8 +3,8 @@ export default function Inventory() {
         <div>
             <div className="mt-6">
                 <div className="mb-4">
-                    <h2 className="text-[16px] font-medium text-[#24272c] leading-[22px] mb-1">All Vehicles</h2>
-                    <p className="text-[13px] text-[#6c757d]">0 of 0 vehicles</p>
+                    <h2 className="text-[16px] font-medium text-[#24272c] leading-[22px] mb-1">All Products</h2>
+                    <p className="text-[13px] text-[#6c757d]">0 of 0 products</p>
                 </div>
                 <div className="bg-white border border-[rgba(0,0,0,0.1)] rounded-lg overflow-hidden">
                     <div data-slot="table-container" className="relative w-full overflow-x-auto">
@@ -19,7 +19,7 @@ export default function Inventory() {
                                     <th
                                         data-slot="table-head"
                                         className="h-10 text-left align-middle whitespace-nowrap [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] text-[13px] font-medium text-[#495057] px-[16px] py-[12px]">
-                                        Vehicle Details
+                                        Product Details
                                     </th>
                                     <th
                                         data-slot="table-head"

@@ -1,7 +1,5 @@
 import { z } from "zod";
 import {
-    cnCompanyLicenseSchema,
-    cnExportLicenseNumberSchema,
     createFileSchema,
     createNameSchema,
     dobSchema,
@@ -71,8 +69,8 @@ export const buyerDocumentSchema = z.object({
 export const sellerDocumentSchema = z.object({
     nationalId: createFileSchema("Please upload national id"),
     companyLicense: createFileSchema("Please upload company license"),
-    exportLicense: createFileSchema("Please upload export license"),
+    exportLicense: createFileSchema("Please upload compliance document"),
     passportNo: passportSchema,
-    licenseNo: cnCompanyLicenseSchema,
-    exportNo: cnExportLicenseNumberSchema,
+    licenseNo: z.string().min(3, "Please enter a valid UAE trade license or registration number").max(40, "Please enter a valid UAE trade license or registration number"),
+    exportNo: z.string().min(3, "Please enter a valid compliance reference").max(60, "Please enter a valid compliance reference"),
 });

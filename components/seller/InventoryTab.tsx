@@ -3,19 +3,20 @@
 import { CheckCircleIcon, CloseCircleIcon, DeleteIcon, EditIcon, EyeOffIcon, FilterIcon, KebabIcon } from "@/components/Icons";
 import Button from "@/elements/Button";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { api } from "@/lib/api/client-request";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import message from "@/elements/message";
-import { useRouter } from "next/navigation";
 import Input from "@/elements/Input";
 import { Brand } from "@/lib/data";
 import Select, { type Option } from "@/elements/Select";
 import NoList from "@/components/NoList";
 import Pagination from "@/components/Pagination";
 import { formatPrice } from "@/lib/utils";
+import { deleteLocalInventory, listLocalInventory, updateLocalInventoryStatus } from "@/lib/localInventory";
+import { getClientMarketMode } from "@/lib/marketplace";
+import { Status } from "@/validation/vehicle-schema";
 
-const tableHeaders = ["Id", "Vehicle Details", "Year", "Price", "Currency", " Regional Specs", "Inventory Status", "Negotiable", "Actions"];
+const tableHeaders = ["Id", "Product Details", "Season", "Price", "Currency", "Certification", "Catalog Status", "RFQ", "Actions"];
 
 export type Data = {
     content: {
@@ -155,7 +156,7 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
         });
     };
 
-    const updateFormField = (name: string, value: string | number) => {
+    const updateFormField = (name: string, value: string) => {
         setFormState((prev) => {
             const filters = { ...prev, [name]: value };
             applyFilter(filters);
@@ -172,34 +173,99 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
         });
     };
 
-    const applyFilter = async (filter: Record<string, string>, page = initialData.currentPage, size = initialData.size) => {
-        try {
-            const res = await api.get<{ data: Data }>("/inventory/api/v1/inventory/getAllInventoryListForUser", { params: { ...filter, page, size } });
-            const next = res.data;
-            if (filter.sortBy === "createdAt") {
-                const dir = filter.sortOrder === "asc" ? 1 : -1;
-                next.content = [...next.content].sort((a, b) => (getInventoryTimestamp(a) - getInventoryTimestamp(b)) * dir);
+    const applyFilter = (filter: Record<string, string>, page = initialData.currentPage, size = initialData.size) => {
+        const mode = getClientMarketMode();
+        const localRecords = listLocalInventory(mode);
+        const normalizedQuery = String(filter.query || "").trim().toLowerCase();
+        const normalizedBrand = String(filter.brand || "").trim().toLowerCase();
+        const normalizedStatus = String(filter.status || "").trim().toUpperCase();
+        const normalizedYear = String(filter.year || "").trim();
+        const normalizedSpecs = String(filter.regionalSpecs || "").trim().toLowerCase();
+        const normalizedNegotiable = String(filter.allowPriceNegotiations || "").trim().toLowerCase();
+
+        const filtered = localRecords.filter((record) => {
+            const inventory = record.form;
+            const price = Number(inventory.price) || Number(inventory.vehicles?.find((v) => Number(v.unitPrice) > 0)?.unitPrice) || 0;
+            const matchesQuery =
+                !normalizedQuery ||
+                [inventory.inventoryId, inventory.brand, inventory.model, inventory.variant]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(normalizedQuery);
+            const matchesBrand = !normalizedBrand || inventory.brand?.toLowerCase() === normalizedBrand;
+            const matchesStatus = !normalizedStatus || inventory.status === normalizedStatus;
+            const matchesYear = !normalizedYear || String(inventory.year) === normalizedYear;
+            const matchesSpecs = !normalizedSpecs || inventory.regionalSpecs?.toLowerCase() === normalizedSpecs;
+            const matchesNegotiable = !normalizedNegotiable || String(Boolean(inventory.allowPriceNegotiations)) === normalizedNegotiable;
+            return matchesQuery && matchesBrand && matchesStatus && matchesYear && matchesSpecs && matchesNegotiable && Number.isFinite(price);
+        });
+
+        const sortable = filtered.map((record) => ({
+            id: record.id,
+            inventory: {
+                id: record.form.inventoryId || record.id,
+                brand: record.form.brand,
+                model: record.form.model,
+                variant: record.form.variant,
+                year: record.form.year,
+                regionalSpecs: record.form.regionalSpecs,
+                bodyType: record.form.bodyType,
+                price: Number(record.form.price) || Number(record.form.vehicles?.find((v) => Number(v.unitPrice) > 0)?.unitPrice) || 0,
+                currency: record.form.currency,
+                allowPriceNegotiations: Boolean(record.form.allowPriceNegotiations),
+                status: record.form.status,
+                createdAt: record.createdAt,
+                updatedAt: record.updatedAt,
+            },
+        }));
+
+        const sorted = [...sortable].sort((a, b) => {
+            if (filter.sortBy === "price") {
+                return ((a.inventory.price || 0) - (b.inventory.price || 0)) * (filter.sortOrder === "asc" ? 1 : -1);
             }
-            setData(next);
-        } catch {
-            console.log("Something went wrong");
-        }
+            if (filter.sortBy === "year") {
+                return ((a.inventory.year || 0) - (b.inventory.year || 0)) * (filter.sortOrder === "asc" ? 1 : -1);
+            }
+            const dir = filter.sortOrder === "asc" ? 1 : -1;
+            return (getInventoryTimestamp(a as Data["content"][number]) - getInventoryTimestamp(b as Data["content"][number])) * dir;
+        });
+
+        const totalItems = sorted.length;
+        const totalPages = Math.max(1, Math.ceil(totalItems / size));
+        const currentPage = Math.min(page, totalPages);
+        const start = Math.max(0, (currentPage - 1) * size);
+        const content = sorted.slice(start, start + size) as Data["content"];
+
+        setData({
+            content,
+            first: currentPage <= 1,
+            last: currentPage >= totalPages,
+            number: false,
+            size,
+            totalPages,
+            currentPage,
+            totalItems,
+        });
     };
 
     useEffect(() => {
-        if (formState.sortBy !== "createdAt") return;
-        setData((prev) => ({
-            ...prev,
-            content: [...prev.content].sort(
-                (a, b) => (getInventoryTimestamp(a) - getInventoryTimestamp(b)) * (formState.sortOrder === "asc" ? 1 : -1)
-            ),
-        }));
-    }, [formState.sortBy, formState.sortOrder]);
+        applyFilter(formState);
+        const handleStorage = () => applyFilter(formState, data.currentPage, data.size);
+        window.addEventListener("local-inventory-updated", handleStorage);
+        window.addEventListener("storage", handleStorage);
+        window.addEventListener("adpg-market-changed", handleStorage);
+        return () => {
+            window.removeEventListener("local-inventory-updated", handleStorage);
+            window.removeEventListener("storage", handleStorage);
+            window.removeEventListener("adpg-market-changed", handleStorage);
+        };
+    }, [formState, data.currentPage, data.size]);
 
     return (
         <div>
             <div className="mb-4">
-                <h2 className="text-[16px] font-medium text-brand-blue leading-[22px] mb-1">All Vehicles</h2>
+                <h2 className="text-[16px] font-medium text-brand-blue leading-[22px] mb-1">All Products</h2>
                 <p className="text-sm text-[#6c757d]">
                     {data.content?.length ?? 0} of {data.totalItems}
                 </p>
@@ -210,7 +276,7 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
                     Filters
                 </div>
                 <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                    <Input placeholder="Search vehicles..." parentClassName="lg:col-span-2" name="query" label="Search" value={formState.query} onChange={handleInputChange} />
+                    <Input placeholder="Search products..." parentClassName="lg:col-span-2" name="query" label="Search" value={formState.query} onChange={handleInputChange} />
                     <Select
                         label="Sort By"
                         name="sortBy"
@@ -225,7 +291,7 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
                         label="Brand"
                         name="brand"
                         options={[
-                            { label: "All Brand", value: "" },
+                            { label: "All Brands", value: "" },
                             ...brands.map((brand) => ({
                                 value: brand.name,
                                 label: brand.name,
@@ -233,7 +299,7 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
                         ]}
                         value={formState.brand}
                         onChange={(value) => updateFormField("brand", value)}
-                        placeholder="Select Make"
+                        placeholder="Select brand"
                         border="bg-input-background"
                         labelCls="text-sm font-medium"
                     />
@@ -248,27 +314,27 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
                         labelCls="text-sm font-medium"
                     />
                     <Select
-                        label="Year"
+                        label="Season"
                         name="year"
                         options={yearOptions}
                         value={formState.year}
                         onChange={(value) => updateFormField("year", value)}
-                        placeholder="Select year"
+                        placeholder="Select season"
                         border="bg-input-background"
                         labelCls="text-sm font-medium"
                     />
                     <Select
-                        label="Regional Specs"
+                        label="Certification"
                         name="regionalSpecs"
                         options={[{ label: "All Specs", value: "" }, ...((filterData.regionalSpecsOptions as Option[]) ?? [])]}
                         value={formState.regionalSpecs}
                         onChange={(value) => updateFormField("regionalSpecs", value)}
-                        placeholder="Select regional specs"
+                        placeholder="Select certification"
                         border="bg-input-background"
                         labelCls="text-sm font-medium"
                     />
                     <Select
-                        label="Negotiable"
+                        label="RFQ Enabled"
                         name="allowPriceNegotiations"
                         options={negotiableOptions}
                         value={formState.allowPriceNegotiations}
@@ -319,7 +385,26 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
                                             </div>
                                         </td>
                                         <td className="p-2 align-middle whitespace-nowrap  [&amp;&gt;[role=checkbox]]:translate-y-[2px]">
-                                            <Actions id={item.id} status={item.inventory?.status} />
+                                            <Actions
+                                                id={item.id}
+                                                status={item.inventory?.status}
+                                                onDelete={() => {
+                                                    if (deleteLocalInventory(item.id)) {
+                                                        message.success("Product deleted");
+                                                        applyFilter(formState, data.currentPage, data.size);
+                                                    } else {
+                                                        message.error("Unable to delete product");
+                                                    }
+                                                }}
+                                                onUnpublish={() => {
+                                                    if (updateLocalInventoryStatus(item.id, Status.DRAFT)) {
+                                                        message.success("Product moved to draft");
+                                                        applyFilter(formState, data.currentPage, data.size);
+                                                    } else {
+                                                        message.error("Unable to unpublish product");
+                                                    }
+                                                }}
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -351,37 +436,20 @@ export default function InventoryTab({ data: initialData, brands, filterData }: 
     );
 }
 
-const Actions = ({ status, id }: { status: string; id: string }) => {
+const Actions = ({ status, id, onDelete, onUnpublish }: { status: string; id: string; onDelete: () => void; onUnpublish: () => void }) => {
     const [isShowMenu, setIsShowMenu] = useState(false);
     const ref = useRef<HTMLDivElement | null>(null);
-    const router = useRouter();
 
     useOutsideClick(ref, () => setIsShowMenu(false));
     if (status === "SOLD") return <></>;
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         setIsShowMenu(false);
-        try {
-            const res = await api.put<{ status: string; message: string }>("/inventory/api/v1/inventory/disable", { params: { id } });
-            if (res.status === "OK") {
-                message.success(res.message);
-                router.refresh();
-            }
-        } catch {
-            message.error("Something went wrong. Unable to disable inventory");
-        }
+        onDelete();
     };
-    const handleUnpublish = async () => {
+    const handleUnpublish = () => {
         setIsShowMenu(false);
-        try {
-            const res = await api.put<{ status: string; message: string }>("/inventory/api/v1/inventory/unpublish", { params: { vehicleId: id } });
-            if (res.status === "OK") {
-                message.success(res.message);
-                router.refresh();
-            }
-        } catch {
-            message.error("Something went wrong. Unable to unpublish");
-        }
+        onUnpublish();
     };
 
     return (
@@ -395,8 +463,8 @@ const Actions = ({ status, id }: { status: string; id: string }) => {
                     <div className="absolute z-1 right-0 flex flex-col bg-white top-10 border border-stroke-light shadow-sm rounded-md p-1 w-45">
                         <Link
                             className="inline-flex items-center px-2 py-1.5 gap-2 whitespace-nowrap rounded-md transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none hover:bg-gray-300 text-black font-normal"
-                            href={"/add-vehicle/?id=" + id}>
-                            <EditIcon /> Edit Listing
+                            href={"/add-product/?id=" + id}>
+                            <EditIcon /> Edit Product
                         </Link>
                         {status === "LIVE" && (
                             <Button
@@ -412,7 +480,7 @@ const Actions = ({ status, id }: { status: string; id: string }) => {
                             variant="secondary"
                             leftIcon={<DeleteIcon className="h-4 w-4 text-black/60" />}
                             className="px-2 bg-transparent text-destructive font-normal justify-start py-1.5">
-                            Delete Listing
+                            Delete Product
                         </Button>
                     </div>
                 )}

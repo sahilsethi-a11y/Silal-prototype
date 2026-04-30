@@ -6,7 +6,7 @@ export default function Orders() {
             <div className="flex items-center justify-between mt-6 mb-6">
                 <div>
                     <h2 className="text-xl text-[#202C4A]">Order Management</h2>
-                    <p className="text-gray-600">Track and manage your vehicle orders</p>
+                    <p className="text-gray-600">Track and manage your product orders</p>
                     <p className="text-sm text-gray-500 mt-1">0 of 0 orders</p>
                 </div>
                 <div className="flex items-center gap-3">

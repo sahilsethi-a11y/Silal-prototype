@@ -2,8 +2,8 @@ import LoginForm from "@/components/login/LoginForm";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Automarketplace - Login to see your vehicles",
-    description: "Automarketplace - Your premier destination for buying and selling vehicles.",
+    title: "Silal Marketplace - Login",
+    description: "Login as a buyer, supplier, or admin for the UAE-made products marketplace.",
 };
 
 export default async function Login({ searchParams }: Readonly<{ searchParams: Promise<{ redirectUrl?: string }> }>) {

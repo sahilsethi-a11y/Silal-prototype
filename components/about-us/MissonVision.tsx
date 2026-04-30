@@ -69,7 +69,7 @@ export default function MissonVision({ data }: Readonly<PropsT>) {
                                 width={392}
                                 height={500}
                                 src="/assets/home-banner.avif"
-                                alt="Electric vehicles charging at modern charging stations showcasing sustainable automotive future"
+                                alt="UAE-made products marketplace"
                                 className="w-full h-full object-cover"
                             />
                         </div>

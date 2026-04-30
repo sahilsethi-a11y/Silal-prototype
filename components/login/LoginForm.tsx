@@ -4,6 +4,7 @@ import SignIn from "@/components/login/SignIn";
 import VerifyOtp from "@/components/login/VerifyOtp";
 import { useRouter } from "next/navigation";
 import { LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY } from "@/lib/localAuth";
+import { marketModeToParam, setClientMarketMode } from "@/lib/marketplace";
 
 export type User = {
     emailId: string;
@@ -13,6 +14,7 @@ export type User = {
     passwordTemporary?: boolean;
     roleId?: string;
     roleType?: string;
+    buyerType?: "individual" | "business";
 };
 
 export default function LoginForm({ redirectUrl }: Readonly<{ redirectUrl?: string }>) {
@@ -29,6 +31,7 @@ export default function LoginForm({ redirectUrl }: Readonly<{ redirectUrl?: stri
         const username = activeUser.username || activeUser.emailId || "";
         const email = activeUser.emailId || activeUser.username || "";
         const roleType = (activeUser.roleType || "buyer").toLowerCase();
+        const buyerType = activeUser.buyerType;
 
         const normalizedUser = {
             userId,
@@ -38,12 +41,16 @@ export default function LoginForm({ redirectUrl }: Readonly<{ redirectUrl?: stri
             email,
             name: username || email,
             roleType,
+            buyerType,
             otpVerified: true,
             passwordTemporary: Boolean(activeUser.passwordTemporary),
         };
 
         window.localStorage.setItem(LOCAL_AUTH_STORAGE_KEY, JSON.stringify(normalizedUser));
         document.cookie = `${LOCAL_AUTH_COOKIE}=${encodeURIComponent(userId)}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax`;
+        if (roleType === "buyer") {
+            setClientMarketMode(buyerType === "business" ? "zero_km" : "second_hand");
+        }
         window.dispatchEvent(new Event("adpg-auth-changed"));
     };
 
@@ -70,7 +77,10 @@ export default function LoginForm({ redirectUrl }: Readonly<{ redirectUrl?: stri
                 pushTo("/seller/dashboard");
                 break;
             case "buyer":
-                pushTo("/buyer/dashboard");
+                {
+                    const mode = activeUser.buyerType === "business" ? "zero_km" : "second_hand";
+                    pushTo(`/products?market=${marketModeToParam(mode)}`);
+                }
                 break;
             case "dealer":
                 pushTo("/dealer/dashboard");

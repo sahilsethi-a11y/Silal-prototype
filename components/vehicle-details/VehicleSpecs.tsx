@@ -19,7 +19,7 @@ export default function VehicleSpecs({
     return (
         <div className="bg-white rounded-xl border border-[rgba(36,39,44,0.1)] p-4 md:p-7.5">
             <h3 className="text-xl font-semibold text-black mb-6">
-                Vehicle Specification
+                Product Specification
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-15.5 gap-y-4.5">

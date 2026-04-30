@@ -34,7 +34,7 @@ export default function ErrorPage({ error, reset }: Readonly<{ error?: Error; re
                                 Go home
                             </Link>
 
-                            <a href="mailto:support@adpg-automarketplace.example" className="ml-2 text-sm text-gray-500 hover:text-gray-700">
+                            <a href="mailto:support@silal-marketplace.example" className="ml-2 text-sm text-gray-500 hover:text-gray-700">
                                 Contact support
                             </a>
                         </div>

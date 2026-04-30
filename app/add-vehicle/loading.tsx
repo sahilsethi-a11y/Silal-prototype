@@ -46,7 +46,7 @@ export default function Loading() {
           {/* Form card */}
           <div className="bg-white border border-stroke-light rounded-lg shadow-sm p-6">
             <h3 className="w-48 h-5 bg-gray-200 rounded mb-4">
-              <span className="sr-only">Loading vehicle form</span>
+              <span className="sr-only">Loading product form</span>
             </h3>
 
             <div className="grid grid-cols-2 gap-4">

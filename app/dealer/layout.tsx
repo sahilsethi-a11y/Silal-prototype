@@ -42,9 +42,9 @@ export default function SellerLayout({
                         <MessageSquareIcon className="w-4 h-4" />
                         Manage Negotiations
                     </Link>
-                    <Link href="/seller/add-vehicle" className="flex bg-brand-blue items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors">
+                    <Link href="/add-product" className="flex bg-brand-blue items-center gap-2 px-4 py-2 text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors">
                         <AddIcon className="w-4 h-4" />
-                        Add New Vehicle
+                        Add New Product
                     </Link>
                 </div>
             </div>

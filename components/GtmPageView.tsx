@@ -8,7 +8,10 @@ export default function GTMPageView() {
 
     useEffect(() => {
         const url = globalThis.window.location.href;
-        globalThis.window.dataLayer?.push({
+        const dataLayer = globalThis.window.dataLayer ?? [];
+
+        globalThis.window.dataLayer = dataLayer;
+        dataLayer.push({
             event: "page_view",
             page_location: url,
         });

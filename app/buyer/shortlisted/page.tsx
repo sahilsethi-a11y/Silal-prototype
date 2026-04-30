@@ -3,7 +3,6 @@ import ShortList from "@/components/vehicle-details/ShortList";
 import { api } from "@/lib/api/server-request";
 import Link from "next/link";
 import Image from "@/elements/Image";
-import MarketplaceSwitch from "@/components/MarketplaceSwitch";
 import { cookies } from "next/headers";
 import { MARKET_MODE_COOKIE_KEY, normalizeMarketMode } from "@/lib/marketplace";
 
@@ -68,32 +67,31 @@ export default async function Shortlisted({
         <div className="bg-white text-foreground flex flex-col gap-6 rounded-xl border border-stroke-light p-6">
             <div className="flex items-start justify-between">
                 <h4 className="leading-none text-brand-blue">
-                    Shortlisted Vehicles
+                    Shortlisted Products
                 </h4>
                 <div className="flex items-center gap-2">
                     <HeartIcon className="w-5 h-5 text-brand-blue" />
                     <span className="text-brand-blue">
-                        {data.totalItems} vehicle
+                        {data.totalItems} product
                     </span>
                 </div>
             </div>
-            <MarketplaceSwitch mode={marketMode} compact className="mb-3 max-w-sm" />
             {data.totalItems === 0 ? (
                 <div className="text-center py-12">
                     <HeartIcon className="h-16 w-16 text-gray-300 mb-4 mx-auto" />
                     <h3 className="text-lg text-gray-600 mb-2">
-                        No vehicles shortlisted yet
+                        No products shortlisted yet
                     </h3>
                     <p className="text-gray-500 mb-4">
-                        Start browsing and shortlist vehicles you&apos;re
+                        Start browsing and shortlist products you&apos;re
                         interested in
                     </p>
                     <Link
-                        href={"/vehicles"}
+                        href={"/products"}
                         className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all bg-brand-blue text-white hover:bg-brand-blue/90 h-8 px-3 text-xs"
                     >
                         <SearchIcon className="w-4 h-4 mr-2" />
-                        Browse Vehicles
+                        Browse Products
                     </Link>
                 </div>
             ) : (
@@ -106,7 +104,7 @@ export default async function Shortlisted({
                             <div className="flex items-center justify-between gap-4">
                                 <Image
                                     src={item?.inventory?.mainImageUrl}
-                                    alt="car-img"
+                                    alt="product image"
                                     width={90}
                                     height={70}
                                     className="object-cover rounded-md w-21"
@@ -152,7 +150,7 @@ export default async function Shortlisted({
                             <div className="flex items-center gap-2">
                                 <Link
                                     className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all bg-brand-blue text-white hover:bg-brand-blue/90 h-8 px-3 text-xs"
-                                    href={`/vehicles/${item?.inventory?.id}`}
+                                    href={`/products/${item?.inventory?.id}`}
                                 >
                                     View Details
                                 </Link>

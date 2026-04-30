@@ -245,17 +245,28 @@ export default function Conversation(props: Readonly<PropsT>) {
 
         const handleProposalSubmitted = (event: Event) => {
             const customEvent = event as CustomEvent<{
+                requestForQuote?: boolean;
+                rfqResponse?: boolean;
+                quotationCancelled?: boolean;
                 discountPercent: number;
                 finalPrice: number;
                 downpaymentPercent: number;
             }>;
 
-            const { discountPercent, finalPrice, downpaymentPercent } = customEvent.detail;
+            const { requestForQuote, rfqResponse, quotationCancelled, discountPercent, finalPrice, downpaymentPercent } = customEvent.detail;
 
             // Create system message about the proposal
             const systemMessage: Message = {
                 senderId: "system",
-                content: `Proposal submitted: ${discountPercent}% discount applied. Final price: $${Math.round(finalPrice).toLocaleString()}. Downpayment: ${downpaymentPercent}%.`,
+                content: requestForQuote
+                    ? finalPrice > 0
+                      ? `RFQ submitted. Quote basis: $${Math.round(finalPrice).toLocaleString()}. Awaiting seller quotation.`
+                      : "RFQ submitted. Awaiting seller quotation."
+                    : quotationCancelled
+                      ? "Seller cancelled the quotation request."
+                      : rfqResponse
+                        ? `Seller quotation submitted. Quoted total: $${Math.round(finalPrice).toLocaleString()}. Downpayment: ${downpaymentPercent}%.`
+                    : `Proposal submitted: ${discountPercent}% discount applied. Final price: $${Math.round(finalPrice).toLocaleString()}. Downpayment: ${downpaymentPercent}%.`,
                 id: `system_${Date.now()}`,
                 conversationId,
                 createdAt: new Date().toISOString(),
@@ -284,7 +295,7 @@ export default function Conversation(props: Readonly<PropsT>) {
                 <div className="flex justify-center">
                     <div className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm max-w-xs text-center">
                         <AlertCircleIcon className="h-4 w-4 inline mr-1 -mt-1" />
-                        Negotiation started for this vehicle. Feel free to discuss price and terms.
+                        Negotiation started for this product. Feel free to discuss price and terms.
                     </div>
                 </div>
                 {messages.map((msg) => (

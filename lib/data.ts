@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { api } from "@/lib/api/client-request";
+import { UAE_MARKETPLACE_LOCATIONS, getUaeProductBrands, uaeProductFilterData } from "@/data/uaeProducts";
 
 export type Brand = {
     displayName: string;
@@ -21,63 +22,76 @@ export type Variant = {
     modelId: string;
 };
 
+type FilterOption = {
+    label: string;
+    value: string;
+    hex?: string;
+};
+
+type FilterMap = Record<string, unknown>;
+
 const FALLBACK_CITIES_BY_COUNTRY: Record<string, { id: string; name: string }[]> = {
-    AE: [
-        { id: "ae-dubai", name: "Dubai" },
-        { id: "ae-abu-dhabi", name: "Abu Dhabi" },
-        { id: "ae-sharjah", name: "Sharjah" },
-        { id: "ae-ajman", name: "Ajman" },
-        { id: "ae-ras-al-khaimah", name: "Ras Al Khaimah" },
-        { id: "ae-fujairah", name: "Fujairah" },
-        { id: "ae-umm-al-quwain", name: "Umm Al Quwain" },
-    ],
-    CN: [
-        { id: "cn-shanghai", name: "Shanghai" },
-        { id: "cn-beijing", name: "Beijing" },
-        { id: "cn-guangzhou", name: "Guangzhou" },
-        { id: "cn-shenzhen", name: "Shenzhen" },
-        { id: "cn-hangzhou", name: "Hangzhou" },
-        { id: "cn-ningbo", name: "Ningbo" },
-        { id: "cn-qingdao", name: "Qingdao" },
-    ],
+    AE: UAE_MARKETPLACE_LOCATIONS.map((location) => ({
+        id: `ae-${location.value.toLowerCase().replace(/\s+/g, "-")}`,
+        name: location.value,
+    })),
 };
 
 const FALLBACK_BRAND_MODEL_VARIANTS: Record<string, Record<string, string[]>> = {
-    byd: {
-        "Qin Plus": ["Hybrid", "EV", "DM-i"],
-        Han: ["EV", "DM-i"],
-        Song: ["Plus DM-i", "Pro"],
+    "silal fresh": {
+        "Hydroponic Tomato Box": ["5 kg carton", "Retail punnet"],
+        "Weekly UAE Farm Box": ["8 to 10 items", "Family basket"],
     },
-    toyota: {
-        Corolla: ["LE", "XLE", "Hybrid"],
-        Levin: ["TNGA 1.5L CVT", "Hybrid"],
-        Camry: ["SE", "XSE"],
+    "silal food": {
+        "Premium Rice Essentials": ["5 kg bag", "Wholesale carton"],
+        "Pantry Staples Bundle": ["Retail pack", "Horeca pack"],
     },
-    nissan: {
-        Patrol: ["SE", "LE", "NISMO"],
-        Altima: ["S", "SV", "SL"],
+    "al dhafra": {
+        "Premium Dates Selection": ["1 kg gift box", "Corporate case"],
     },
-    kia: {
-        Sportage: ["LX", "EX", "GT-Line"],
-        K5: ["LXS", "GT-Line"],
+    "desert line": {
+        "Linen Abaya": ["S to XL", "Made to order"],
     },
-    hyundai: {
-        Elantra: ["SE", "SEL", "Limited"],
-        Tucson: ["SE", "SEL", "N Line"],
+    "sharjah textile": {
+        "Kandora Fabric Roll": ["30 meter roll", "Uniform house pack"],
     },
-    honda: {
-        Civic: ["LX", "EX", "Sport"],
-        Accord: ["EX", "Touring"],
+    "majlis play": {
+        "Arabic STEM Board Game": ["Bilingual edition", "School pack"],
+    },
+    "farmers market": {
+        "Weekly UAE Farm Box": ["8 to 10 items", "Family basket"],
+    },
+    "uae makers": {
+        "Corporate Gift Hamper": ["Dates, coffee, craft goods", "Enterprise case"],
     },
 };
 
+const FALLBACK_FILTERS = uaeProductFilterData as Record<string, FilterOption[]>;
+
 const normalizeRef = (value: string) => value.trim().toLowerCase();
 
-const FALLBACK_BRANDS: Brand[] = Object.keys(FALLBACK_BRAND_MODEL_VARIANTS).map((brand) => ({
-    id: brand,
-    name: brand.charAt(0).toUpperCase() + brand.slice(1),
-    displayName: brand.charAt(0).toUpperCase() + brand.slice(1),
-}));
+const cloneFallback = (key: keyof typeof FALLBACK_FILTERS): FilterOption[] => FALLBACK_FILTERS[key].map((item) => ({ ...item }));
+
+const normalizeFilters = (data?: FilterMap | null): FilterMap => {
+    const raw = data ?? {};
+
+    return {
+        ...raw,
+        country: cloneFallback("country"),
+        bodyType: cloneFallback("bodyType"),
+        fuelTypeOptions: cloneFallback("fuelTypeOptions"),
+        transmissionOptions: cloneFallback("transmissionOptions"),
+        regionalSpecsOptions: cloneFallback("regionalSpecsOptions"),
+        drivetrainOptions: cloneFallback("drivetrainOptions"),
+        bodyConditionOptions: cloneFallback("bodyConditionOptions"),
+        currency: cloneFallback("currency"),
+        colors: cloneFallback("colors"),
+        priceRange: cloneFallback("priceRange"),
+        sellerTypeOptions: cloneFallback("sellerTypeOptions"),
+    };
+};
+
+const FALLBACK_BRANDS: Brand[] = getUaeProductBrands();
 
 const getFallbackModels = (brand: string): Model[] => {
     const key = normalizeRef(brand);
@@ -110,34 +124,41 @@ const getFallbackVariants = (model: string): Variant[] => {
 };
 
 export const getFilters = async () => {
-    return api.get<{ data: Record<string, unknown> }>("/masters/api/filters/map", { cacheRevalidate: 300 }); // 300 seconds or 5 min cache
+    try {
+        const res = await api.get<{ data: Record<string, unknown> }>("/masters/api/filters/map", { cacheRevalidate: 300 }); // 300 seconds or 5 min cache
+        return { ...res, data: normalizeFilters(res.data) };
+    } catch {
+        return { data: normalizeFilters() };
+    }
 };
 
 export const getBrands = cache(async () => {
-    try {
-        return await api.get<{ data: Brand[] }>("/masters/api/v1/mtoc/brands");
-    } catch {
-        return { data: FALLBACK_BRANDS };
-    }
+    return { data: FALLBACK_BRANDS };
 });
 
 export const getModals = cache(async (brand: string) => {
+    const fallbackModels = getFallbackModels(brand);
+    if (fallbackModels.length) return { data: fallbackModels };
+
     try {
         const res = await api.get<{ data: Model[] }>("/masters/api/v1/mtoc/brands/models", { params: { ref: brand } });
         if (res?.data?.length) return res;
-        return { data: getFallbackModels(brand) };
+        return { data: fallbackModels };
     } catch {
-        return { data: getFallbackModels(brand) };
+        return { data: fallbackModels };
     }
 });
 
 export const getVariants = cache(async (model: string) => {
+    const fallbackVariants = getFallbackVariants(model);
+    if (fallbackVariants.length) return { data: fallbackVariants };
+
     try {
         const res = await api.get<{ data: Variant[] }>("/masters/api/v1/mtoc/models/variants", { params: { ref: model } });
         if (res?.data?.length) return res;
-        return { data: getFallbackVariants(model) };
+        return { data: fallbackVariants };
     } catch {
-        return { data: getFallbackVariants(model) };
+        return { data: fallbackVariants };
     }
 });
 
@@ -151,6 +172,17 @@ export const getCountryDetails = cache(async (countryCode: string) => {
 
 export const getCities = cache(async (countryCode: string) => {
     const normalizedCode = (countryCode || "").trim().toUpperCase();
+    const selectedUaeLocation = UAE_MARKETPLACE_LOCATIONS.find((location) => location.value.toUpperCase() === normalizedCode);
+    if (selectedUaeLocation) {
+        return {
+            data: [
+                {
+                    id: `ae-${selectedUaeLocation.value.toLowerCase().replace(/\s+/g, "-")}`,
+                    name: selectedUaeLocation.value,
+                },
+            ],
+        };
+    }
     try {
         const res = await getCountryDetails(normalizedCode);
         const countryId = res.data?.[0]?.id;

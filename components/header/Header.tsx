@@ -1,4 +1,3 @@
-import Image from "@/elements/Image";
 import Link from "next/link";
 import SelectCurrency from "@/components/header/SelectCurrency";
 import UserProfileButton from "@/components/header/UserProfileButton";
@@ -12,14 +11,13 @@ import { getFilters } from "@/lib/data";
 import { getCurrency } from "@/lib/serverActions";
 import { cookies } from "next/headers";
 import { getDemoUserByToken } from "@/lib/localAuth";
-import { MARKET_MODE_COOKIE_KEY, normalizeMarketMode } from "@/lib/marketplace";
-import MarketplaceMarker from "@/components/header/MarketplaceMarker";
 
 export type User = {
     name: string;
     username: string;
     email: string;
     roleType: string;
+    buyerType?: "individual" | "business";
     userId: string;
     otpVerified: boolean;
 };
@@ -40,6 +38,7 @@ const normalizeUser = (raw?: ApiUser): User | undefined => {
         name: raw.name || raw.username || raw.email || raw.emailId || "",
         email: raw.email || raw.emailId || raw.username || "",
         roleType: raw.roleType || "",
+        buyerType: raw.buyerType,
         otpVerified: Boolean(raw.otpVerified),
     };
 };
@@ -47,8 +46,6 @@ const normalizeUser = (raw?: ApiUser): User | undefined => {
 export default async function Header() {
     const cookieStore = await cookies();
     const selectedCurrency = await getCurrency();
-    const marketMode = normalizeMarketMode(cookieStore.get(MARKET_MODE_COOKIE_KEY)?.value);
-
     const filters = await getFilters().catch(() => ({ data: {} as Record<string, unknown> }));
 
     let userData: { data?: User } = {};
@@ -71,21 +68,21 @@ export default async function Header() {
         <header className="sticky top-0 z-50 bg-white border-b border-stroke-light shadow-sm">
             <div className="container mx-auto px-4 lg:px-6">
                 <div className="flex items-center justify-between py-2.5 gap-2">
-                    <Link title="AD Ports Group" href="/" className="h-6 md:h-7">
-                        <Image className="h-full w-auto hidden md:block" alt="AD Ports Group" width={294} height={51} src="/assets/logo.png" preload />
-                        <Image className="h-full w-auto md:hidden" alt="AD Ports Group" width={51} height={51} src="/assets/adp-logo.png" preload />
+                    <Link title="Silal Marketplace" href="/" className="flex items-center gap-2 text-brand-blue">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-blue text-sm font-bold text-white">S</span>
+                        <span className="hidden leading-tight sm:block">
+                            <span className="block text-base font-bold">Silal Marketplace</span>
+                            <span className="block text-[10px] font-medium uppercase text-silal-leaf">Made in UAE</span>
+                        </span>
                     </Link>
                     <DesktopNav isLoggedIn={userData.data?.userId} />
                     <div className="flex gap-2 md:gap-4 items-center">
-                        <MarketplaceMarker initialMode={marketMode} />
                         <SelectCurrency filters={filters?.data} selectedCurrency={selectedCurrency} />
-                        <Link className="p-2 hover:bg-gray-100 block rounded-md" href="/vehicles" title="Search vehicles">
+                        <Link className="p-2 hover:bg-gray-100 block rounded-md" href="/products" title="Search products">
                             <SearchIcon className="h-4 w-4" />
                         </Link>
-                        <>
-                            <QuoteBuilderButton />
-                            <CartButton initialCount={cartResp?.data?.cartCount ?? 0} />
-                        </>{" "}
+                        <QuoteBuilderButton />
+                        <CartButton initialCount={cartResp?.data?.cartCount ?? 0} />{" "}
                         <UserProfileButton user={userData.data} />
                         <div className="md:hidden">
                             <Sidebar />

@@ -35,7 +35,7 @@ export default function QRShare({
     };
     const url = globalThis.window?.location.origin + vehicleUrl;
     const encodedUrl = encodeURIComponent(url);
-    const text = encodeURIComponent("Check this vehicle!");
+    const text = encodeURIComponent("Check this product!");
 
     const icons = [
         {
@@ -88,7 +88,7 @@ export default function QRShare({
             >
                 <div className="flex flex-col gap-2 text-center sm:text-left">
                     <h2 className="text-lg leading-none font-semibold">
-                        Share Vehicle
+                        Share Product
                     </h2>
                 </div>
                 <div className="space-y-6">

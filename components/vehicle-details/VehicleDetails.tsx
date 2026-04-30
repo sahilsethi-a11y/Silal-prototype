@@ -17,7 +17,7 @@ export type VehicleDetailsData = {
 export default function VehicleDetails({ data, hideInspectionReport = false }: Readonly<{ data: VehicleDetailsData[]; hideInspectionReport?: boolean }>) {
     const { vehicles, addVehicle, updateVehicles, clearVehicles, totalItems } = useVehicle();
 
-    const headers = ["Select", "Mileage", "Number of Owners", "Warranty Remaining", "View Inspection Report"];
+    const headers = ["Select", "Stock Signal", "Origin Checks", "Availability", "View Documents"];
     if (hideInspectionReport) {
         headers.pop();
     }
@@ -39,7 +39,7 @@ export default function VehicleDetails({ data, hideInspectionReport = false }: R
         <div className="bg-white rounded-xl border border-[rgba(36,39,44,0.1)] p-4 md:p-7.5">
             <div className="flex flex-col gap-6 md:items-center justify-between mb-6 md:flex-row">
                 <div className="flex gap-4">
-                    <h3 className="text-xl font-semibold text-black">Vehicle Details</h3>
+                    <h3 className="text-xl font-semibold text-black">Product Lot Details</h3>
                     {totalItems > 0 && data.length !== 1 && <p className="text-[13px] text-gray-600 mt-1">{totalItems} inventory selected</p>}
                 </div>
                 {data.length !== 1 && (

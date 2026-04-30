@@ -1,8 +1,9 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { setClientMarketMode, type MarketMode } from "@/lib/marketplace";
+import { marketModeToParam, parseMarketMode, setClientMarketMode, type MarketMode } from "@/lib/marketplace";
 import { CheckIcon, CautionIcon } from "@/components/Icons";
+import { useEffect } from "react";
 
 type MarketplaceSwitchProps = {
     mode?: MarketMode;
@@ -18,15 +19,18 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
     const searchParams = useSearchParams();
 
     const queryMode = searchParams.get("market");
-    const current: MarketMode | null =
-        queryMode === "second_hand" || queryMode === "zero_km" ? queryMode : mode === "second_hand" || mode === "zero_km" ? mode : null;
+    const current: MarketMode | null = parseMarketMode(queryMode) ?? parseMarketMode(mode);
+
+    useEffect(() => {
+        if (current) setClientMarketMode(current);
+    }, [current]);
 
     const switchMode = (next: MarketMode) => {
         if (next === current) return;
         const sp = new URLSearchParams(searchParams.toString());
-        sp.set("market", next);
+        sp.set("market", marketModeToParam(next));
         setClientMarketMode(next);
-        router.push(`${pathname}?${sp.toString()}`);
+        router.push(`${pathname.startsWith("/vehicles") ? pathname.replace("/vehicles", "/products") : pathname}?${sp.toString()}`);
     };
 
     return (
@@ -39,7 +43,7 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
                         className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition-colors ${
                             current === "second_hand" ? "bg-brand-blue text-white" : "text-gray-700 hover:bg-gray-100"
                         }`}>
-                        Second-Hand
+                        B2C Retail
                     </button>
                     <button
                         type="button"
@@ -47,7 +51,7 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
                         className={`flex-1 rounded-md px-3 py-2 text-xs font-semibold transition-colors ${
                             current === "zero_km" ? "bg-brand-blue text-white" : "text-gray-700 hover:bg-gray-100"
                         }`}>
-                        Zero KM
+                        B2B Wholesale
                     </button>
                 </div>
             ) : null}
@@ -57,9 +61,9 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
                         <div className="mb-3 flex items-center justify-between gap-3">
                             <div>
                                 <p className="text-sm font-semibold text-gray-900">
-                                    Marketplace Type {required ? <span className="text-destructive">*</span> : null}
+                                    Buying Mode {required ? <span className="text-destructive">*</span> : null}
                                 </p>
-                                <p className="text-xs text-gray-600">Select one before searching vehicles.</p>
+                                <p className="text-xs text-gray-600">Select one before searching products.</p>
                             </div>
                             {required && !current ? (
                                 <span className="inline-flex items-center gap-1 rounded-md border border-destructive/30 bg-destructive/5 px-2 py-1 text-xs font-medium text-destructive">
@@ -85,9 +89,9 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
                             }`}>
                             <div className="flex items-start justify-between gap-2">
                                 <div>
-                                    <p className="text-sm font-semibold">Second-Hand</p>
+                                    <p className="text-sm font-semibold">B2C Retail</p>
                                     <p className={`mt-0.5 text-xs ${current === "second_hand" ? "text-white/85" : "text-gray-600"}`}>
-                                        Pre-owned cars from verified sellers
+                                        Household shopping from verified UAE suppliers
                                     </p>
                                 </div>
                                 <span
@@ -108,9 +112,9 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
                             }`}>
                             <div className="flex items-start justify-between gap-2">
                                 <div>
-                                    <p className="text-sm font-semibold">Zero KM</p>
+                                    <p className="text-sm font-semibold">B2B Wholesale</p>
                                     <p className={`mt-0.5 text-xs ${current === "zero_km" ? "text-white/85" : "text-gray-600"}`}>
-                                        Brand-new vehicles with zero mileage
+                                        Bulk procurement, RFQs, and contract pricing
                                     </p>
                                 </div>
                                 <span
@@ -122,7 +126,7 @@ export default function MarketplaceSwitch({ mode, className, showLabel = false, 
                             </div>
                         </button>
                     </div>
-                    {required && !current ? <p className="mt-2 text-xs font-medium text-destructive">Required before searching vehicles.</p> : null}
+                    {required && !current ? <p className="mt-2 text-xs font-medium text-destructive">Required before searching products.</p> : null}
                 </>
             ) : null}
         </div>

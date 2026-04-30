@@ -12,9 +12,9 @@ import Input from "@/elements/Input";
 const MAX_DOC_LIMIT = 3;
 
 const data = {
-    title: "Suspend Listing",
-    description: "Please provide a detailed reason for suspending this listing. This message will be sent to the seller/dealer via email.",
-    confirmText: "Suspend Listing",
+    title: "Suspend Product",
+    description: "Please provide a detailed reason for suspending this product. This message will be sent to the supplier via email.",
+    confirmText: "Suspend Product",
     cancelText: "Cancel",
 };
 
@@ -49,11 +49,11 @@ export default function SuspendListing({ handleClose, item }: Readonly<PropsT>) 
                 setTimeout(() => {
                     handleClose(true);
                     setLoading(false);
-                    message.success("Listing suspend successfully");
+                    message.success("Product suspended successfully");
                 }, 500);
             } else throw new Error("Something went wrong");
         } catch {
-            message.error("Failed to suspended vehicle");
+            message.error("Failed to suspend product");
         }
     };
     const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,12 +97,12 @@ export default function SuspendListing({ handleClose, item }: Readonly<PropsT>) 
 
             <div className="max-h-[70vh] overflow-y-auto pe-0.5">
                 <div className="bg-gray-50 border-gray-200 rounded-lg p-4 mt-4">
-                    <h2 className="text-brand-blue mb-2">Listing Details</h2>
+                    <h2 className="text-brand-blue mb-2">Product Details</h2>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span className="text-gray-600">Vehicle:</span>
+                            <span className="text-gray-600">Product:</span>
                             <span className="ml-2">
-                                {item?.inventory?.year} {item?.inventory?.brand} {item?.inventory?.model}
+                                {item?.inventory?.brand} {item?.inventory?.model}
                             </span>
                         </div>
                         <div>
@@ -112,7 +112,7 @@ export default function SuspendListing({ handleClose, item }: Readonly<PropsT>) 
                             </span>
                         </div>
                         <div>
-                            <span className="text-gray-600">Seller:</span>
+                            <span className="text-gray-600">Supplier:</span>
                             <span className="ml-2">
                                 {item?.user?.name} ({item?.user?.roleType})
                             </span>
@@ -130,7 +130,7 @@ export default function SuspendListing({ handleClose, item }: Readonly<PropsT>) 
                         value={reason}
                         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setReason(e.target.value)}
                         rows={3}
-                        placeholder="Please provide a detailed reason for suspending this listing. This message will be sent to the seller/dealer via email."
+                        placeholder="Please provide a detailed reason for suspending this product. This message will be sent to the supplier via email."
                     />
                     <p className="text-xs text-gray-500 mt-1">{reason.length}/1000 characters</p>
                 </div>
@@ -174,7 +174,7 @@ export default function SuspendListing({ handleClose, item }: Readonly<PropsT>) 
                     </div>
 
                     <div className="col-start-2 grid justify-items-start gap-1 text-sm [&amp;_p]:leading-relaxed text-red-800">
-                        <strong>Important:</strong> Suspending this listing will immediately remove it from public view. The seller/dealer will receive an email notification with your message and any
+                        <strong>Important:</strong> Suspending this product will immediately remove it from public view. The supplier will receive an email notification with your message and any
                         attached documents. They can respond to the email to address the issue and request revocation.
                     </div>
                 </div>

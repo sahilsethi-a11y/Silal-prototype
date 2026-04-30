@@ -5,13 +5,13 @@ import { useState } from "react";
 import type { ThankyouData } from "@/components/admin/AddDealerForm";
 
 const data = {
-    title: "Dealer Created Successfully",
-    description: "Review the dealer details and copy the temporary password to share with the new dealer.",
+    title: "Supplier Created Successfully",
+    description: "Review the supplier details and copy the temporary password to share with the new supplier.",
     alert: {
         type: "success",
-        message: "Dealer account has been created successfully. Please share the temporary password with the dealer.",
+        message: "Supplier account has been created successfully. Please share the temporary password with the supplier.",
     },
-    note: "This is a single-use password. The dealer will be required to reset it on first login.",
+    note: "This is a single-use password. The supplier will be required to reset it on first login.",
 };
 
 export default function Thankyou({ user, onClose }: Readonly<{ user: ThankyouData; onClose?: () => void }>) {
@@ -36,10 +36,10 @@ export default function Thankyou({ user, onClose }: Readonly<{ user: ThankyouDat
                     {data.alert.message}
                 </div>
             </div>
-            <h3 className="text-sm mb-2">Dealer Details:</h3>
+            <h3 className="text-sm mb-2">Supplier Details:</h3>
             <div className="bg-gray-50 p-3 rounded-lg space-y-1 text-sm mb-2">
                 <p>
-                    <span className="font-medium">Dealership Name: </span>
+                    <span className="font-medium">Supplier Name: </span>
                     {user.rolemetadata.dealershipName}
                     {}
                 </p>
@@ -54,7 +54,7 @@ export default function Thankyou({ user, onClose }: Readonly<{ user: ThankyouDat
                     <span className="font-medium">Mobile Number: </span> {user.mobileno}
                 </p>
                 <p>
-                    <span className="font-medium">Dealer Address: </span> {user.rolemetadata.address}
+                    <span className="font-medium">Supplier Address: </span> {user.rolemetadata.address}
                 </p>
                 <p>
                     <span className="font-medium">Representative DOB: </span> {user.rolemetadata.dob}

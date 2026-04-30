@@ -3,9 +3,10 @@ import { Outfit } from "next/font/google";
 import "@/app/globals.css";
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
-import { GoogleTagManager } from "@next/third-parties/google";
+import GoogleTagManager from "@/components/GoogleTagManager";
 import { config } from "@/lib/config";
 import GTMPageView from "@/components/GtmPageView";
+import AITradeAssistant from "@/components/AITradeAssistant";
 
 const outfit = Outfit({
     subsets: ["latin"],
@@ -14,8 +15,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-    title: "Automarketplace - Your premier destination for buying and selling vehicles.",
-    description: "Automarketplace - Your premier destination for buying and selling vehicles. Browse thousands of cars, trucks, and specialty vehicles from verified dealers and private sellers.",
+    title: "Silal Marketplace - UAE-made products for B2C and B2B buyers.",
+    description: "A UAE-made products marketplace for verified food, clothing, games, supplier onboarding, AI product checks, and B2B procurement.",
     manifest: "/manifest.json",
 };
 
@@ -26,11 +27,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
-            <GoogleTagManager gtmId={config.gtmId} />
             <body className={`${outfit.variable} antialiased text-brand-blue`}>
+                <GoogleTagManager gtmId={config.gtmId} />
                 <GTMPageView />
                 <Header />
                 {children}
+                <AITradeAssistant />
                 <Footer />
             </body>
         </html>

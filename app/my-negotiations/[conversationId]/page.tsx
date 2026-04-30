@@ -4,7 +4,7 @@ import NegotiationClientWrapper from "@/components/negotiations/NegotiationClien
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { getDemoUserByToken } from "@/lib/localAuth";
-import { MARKET_MODE_COOKIE_KEY, normalizeMarketMode } from "@/lib/marketplace";
+import { MARKET_MODE_COOKIE_KEY, marketModeToParam, normalizeMarketMode } from "@/lib/marketplace";
 
 type Vehicle = {
     id: string;
@@ -32,7 +32,7 @@ type Data = {
 
 const buildLocalVehicle = (vehicleId: string): Vehicle => ({
     id: vehicleId,
-    brand: "Vehicle",
+    brand: "Product",
     model: "Group",
     variant: "",
     currency: "USD",
@@ -89,7 +89,7 @@ export default async function MyConversation({
             <div className="flex md:items-center md:flex-row space-x-4 flex-col gap-4 items-start mb-8">
                 <Link
                     title="Back to negotiations"
-                    href={`/my-negotiations?market=${marketMode}`}
+                    href={`/my-negotiations?market=${marketModeToParam(marketMode)}`}
                     className="rounded-lg hover:bg-accent md:px-2 hover:text-brand-blue flex items-center justify-center gap-2 text-xs py-2 text-brand-blue">
                     <ArrowLeftIcon className="h-3.5 w-3.5" /> Back to Conversations
                 </Link>

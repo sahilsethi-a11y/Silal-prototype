@@ -6,7 +6,7 @@ import message from "@/elements/message";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { getDemoUserByToken, LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY, type LocalAuthUser } from "@/lib/localAuth";
-import { getClientMarketMode, scopedStorageKey } from "@/lib/marketplace";
+import { getClientMarketMode, marketModeToParam, scopedStorageKey } from "@/lib/marketplace";
 
 type User = {
     name: string;
@@ -26,6 +26,7 @@ export default function NegotiatePriceButton({
     const [loading, setLoading] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const pathname = usePathname();
+    const currentMarketMode = getClientMarketMode();
 
     const createConversationId = (buyerId: string, marketMode: string) => {
         if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -103,7 +104,7 @@ export default function NegotiatePriceButton({
                         window.localStorage.setItem(NEGOTIATIONS_LOCAL_KEY, JSON.stringify(map));
                     } catch {}
                 }
-                router.push(`/my-negotiations/${conversationId}?market=${marketMode}`);
+                router.push(`/my-negotiations/${conversationId}?market=${marketModeToParam(marketMode)}`);
             } else {
                 message.info("Only buyers can negotiate the price.");
                 setDisabled(true);
@@ -117,9 +118,8 @@ export default function NegotiatePriceButton({
     };
 
     return (
-        <Button variant="outline" disabled={disabled} className="w-full" loading={loading} onClick={() => handleNegotiatePrice()}>
-            <MessageSquareIcon className="w-4 h-4 mr-2" />
-            Start quotation
+        <Button variant="outline" disabled={disabled} className="w-full" loading={loading} onClick={() => handleNegotiatePrice()} leftIcon={<MessageSquareIcon className="w-4 h-4" />}>
+            {currentMarketMode === "zero_km" ? "Start RFQ" : "Start quotation"}
         </Button>
     );
 }

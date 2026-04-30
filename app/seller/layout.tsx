@@ -1,13 +1,16 @@
 import QuickActions from "@/components/seller/QuickActions";
 import Tabs from "@/components/Tabs";
 const data = {
-    title: " Seller Dashboard",
-    description: "Manage your vehicle listings and track your sales.",
+    title: "Supplier Portal",
+    description: "Manage your UAE-made product catalog, orders, fulfillment, analytics, and settlements.",
     tabs: [
         { label: "Dashboard", href: "/seller/dashboard" },
-        { label: "Inventory", href: "/seller/inventory" },
+        { label: "Product Catalog", href: "/seller/products" },
         { label: "Orders", href: "/seller/orders" },
-        { label: "Profile Settings", href: "/seller/profile" },
+        { label: "Fulfillment", href: "/seller/fulfillment" },
+        { label: "Analytics", href: "/seller/analytics" },
+        { label: "Payout", href: "/seller/payout" },
+        { label: "Profile", href: "/seller/profile" },
     ],
 };
 

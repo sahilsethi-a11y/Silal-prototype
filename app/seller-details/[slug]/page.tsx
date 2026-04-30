@@ -5,7 +5,7 @@ import Tabbin from "@/components/Tabbin";
 import VehicleList from "@/components/single-seller/VehicleList";
 import About, { type AboutData } from "@/components/single-seller/About";
 import { api } from "@/lib/api/server-request";
-import { Data as VehicleData } from "@/app/vehicles/page";
+import { Data as VehicleData } from "@/app/products/page";
 import { getBrands, getFilters } from "@/lib/data";
 
 type Data = {
@@ -39,22 +39,22 @@ export default async function page({ params }: { params: Promise<{ slug: string 
         },
     });
 
-    const [userInfo, vehicles] = await Promise.all([res, vehicleData]);
+    const [userInfo, products] = await Promise.all([res, vehicleData]);
     const data = userInfo.data;
     const brandRes = getBrands();
     const filterRes = getFilters();
 
     const tabs = [
         {
-            label: "vehicles",
+            label: "Products",
             panel: (
                 <VehicleList
                     userId={slug}
                     brandRes={brandRes}
                     filterRes={filterRes}
-                    initialData={vehicles.data.content}
-                    currentPage={vehicles.data.currentPage}
-                    totalItems={vehicles.data.totalElements}
+                    initialData={products.data.content}
+                    currentPage={products.data.currentPage}
+                    totalItems={products.data.totalElements}
                 />
             ),
         },
@@ -71,10 +71,10 @@ export default async function page({ params }: { params: Promise<{ slug: string 
                     <Image width={1440} height={224} alt="banner-img" src={data.about.bannerImage} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/30"></div>
                     <Link
-                        href={"/vehicles"}
+                        href={"/products"}
                         className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shrink-0 h-9 px-4 py-2 absolute top-4 left-4 text-white hover:bg-white/10">
                         <ArrowLeftIcon className="h-4 w-4 mr-2" />
-                        Back to All Vehicles
+                        Back to All Products
                     </Link>
                 </div>
                 <div className="bg-white border-b">
@@ -94,7 +94,7 @@ export default async function page({ params }: { params: Promise<{ slug: string 
                                     </div>
                                     <div className="flex items-center gap-4 text-sm text-gray-600">
                                         <span className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 border-brand-blue text-brand-blue">
-                                            Authorized Dealer
+                                            Verified Supplier
                                         </span>
                                         <div className="flex items-center gap-1">
                                             <MapPinIcon className="h-4 w-4" />
@@ -108,7 +108,7 @@ export default async function page({ params }: { params: Promise<{ slug: string 
                             <div className="flex gap-6 md:ml-auto">
                                 <div className="text-center">
                                     <div className="text-2xl font-bold text-brand-blue">{data.userInformation.totalInventory}</div>
-                                    <div className="text-sm text-gray-600">Vehicles</div>
+                                    <div className="text-sm text-gray-600">Products</div>
                                 </div>
                             </div>
                         </div>

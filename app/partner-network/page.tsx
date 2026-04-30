@@ -19,28 +19,28 @@ export default async function PartnerNetwork() {
     const data = {
         title: "Partner Networks",
         description:
-            "We collaborate with leading service providers to deliver exceptional automotive solutions. Our strategic partnerships ensure quality, reliability, and comprehensive service coverage.",
+            "We collaborate with leading service providers to deliver exceptional marketplace, logistics, quality, and payment solutions for UAE-made products.",
         inspection: {
-            title: "Inspection Partners",
-            subtitle: "Certified vehicle inspection service providers",
+            title: "Quality Partners",
+            subtitle: "Certified product quality and compliance providers",
             items: [
                 {
                     isFeatured: true,
                     image: "/assets/elite.jpeg",
-                    title: "Elite Auto Inspection",
-                    description: "Leading automotive inspection services with 15+ years of experience in the UAE market.",
+                    title: "Elite Quality Inspection",
+                    description: "Product quality and compliance services with deep UAE market experience.",
                     link: "https://www.google.com/search?q=Elite Auto Inspection",
                 },
                 {
                     image: "/assets/vehicle-assessment.jpeg",
-                    title: "Premium Vehicle Assessment",
-                    description: "Comprehensive vehicle assessment and certification services across Middle East.",
+                    title: "Premium Product Assessment",
+                    description: "Comprehensive product assessment and certification services across the Middle East.",
                     link: "https://www.google.com/search",
                 },
                 {
                     image: "/assets/gulf-inspection.jpeg",
                     title: "Gulf Inspection Services",
-                    description: "Specialized in luxury and commercial vehicle inspections with certified technicians.",
+                    description: "Specialized in commercial product inspections with certified specialists.",
                     link: "https://www.google.com",
                 },
             ],
@@ -52,14 +52,14 @@ export default async function PartnerNetwork() {
                 {
                     isFeatured: true,
                     image: "/assets/global-auto-transport.jpeg",
-                    title: "Global Auto Transport",
-                    description: "Worldwide vehicle shipping with insurance coverage and real-time tracking.",
+                    title: "Global Product Transport",
+                    description: "Worldwide product shipping with insurance coverage and real-time tracking.",
                     link: "https://www.google.com",
                 },
                 {
                     image: "/assets/emirates-logistics-hub.jpeg",
                     title: "Emirates Logistics Hub",
-                    description: "Regional logistics expert specializing in automotive transportation.",
+                    description: "Regional logistics expert specializing in marketplace fulfillment.",
                     link: "https://www.google.com",
                 },
             ],
@@ -72,13 +72,13 @@ export default async function PartnerNetwork() {
                     isFeatured: true,
                     image: "/assets/uae-national-bank.jpeg",
                     title: "UAE National Bank",
-                    description: "Leading bank offering competitive auto financing solutions and payment processing.",
+                    description: "Leading bank offering competitive trade finance solutions and payment processing.",
                     link: "https://www.google.com",
                 },
                 {
                     image: "/assets/gulf-finance-corporation.jpeg",
                     title: "Gulf Finance Corporation",
-                    description: "Specialized automotive financing with flexible payment terms.",
+                    description: "Specialized commerce financing with flexible payment terms.",
                     link: "https://www.google.com",
                 },
             ],
@@ -89,14 +89,14 @@ export default async function PartnerNetwork() {
             items: [
                 {
                     image: "/assets/car-tech-systems.jpeg",
-                    title: "AutoData Solutions",
-                    description: "Vehicle data and market analytics platform providing real-time insights.",
+                    title: "Marketplace Data Solutions",
+                    description: "Product data and market analytics platform providing real-time insights.",
                     link: "https://www.google.com",
                 },
                 {
                     image: "/assets/car-tech-systems.jpeg",
-                    title: "CarTech Systems",
-                    description: "Advanced automotive technology solutions and integration services.",
+                    title: "CommerceTech Systems",
+                    description: "Advanced marketplace technology solutions and integration services.",
                     link: "https://www.google.com",
                 },
             ],
@@ -107,7 +107,7 @@ export default async function PartnerNetwork() {
             items: [
                 {
                     title: "Access to Network",
-                    description: "Connect with thousands of buyers, sellers, and dealers across our platform",
+                    description: "Connect with buyers, suppliers, and marketplace operators across our platform",
                     icon: "/assets/users.svg",
                 },
                 {

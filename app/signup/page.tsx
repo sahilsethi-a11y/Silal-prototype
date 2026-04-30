@@ -6,103 +6,103 @@ import Image from "@/elements/Image";
 
 const data = {
     topBanner: {
-        title: "Join the Marketplace",
-        description: "Join ADPG Auto Marketplace as a buyer from UAE or seller from China. Access thousands of verified vehicles and trusted partners.",
-        image: "/assets/get-started-banner.webp",
+        title: "Join Silal Marketplace",
+        description: "Create a buyer or supplier account for UAE-made products across food, clothing, games, and future local categories.",
+        image: "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1800&q=85",
         link: "#signup",
     },
     buyers: {
-        title: "Trusted by Thousands of Buyers",
-        subTitle: "Join a thriving community of car buyers who trust ADPG Auto for their vehicle purchases",
+        title: "Built For UAE Buyers And Suppliers",
+        subTitle: "B2C shopping and B2B procurement flows with verified onboarding, AI product checks, and supplier trust signals",
         List: [
             {
                 icon: "/assets/users.svg",
                 title: "0",
-                subTitle: "Active Buyers",
+                subTitle: "Buyer Types",
             },
             {
                 icon: "/assets/car.svg",
                 title: "1",
-                subTitle: "Vehicles Available",
+                subTitle: "Core Categories",
             },
             {
                 icon: "/assets/star.svg",
                 title: "2",
-                subTitle: "Buyer Satisfaction",
+                subTitle: "AI Trust Features",
             },
             {
                 icon: "/assets/trend-up.svg",
                 title: "3",
-                subTitle: "Platform Transaction Value",
+                subTitle: "Marketplace Modes",
             },
         ],
     },
     whyus: {
-        title: "Why Buy with ADPG Auto?",
-        subTitle: "Experience the most secure and comprehensive car buying platform in the UAE",
+        title: "Why Use Silal Marketplace?",
+        subTitle: "A trusted commerce layer for local products, supplier discovery, and enterprise procurement",
         List: [
             {
                 icon: "/assets/dollar.svg",
-                title: "Best Market Prices",
-                subTitle: "Get the best value when buying vehicles with transparent pricing and no hidden fees from verified dealers.",
+                title: "B2C And B2B Pricing",
+                subTitle: "Shop retail packs or request wholesale pricing with transparent RFQs and supplier comparisons.",
             },
             {
                 icon: "/assets/shield.svg",
-                title: "Verified Dealers Only",
-                subTitle: "All dealers and vehicles on our platform are thoroughly verified, ensuring secure transactions and quality vehicles",
+                title: "Verified UAE Suppliers",
+                subTitle: "Supplier KYC, origin evidence, compliance documents, and admin approval are part of onboarding.",
             },
             {
                 icon: "/assets/clock.svg",
-                title: "Quick Purchase Process",
-                subTitle: "Complete your vehicle purchase in 7-14 days with our streamlined process and extensive dealer network.",
+                title: "Fast Buying Flows",
+                subTitle: "Move from discovery to checkout, RFQ, negotiation, and fulfilment tracking in one account.",
             },
             {
                 icon: "/assets/star.svg",
-                title: "Buyer Protection",
-                subTitle: "Comprehensive buyer protection with professional inspections, secure payments, and dedicated customer support.",
+                title: "AI-Assisted Trust",
+                subTitle: "Use chatbot support, image classification, product identification, and KYC checks across the journey.",
             },
         ],
     },
     process: {
         title: "How It Works",
-        subTitle: "Our streamlined process makes becoming a verified buyer simple and secure",
+        subTitle: "A simple onboarding model for consumers, business buyers, suppliers, and admins",
         List: [
             {
                 icon: "/assets/user-check.svg",
                 title: "Create Account",
-                subTitle: "Fill out the buyer registration form with your personal details.",
+                subTitle: "Choose buyer or supplier and provide account details.",
             },
             {
                 icon: "/assets/document.svg",
                 title: "Upload Documents",
-                subTitle: "Upload required documents for identity verification.",
+                subTitle: "Complete UAE Pass, trade license, origin, and compliance document checks where required.",
             },
             {
                 icon: "/assets/check-circle.svg",
-                title: "Verification Process",
-                subTitle: "Our team reviews your application and documents for approval.",
+                title: "AI And Admin Review",
+                subTitle: "Image checks, KYC checks, and admin moderation review onboarding risk.",
             },
             {
                 icon: "/assets/target.svg",
-                title: "Start Shopping",
-                subTitle: "Once approved, browse and purchase vehicles from verified dealers.",
+                title: "Start Trading",
+                subTitle: "Buy, sell, publish products, build RFQs, and manage orders.",
             },
         ],
     },
     signup: {
         title: "Choose Your Account Type",
-        subTitle: "Select whether you want to join as a buyer from UAE or seller from China to get started with the right registration process",
+        subTitle: "Select the account type that matches your marketplace role",
         List: [
             {
                 icon: "/assets/users.svg",
                 title: "Buyer",
-                subTitle: "UAE based individuals",
+                subTitle: "Consumers and business buyers",
                 link: "/signup/buyer",
             },
             {
                 icon: "/assets/briefcase.svg",
-                title: "Seller",
-                subTitle: "Seller based out of china",
+                title: "Supplier",
+                subTitle: "UAE farms, brands, makers",
                 link: "/signup/seller",
             },
         ],
@@ -149,7 +149,7 @@ export default function page() {
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="text-center mb-12">
                         <div className="text-3xl mb-4 text-[#202C4A]">Choose Your Account Type</div>
-                        <p className="text-gray-600 max-w-2xl mx-auto">Select whether you want to join as a buyer from UAE or seller from China to get started with the right registration process</p>
+                        <p className="text-gray-600 max-w-2xl mx-auto">Select whether you want to buy UAE-made products or supply products into the marketplace.</p>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {data.signup.List.map((item) => (

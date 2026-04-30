@@ -15,13 +15,13 @@ import { useRouter } from "next/navigation";
 import Button from "@/elements/Button";
 import message from "@/elements/message";
 
-const tableHeaders = ["Listing", "Seller/Dealer", "Price", "Location", "Listed", "Sessions", "Views", "Status", "Actions"];
+const tableHeaders = ["Product", "Supplier", "Price", "Location", "Listed", "Sessions", "Views", "Status", "Actions"];
 
 // Seller Type options
 const sellerTypeOptions = [
     { label: "All Sellers", value: "" },
     { label: "Individual", value: "Individual" },
-    { label: "Dealer", value: "Dealer" },
+    { label: "Supplier", value: "Dealer" },
     { label: "Agency", value: "Agency" },
 ];
 
@@ -215,10 +215,10 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
             <div>
                 <div className="mb-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-[16px] font-medium text-brand-blue leading-[22px] mb-1">Listings Moderation</h2>
-                        <p className="text-sm text-[#6c757d]">{data.totalItems} listings</p>
+                        <h2 className="text-[16px] font-medium text-brand-blue leading-[22px] mb-1">Product Moderation</h2>
+                        <p className="text-sm text-[#6c757d]">{data.totalItems} products</p>
                     </div>
-                    <p className="text-sm text-[#6c757d]">Monitor and manage all vehicle listings on the platform</p>
+                    <p className="text-sm text-[#6c757d]">Monitor product listings, AI flags, compliance documents, and supplier status</p>
                 </div>
                 <div className="mb-6 p-4 rounded-lg border border-stroke-light">
                     <div className="flex items-center gap-2 mb-4">
@@ -226,12 +226,12 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                         Filters
                     </div>
                     <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        <Input placeholder="Search vehicles..." parentClassName="lg:col-span-2" name="query" label="Search" value={formState.query} onChange={handleInputChange} />
+                        <Input placeholder="Search products..." parentClassName="lg:col-span-2" name="query" label="Search" value={formState.query} onChange={handleInputChange} />
 
                         <Select
                             label="Brand"
                             options={[
-                                { label: "All Brand", value: "" },
+                                { label: "All Brands", value: "" },
                                 ...(brandList?.map((brand) => ({
                                     label: brand.name,
                                     value: brand.name,
@@ -247,9 +247,9 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                         />
 
                         <Select
-                            label="Model"
+                            label="Product"
                             options={[
-                                { label: "All Model", value: "" },
+                                { label: "All Products", value: "" },
                                 ...(modelList?.map((model) => ({
                                     label: model.modelName,
                                     value: model.modelName,
@@ -257,17 +257,17 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                             ]}
                             value={formState.model}
                             onChange={(value) => updateFormField("model", value)}
-                            placeholder="Select Model"
+                            placeholder="Select product"
                             noDataMessage="Select brand first"
                             border="bg-input-background"
                         />
 
                         <Select
-                            label="Country"
-                            options={[{ label: "All Country", value: "" }, ...((filterData?.country as Option[]) ?? [])]}
+                            label="Location"
+                            options={[{ label: "All UAE Locations", value: "" }, ...((filterData?.country as Option[]) ?? [])]}
                             value={formState.country}
                             onChange={(value) => updateFormField("country", value)}
-                            placeholder="Select Country"
+                            placeholder="Select location"
                             border="bg-input-background"
                         />
 
@@ -282,12 +282,12 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                             labelCls="text-sm font-medium"
                         />
                         <Select
-                            label="Seller Type"
+                            label="Supplier Type"
                             name="sellerType"
                             options={sellerTypeOptions}
                             value={formState.userType}
                             onChange={(value) => updateFormField("userType", value)}
-                            placeholder="Select Seller Type"
+                            placeholder="Select supplier type"
                             border="bg-input-background"
                             labelCls="text-sm font-medium"
                         />
@@ -305,7 +305,7 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                 </div>
 
                 <div className="mb-6 p-4 rounded-lg border border-stroke-light">
-                    <h2 className="text-[16px] font-medium text-brand-blue leading-[22px] mb-4">All Listings</h2>
+                    <h2 className="text-[16px] font-medium text-brand-blue leading-[22px] mb-4">All Products</h2>
 
                     {data.totalItems === 0 ? (
                         <NoList />
@@ -327,7 +327,7 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                                             <tr key={item.id} className="transition-colors border-b border-black/10 hover:bg-accent/30">
                                                 <td className="font-medium align-middle text-sm text-brand-blue p-2 min-w-65">
                                                     <div className="flex items-center gap-2">
-                                                        <Image width={48} height={32} src={item.inventory?.mainImageUrl} alt="car-image" className="w-12 h-8 object-cover rounded-md grow-0" />
+                                                        <Image width={48} height={32} src={item.inventory?.mainImageUrl} alt="product image" className="w-12 h-8 object-cover rounded-md grow-0" />
 
                                                         <div>
                                                             <p className="font-medium">
@@ -394,7 +394,7 @@ export default function ListingModerationTab({ data: initialData, brandRes, filt
                                                 <td className="p-2 align-middle whitespace-nowrap  [&amp;&gt;[role=checkbox]]:translate-y-[2px]">
                                                     <div className=" flex items-center gap-2">
                                                         <Button
-                                                            onClick={() => router.push(`/vehicles/${item.inventory?.id}`)}
+                                                            onClick={() => router.push(`/products/${item.inventory?.id}`)}
                                                             leftIcon={<EyeIcon className="h-3.5 w-3.5 text-gray-500 " />}
                                                             size="sm"
                                                             variant="ghost"

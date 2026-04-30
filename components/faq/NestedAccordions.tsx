@@ -7,56 +7,56 @@ import InnerAccordion from "@/components/faq/InnerAccordion";
 const data = [
     {
         title: "Getting Started",
-        description: "Essential information for new users to begin their journey on ADPG Auto Marketplace",
+        description: "Essential information for new users to begin their journey on Silal Marketplace",
         icon: "🚀",
         id: "gettingStarted",
         faq: [
-            { q: "How does ADPG Auto Marketplace work?", a: "ADPG Auto Marketplace is a comprehensive platform connecting verified buyers, sellers, and dealers across the UAE. We facilitate secure vehicle transactions with professional inspections, escrow payments, and logistics support. Simply browse our inventory, add vehicles to your cart, schedule inspections, and complete your purchase with confidence." },
-            { q: "Do I need to create an account to browse vehicles?", a: "No, you can browse our vehicle inventory without creating an account. However, to add items to your cart, schedule inspections, make purchases, or list vehicles for sale, you'll need to create a free account and complete our verification process." },
-            { q: "What makes ADPG Auto different from other car marketplaces?", a: "ADPG Auto offers end-to-end services including professional vehicle inspections, escrow payment protection, verified seller network, comprehensive logistics support, and integration with AD Ports Group's infrastructure. We ensure every transaction is secure, transparent, and hassle-free." },
+            { q: "How does Silal Marketplace work?", a: "Silal Marketplace is a comprehensive platform connecting verified buyers, sellers, and suppliers across the UAE. We facilitate secure product transactions with professional inspections, escrow payments, and logistics support. Simply browse our inventory, add products to your cart, schedule inspections, and complete your purchase with confidence." },
+            { q: "Do I need to create an account to browse products?", a: "No, you can browse our product inventory without creating an account. However, to add items to your cart, schedule inspections, make purchases, or list products for sale, you'll need to create a free account and complete our verification process." },
+            { q: "What makes Silal Marketplace different from other product marketplaces?", a: "Silal Marketplace offers end-to-end services including professional product inspections, escrow payment protection, verified seller network, comprehensive logistics support, and integration with AD Ports Group's infrastructure. We ensure every transaction is secure, transparent, and hassle-free." },
         ],
     },
     {
         title: "Buying Process",
-        description: "Step-by-step guidance through our secure vehicle purchasing process and payment options",
+        description: "Step-by-step guidance through our secure product purchasing process and payment options",
         icon: "🛒",
         id: "buyingProcess",
         faq: [
             {
-                q: "How do I purchase a vehicle on ADPG Auto?",
-                a: "Browse and filter vehicles by your preferences "
+                q: "How do I purchase a product on Silal Marketplace?",
+                a: "Browse and filter products by your preferences "
             },
             {
                 q: "What payment methods do you accept?",
-                a: "We accept major credit cards, debit cards, bank transfers, and certified checks. All payments are processed through our secure escrow system to protect both buyers and sellers. You can pay a 10% token to reserve a vehicle or pay the full amount immediately."
+                a: "We accept major credit cards, debit cards, bank transfers, and certified checks. All payments are processed through our secure escrow system to protect both buyers and sellers. You can pay a 10% token to reserve a product or pay the full amount immediately."
             },
             {
-                q: "Can I negotiate the price of a vehicle?",
+                q: "Can I negotiate the price of a product?",
                 a: "Yes! Our platform includes built-in negotiation tools that allow you to communicate directly with sellers and make counter-offers. Many sellers are open to reasonable negotiations, especially for cash buyers or quick transactions."
             },
             {
-                q: "What if I'm not satisfied with the vehicle after inspection?",
-                a: "If the vehicle doesn't match the description or fails to meet your expectations during the professional inspection, you can withdraw from the purchase without penalty. Your deposit will be fully refunded through our buyer protection program. "
+                q: "What if I'm not satisfied with the product after inspection?",
+                a: "If the product doesn't match the description or fails to meet your expectations during the professional inspection, you can withdraw from the purchase without penalty. Your deposit will be fully refunded through our buyer protection program. "
             },
         ],
     },
     {
-        title: "Vehicle Inspection",
-        description: "Comprehensive vehicle evaluation services to ensure quality and transparency in every purchase",
+        title: "Product Inspection",
+        description: "Comprehensive product evaluation services to ensure quality and transparency in every purchase",
         icon: "🔍",
         id: "vehicleInspection",
         faq: [
             {
-                q: "Are vehicle inspections mandatory?",
-                a: "While not mandatory, we highly recommend professional inspections for all vehicles. Our certified inspectors provide comprehensive 150-point checks covering engine, transmission, brakes, electrical systems, body condition, and more. Inspection reports help you make informed decisions.",
+                q: "Are product inspections mandatory?",
+                a: "While not mandatory, we highly recommend professional inspections for all products. Our certified inspectors provide comprehensive 150-point checks covering engine, transmission, brakes, electrical systems, body condition, and more. Inspection reports help you make informed decisions.",
             },
             {
                 q: "How much do inspections cost?",
-                a: "Inspection fees are included in our service at no additional cost to buyers. This is part of our commitment to transparency and ensuring every vehicle meets quality standards before purchase.",
+                a: "Inspection fees are included in our service at no additional cost to buyers. This is part of our commitment to transparency and ensuring every product meets quality standards before purchase.",
             },
             {
                 q: "How long does an inspection take?",
-                a: "Standard inspections take 2-4 hours depending on the vehicle type and condition. Rush inspections can be completed within 24 hours for an additional fee. You'll receive a detailed report with photos and videos within 6 hours of completion.",
+                a: "Standard inspections take 2-4 hours depending on the product type and condition. Rush inspections can be completed within 24 hours for an additional fee. You'll receive a detailed report with photos and videos within 6 hours of completion.",
             },
             {
                 q: "Can I be present during the inspection?",
@@ -66,25 +66,25 @@ const data = [
     },
     {
         title: "Selling Process",
-        description: "Everything you need to know about listing and selling your vehicle on our trusted platform",
+        description: "Everything you need to know about listing and selling your product on our trusted platform",
         icon: "💰",
         id: "sellingProcess",
         faq: [
             {
-                q: "How do I list my vehicle for sale?",
+                q: "How do I list my product for sale?",
                 a: "Create a seller account and complete verification",
             },
             {
                 q: "What are the seller fees?",
-                a: "Individual sellers pay a 3% commission only when the vehicle is sold. Dealers have subscription plans starting from AED 299/month. There are no upfront listing fees - you only pay when you successfully sell your vehicle.",
+                a: "Individual sellers pay a 3% commission only when the product is sold. Suppliers have subscription plans starting from AED 299/month. There are no upfront listing fees - you only pay when you successfully sell your product.",
             },
             {
-                q: "How long does it take to sell a vehicle?",
-                a: "Average selling time varies by vehicle type, condition, and pricing. Most well-priced vehicles sell within 30-45 days. Premium vehicles may take longer, while competitively priced economy cars often sell within 2-3 weeks.",
+                q: "How long does it take to sell a product?",
+                a: "Average selling time varies by product type, condition, and pricing. Most well-priced products sell within 30-45 days. Premium products may take longer, while competitively priced retail products often sell within 2-3 weeks.",
             },
             {
-                q: "Can I sell multiple vehicles?",
-                a: "Yes! Individual sellers can list up to 5 vehicles at a time. If you regularly sell vehicles, consider upgrading to a dealer account for unlimited listings and additional features like inventory management tools and priority support.",
+                q: "Can I sell multiple products?",
+                a: "Yes! Individual sellers can list up to 5 products at a time. If you regularly sell products, consider upgrading to a supplier account for unlimited listings and additional features like inventory management tools and priority support.",
             },
         ],
     },
@@ -95,20 +95,20 @@ const data = [
         id: "shippingDelivery",
         faq: [
             {
-                q: "Do you provide vehicle delivery services?",
-                a: "Yes, we offer comprehensive logistics solutions through our network of certified transporters. We can deliver vehicles anywhere in the UAE and to select international destinations. Delivery costs are calculated based on distance and vehicle type.",
+                q: "Do you provide product delivery services?",
+                a: "Yes, we offer comprehensive logistics solutions through our network of certified transporters. We can deliver products anywhere in the UAE and to select international destinations. Delivery costs are calculated based on distance and product type.",
             },
             {
                 q: "How much does delivery cost?",
                 a: "Delivery within UAE emirates ranges from AED 300-800 depending on the distance. International shipping costs vary by destination. You'll see exact delivery costs before completing your purchase. Some sellers offer free local delivery for qualified buyers.",
             },
             {
-                q: "Is my vehicle insured during transport?",
-                a: "Yes, all vehicles are fully insured during transport through our logistics partners. Coverage includes protection against damage, theft, or loss during the delivery process. Insurance is included at no additional cost to buyers.",
+                q: "Is my product insured during transport?",
+                a: "Yes, all products are fully insured during transport through our logistics partners. Coverage includes protection against damage, theft, or loss during the delivery process. Insurance is included at no additional cost to buyers.",
             },
             {
-                q: "Can I track my vehicle delivery?",
-                a: "Absolutely! You'll receive real-time tracking updates via SMS and email once your vehicle is dispatched. Our logistics dashboard provides live GPS tracking, estimated delivery times, and direct contact with the driver.",
+                q: "Can I track my product delivery?",
+                a: "Absolutely! You'll receive real-time tracking updates via SMS and email once your product is dispatched. Our logistics dashboard provides live GPS tracking, estimated delivery times, and direct contact with the driver.",
             },
         ],
     },
@@ -120,7 +120,7 @@ const data = [
         faq: [
             {
                 q: "How do you verify users on the platform?",
-                a: "We use a comprehensive KYC (Know Your Customer) process that includes Emirates ID verification, phone number confirmation, and address verification. Dealers undergo additional business license and trade license verification. This ensures all users are legitimate and trustworthy.",
+                a: "We use a comprehensive KYC (Know Your Customer) process that includes Emirates ID verification, phone number confirmation, and address verification. Suppliers undergo additional business license and trade license verification. This ensures all users are legitimate and trustworthy.",
             },
             {
                 q: "Is my personal information secure?",
@@ -137,22 +137,22 @@ const data = [
         ],
     },
     {
-        title: "Dealer Services",
-        description: "Professional dealer onboarding, enhanced features, and business growth opportunities",
+        title: "Supplier Services",
+        description: "Professional supplier onboarding, enhanced features, and business growth opportunities",
         icon: "🏢",
         id: "dealerServices",
         faq: [
             {
-                q: "How do I become a verified dealer?",
-                a: "To become a verified dealer: 1) Submit your trade license and business registration 2) Complete our dealer verification process 3) Choose a subscription plan 4) Upload your inventory 5) Start selling with enhanced features like bulk listing tools, analytics dashboard, and priority support.",
+                q: "How do I become a verified supplier?",
+                a: "To become a verified supplier: 1) Submit your trade license and business registration 2) Complete our supplier verification process 3) Choose a subscription plan 4) Upload your inventory 5) Start selling with enhanced features like bulk listing tools, analytics dashboard, and priority support.",
             },
             {
-                q: "What are the benefits of a dealer account?",
-                a: "Dealer accounts include: unlimited vehicle listings, advanced inventory management, detailed analytics, priority customer support, bulk upload tools, custom branding options, featured listing privileges, and access to dealer financing programs.",
+                q: "What are the benefits of a supplier account?",
+                a: "Supplier accounts include: unlimited product listings, advanced inventory management, detailed analytics, priority customer support, bulk upload tools, custom branding options, featured listing privileges, and access to supplier financing programs.",
             },
             {
-                q: "Do you offer dealer financing programs?",
-                a: "Yes, we partner with leading financial institutions to offer competitive financing options to your customers. Dealers can access wholesale financing, floor plan financing, and customer financing programs to boost sales and profitability.",
+                q: "Do you offer supplier financing programs?",
+                a: "Yes, we partner with leading financial institutions to offer competitive financing options to your customers. Suppliers can access wholesale financing, floor plan financing, and customer financing programs to boost sales and profitability.",
             },
 
         ],

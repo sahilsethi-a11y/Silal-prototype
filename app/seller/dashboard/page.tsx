@@ -1,193 +1,158 @@
+import { MOCK_ORDERS, SELLER_TOP_PRODUCTS, SELLER_WEEKLY_SALES, formatAEDCompact, formatAED, ORDER_STATUS_COLORS, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/mockData";
+import Link from "next/link";
 import QuickActions from "@/components/seller/QuickActions";
-import { api } from "@/lib/api/server-request";
-import { ReactNode } from "react";
 
-interface StatCardProps {
-    title: string;
-    value: number;
-    icon: ReactNode;
-}
+const MY_ORDERS = MOCK_ORDERS.filter((o) => o.supplierId === "sup-001");
 
-const StatCard = ({ title, value, icon }: StatCardProps) => (
-    <div className="bg-white rounded-xl p-6 hover:shadow-md flex items-center justify-between border border-stroke-light">
-        <div>
-            <h3 className="text-sm text-gray-600">{title}</h3>
-            <p className="text-xl">{value}</p>
-        </div>
-        <div className="opacity-60">{icon}</div>
-    </div>
-);
-
-interface ActivityItem {
-    label: string;
-    value: string;
-}
-
-interface ActivityOverviewProps {
-    title: string;
-    items: ActivityItem[];
-}
-
-const ActivityOverview = ({ title, items }: ActivityOverviewProps) => (
-    <div className="bg-white rounded-xl p-6 border border-stroke-light">
-        <h2 className="text-lg mb-6 text-gray-800">{title}</h2>
-        <div className="space-y-4">
-            {items.map((item) => (
-                <div key={item.label} className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">{item.label}</span>
-                    <span className="text-sm font-medium text-gray-900">{item.value}</span>
-                </div>
-            ))}
-        </div>
-    </div>
-);
-
-type ResponseData = {
-    data: {
-        dashboard: {
-            totalInventory: number;
-            revenueGenerated: number;
-            performanceOverview: number;
-            pendingDeliveries: number;
-            activeOrders: number;
-        };
-    };
-};
-
-export default async function BuyerDashboard() {
-    let dashboardData: ResponseData["data"]["dashboard"] = {
-        totalInventory: 0,
-        revenueGenerated: 0,
-        performanceOverview: 0,
-        pendingDeliveries: 0,
-        activeOrders: 0,
-    };
-
-    try {
-        const res = await api.get<ResponseData>("/inventory/api/v1/inventory/profile-analytics", { isAuthRequired: false });
-        if (res?.data?.dashboard) {
-            dashboardData = res.data.dashboard;
-        }
-    } catch {
-        dashboardData = {
-            totalInventory: 0,
-            revenueGenerated: 0,
-            performanceOverview: 0,
-            pendingDeliveries: 0,
-            activeOrders: 0,
-        };
-    }
+export default function SellerDashboard() {
+    const totalRevenue = SELLER_WEEKLY_SALES.reduce((a, d) => a + d.b2c + d.b2b, 0);
+    const activeOrders = MY_ORDERS.filter((o) => !["delivered", "cancelled", "returned"].includes(o.status)).length;
+    const pendingOrders = MY_ORDERS.filter((o) => o.status === "pending").length;
+    const deliveredOrders = MY_ORDERS.filter((o) => o.status === "delivered").length;
+    const maxSales = Math.max(...SELLER_WEEKLY_SALES.map((d) => d.b2c + d.b2b));
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard
-                    title="Total Inventory"
-                    value={dashboardData.totalInventory ?? 0}
-                    icon={
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-7 w-7 text-blue-600"
-                            aria-hidden="true">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                            <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                        </svg>
-                    }
-                />
-
-                <StatCard
-                    title="Cart Items"
-                    value={0}
-                    icon={
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-7 w-7 text-green-600"
-                            aria-hidden="true">
-                            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
-                            <circle cx="7" cy="17" r="2"></circle>
-                            <path d="M9 17h6"></path>
-                            <circle cx="17" cy="17" r="2"></circle>
-                        </svg>
-                    }
-                />
-
-                <StatCard
-                    title="Shortlisted"
-                    value={0}
-                    icon={
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className=" h-7 w-7 text-orange-600"
-                            aria-hidden="true">
-                            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
-                        </svg>
-                    }
-                />
-
-                <StatCard
-                    title="Active Negotiations"
-                    value={0}
-                    icon={
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-7 w-7 text-purple-600"
-                            aria-hidden="true">
-                            <path d="M16 7h6v6"></path>
-                            <path d="m22 7-8.5 8.5-5-5L2 17"></path>
-                        </svg>
-                    }
-                />
+            {/* KPIs */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <StatCard title="This Week Revenue" value={formatAEDCompact(totalRevenue)} sub="+12.4% vs last week" color="text-green-600" icon="💰" />
+                <StatCard title="Active Orders" value={String(activeOrders)} sub={`${pendingOrders} pending action`} color={pendingOrders > 0 ? "text-orange-600" : "text-gray-500"} icon="📦" />
+                <StatCard title="Active Products" value="38" sub="2 low stock" color="text-brand-blue" icon="🏷️" />
+                <StatCard title="Buyer Rating" value="4.8" sub="Based on 342 reviews" color="text-silal-gold" icon="⭐" />
             </div>
 
-            {/* Activity Overview and Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ActivityOverview
-                    title="Performance Overview"
-                    items={[
-                        { label: "Total Views", value: "0" },
-                        { label: "Total Inquiries", value: "0" },
-                        { label: "Conversion Rate", value: "0" },
-                        { label: "Pending Orders", value: "0" },
-                    ]}
-                />
-                <div className="bg-white rounded-xl p-6 border border-stroke-light">
-                    <h2 className="text-lg font-semibold mb-4 text-gray-800">Quick Actions</h2>
+            {pendingOrders > 0 && (
+                <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xl">⏰</span>
+                        <div>
+                            <p className="font-semibold text-orange-800">{pendingOrders} order{pendingOrders > 1 ? "s" : ""} awaiting your confirmation</p>
+                            <p className="text-sm text-orange-700">Confirm promptly to maintain your SLA score</p>
+                        </div>
+                    </div>
+                    <Link href="/seller/fulfillment" className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg text-sm font-medium hover:bg-orange-200 transition-colors">
+                        Go to Fulfillment
+                    </Link>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Sales Chart */}
+                <div className="lg:col-span-2 bg-white rounded-xl border border-stroke-light p-5">
+                    <div className="flex justify-between items-center mb-3">
+                        <h3 className="font-semibold text-gray-800">Daily Sales This Week</h3>
+                        <Link href="/seller/analytics" className="text-sm text-brand-blue hover:underline">Full Analytics →</Link>
+                    </div>
+                    <div className="flex items-end gap-3 h-28">
+                        {SELLER_WEEKLY_SALES.map((d) => {
+                            const total = d.b2c + d.b2b;
+                            const totalH = (total / maxSales) * 100;
+                            const b2cH = (d.b2c / total) * totalH;
+                            const b2bH = totalH - b2cH;
+                            return (
+                                <div key={d.day} className="flex-1 flex flex-col items-center gap-0.5">
+                                    <div className="w-full flex flex-col items-stretch h-24 justify-end">
+                                        <div className="rounded-t-sm" style={{ height: `${b2bH}%`, backgroundColor: "#174f2a" }} />
+                                        <div style={{ height: `${b2cH}%`, backgroundColor: "#75a843" }} />
+                                    </div>
+                                    <span className="text-xs text-gray-500">{d.day}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="flex gap-3 mt-2 text-xs text-gray-500">
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-silal-leaf inline-block" /> B2C</span>
+                        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-brand-blue inline-block" /> B2B</span>
+                    </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="bg-white rounded-xl border border-stroke-light p-5">
+                    <h3 className="font-semibold text-gray-800 mb-3">Quick Actions</h3>
                     <QuickActions variant="vertical" />
                 </div>
+            </div>
+
+            {/* Recent Orders */}
+            <div className="bg-white rounded-xl border border-stroke-light p-5">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold text-gray-800">Recent Orders</h3>
+                    <Link href="/seller/orders" className="text-sm text-brand-blue hover:underline">View all →</Link>
+                </div>
+                <div className="space-y-3">
+                    {MY_ORDERS.slice(0, 4).map((o) => (
+                        <div key={o.id} className="flex items-center justify-between py-2 border-b border-stroke-light last:border-0">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-0.5">
+                                    <span className="font-medium font-mono text-sm text-gray-800">{o.orderNumber}</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ORDER_STATUS_COLORS[o.status as OrderStatus]}`}>
+                                        {ORDER_STATUS_LABELS[o.status as OrderStatus]}
+                                    </span>
+                                    <span className={`px-1.5 py-0.5 rounded text-xs ${o.type === "B2B" ? "bg-brand-blue/10 text-brand-blue" : "bg-silal-leaf/10 text-silal-leaf"}`}>{o.type}</span>
+                                </div>
+                                <p className="text-xs text-gray-500">{o.buyerName} · {new Date(o.createdAt).toLocaleDateString("en-AE")}</p>
+                            </div>
+                            <p className="font-semibold text-brand-blue text-sm">{formatAED(o.totalAmount)}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Top Products & Performance */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-xl border border-stroke-light p-5">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-semibold text-gray-800">Top Products</h3>
+                        <Link href="/seller/analytics" className="text-sm text-brand-blue hover:underline">Analytics →</Link>
+                    </div>
+                    <div className="space-y-3">
+                        {SELLER_TOP_PRODUCTS.slice(0, 4).map((p) => (
+                            <div key={p.sku} className="flex items-center gap-3">
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-800">{p.name}</p>
+                                    <p className="text-xs text-gray-400">{p.sold} units · {p.stock} in stock</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-semibold text-brand-blue">{formatAEDCompact(p.revenue)}</p>
+                                    <span className={`text-xs ${p.trend === "up" ? "text-green-500" : p.trend === "down" ? "text-red-500" : "text-gray-400"}`}>
+                                        {p.trend === "up" ? "▲" : p.trend === "down" ? "▼" : "—"}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    {[
+                        { title: "Compliance Status", icon: "✅", detail: "Trade license valid until Dec 2026. Halal certificate renewed Apr 2026. Origin certificates up to date.", cta: "View Docs", href: "/seller/profile" },
+                        { title: "Next Payout", icon: "💸", detail: "AED 127,313 scheduled for May 5, 2026. 91 orders in settlement period.", cta: "View Payout", href: "/seller/payout" },
+                    ].map((c) => (
+                        <div key={c.title} className="bg-white rounded-xl border border-stroke-light p-5">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl">{c.icon}</span>
+                                <div className="flex-1">
+                                    <h4 className="font-semibold text-gray-800">{c.title}</h4>
+                                    <p className="text-sm text-gray-500 mt-1">{c.detail}</p>
+                                    <Link href={c.href} className="text-sm text-brand-blue hover:underline mt-2 inline-block">{c.cta} →</Link>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function StatCard({ title, value, sub, color, icon }: { title: string; value: string; sub: string; color: string; icon: string }) {
+    return (
+        <div className="bg-white rounded-xl p-5 hover:shadow-md flex items-center gap-3 border border-stroke-light">
+            <div className="text-2xl">{icon}</div>
+            <div>
+                <p className="text-xl font-semibold text-gray-800">{value}</p>
+                <p className="text-xs text-gray-500">{title}</p>
+                <p className={`text-xs font-medium mt-0.5 ${color}`}>{sub}</p>
             </div>
         </div>
     );

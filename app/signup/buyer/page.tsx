@@ -2,7 +2,7 @@ import BuyerOnboard from "@/components/BuyerOnboard";
 
 const data = {
     title: "Create Your Buyer Account",
-    description: "Register as a buyer to access thousands of verified vehicles from trusted dealers with secure transactions and professional support.",
+    description: "Register as a consumer or business buyer to shop UAE-made products, build B2B RFQs, and access verified supplier trust signals.",
 };
 
 export default function page() {

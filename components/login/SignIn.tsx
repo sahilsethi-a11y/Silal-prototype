@@ -5,21 +5,34 @@ import Link from "next/link";
 import type { User } from "@/components/login/LoginForm";
 import Button from "@/elements/Button";
 import Input from "@/elements/Input";
-import { DEMO_CREDENTIALS, getDemoUser, LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY } from "@/lib/localAuth";
+import { DEMO_CREDENTIALS, getDemoUser, LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY, type BuyerType } from "@/lib/localAuth";
+import { setClientMarketMode } from "@/lib/marketplace";
 
 const data = {
     title: "Welcome Back",
-    description: "Sign in to your ADPG Auto Marketplace account",
+    description: "Sign in as a buyer, supplier, or admin",
 };
 
 type PropsT = {
     successCallback: (user: User, opts?: { skipOtp?: boolean }) => void;
 };
 
+type LoginAccountType = "individual_buyer" | "business_buyer" | "supplier" | "admin";
+
+const accountOptions: { type: LoginAccountType; label: string; caption: string; username: string }[] = [
+    { type: "individual_buyer", label: "Individual Buyer", caption: "B2C Retail", username: "individual@silal.local" },
+    { type: "business_buyer", label: "Business Buyer", caption: "B2B Wholesale", username: "business@silal.local" },
+    { type: "supplier", label: "Supplier", caption: "Seller portal", username: "supplier@silal.local" },
+    { type: "admin", label: "Admin", caption: "Operations", username: "admin@silal.local" },
+];
+
+const demoCredentialFor = (username: string) => DEMO_CREDENTIALS.find((credential) => credential.username === username);
+
 export default function SignIn({ successCallback }: Readonly<PropsT>) {
+    const [selectedAccountType, setSelectedAccountType] = useState<LoginAccountType>("individual_buyer");
     const [formData, setFormData] = useState({
-        username: "",
-        password: "",
+        username: demoCredentialFor("individual@silal.local")?.username ?? "",
+        password: demoCredentialFor("individual@silal.local")?.password ?? "",
     });
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +41,16 @@ export default function SignIn({ successCallback }: Readonly<PropsT>) {
     const buildLocalUser = (username: string) => {
         const normalizedUsername = username.trim().toLowerCase();
         const safeSlug = normalizedUsername.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-        const roleType: "buyer" | "seller" = normalizedUsername.includes("seller") ? "seller" : "buyer";
+        const selectedRole: "buyer" | "seller" | "admin" = selectedAccountType === "admin" ? "admin" : selectedAccountType === "supplier" ? "seller" : "buyer";
+        const roleType: "buyer" | "seller" | "admin" = normalizedUsername.includes("admin")
+            ? "admin"
+            : normalizedUsername.includes("seller") || normalizedUsername.includes("supplier")
+              ? "seller"
+              : selectedRole;
+        const buyerType: BuyerType =
+            roleType === "buyer" && (selectedAccountType === "business_buyer" || normalizedUsername.includes("business") || normalizedUsername.includes("b2b"))
+                ? "business"
+                : "individual";
         const userId = `local-${roleType}-${safeSlug || "user"}`;
         return {
             userId,
@@ -38,6 +60,7 @@ export default function SignIn({ successCallback }: Readonly<PropsT>) {
             email: normalizedUsername,
             name: normalizedUsername.split("@")[0] || "Local User",
             roleType,
+            buyerType: roleType === "buyer" ? buyerType : undefined,
             otpVerified: true,
             passwordTemporary: false,
         };
@@ -63,18 +86,29 @@ export default function SignIn({ successCallback }: Readonly<PropsT>) {
 
         try {
             const localUser = getDemoUser(formData.username, formData.password) || buildLocalUser(formData.username);
+            const resolvedUser = {
+                ...localUser,
+                buyerType:
+                    localUser.roleType === "buyer"
+                        ? localUser.buyerType ?? (selectedAccountType === "business_buyer" ? "business" : "individual")
+                        : undefined,
+            };
             if (typeof window !== "undefined") {
-                window.localStorage.setItem(LOCAL_AUTH_STORAGE_KEY, JSON.stringify(localUser));
-                document.cookie = `${LOCAL_AUTH_COOKIE}=${encodeURIComponent(localUser.userId)}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax`;
+                window.localStorage.setItem(LOCAL_AUTH_STORAGE_KEY, JSON.stringify(resolvedUser));
+                document.cookie = `${LOCAL_AUTH_COOKIE}=${encodeURIComponent(resolvedUser.userId)}; path=/; max-age=${60 * 60 * 24 * 30}; samesite=lax`;
+                if (resolvedUser.roleType === "buyer") {
+                    setClientMarketMode(resolvedUser.buyerType === "business" ? "zero_km" : "second_hand");
+                }
                 window.dispatchEvent(new Event("adpg-auth-changed"));
             }
             successCallback(
                 {
-                    id: localUser.id,
-                    username: localUser.username,
-                    emailId: localUser.emailId,
-                    roleType: localUser.roleType,
-                    passwordTemporary: localUser.passwordTemporary,
+                    id: resolvedUser.id,
+                    username: resolvedUser.username,
+                    emailId: resolvedUser.emailId,
+                    roleType: resolvedUser.roleType,
+                    buyerType: resolvedUser.buyerType,
+                    passwordTemporary: resolvedUser.passwordTemporary,
                 },
                 { skipOtp: true }
             );
@@ -88,16 +122,31 @@ export default function SignIn({ successCallback }: Readonly<PropsT>) {
             <div className="max-w-md w-full mx-auto bg-white rounded-2xl shadow-lg p-8 border border-black/10">
                 <h1 className="text-2xl text-center text-brand-blue mb-1">{data.title}</h1>
                 <p className="text-center text-gray-500 mb-6">{data.description}</p>
-                <div className="mb-5 rounded-lg border border-stroke-light bg-gray-50 p-3 text-xs text-gray-700">
-                    <p className="font-semibold text-gray-900 mb-2">Demo Credentials (Local Mode)</p>
-                    <p>
-                        Buyer: <span className="font-medium">{DEMO_CREDENTIALS[0].username}</span> /{" "}
-                        <span className="font-medium">{DEMO_CREDENTIALS[0].password}</span>
-                    </p>
-                    <p>
-                        Seller: <span className="font-medium">{DEMO_CREDENTIALS[1].username}</span> /{" "}
-                        <span className="font-medium">{DEMO_CREDENTIALS[1].password}</span>
-                    </p>
+                <div className="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {accountOptions.map((option) => {
+                        const demo = demoCredentialFor(option.username);
+                        const selected = selectedAccountType === option.type;
+                        return (
+                            <button
+                                key={option.type}
+                                type="button"
+                                onClick={() => {
+                                    setSelectedAccountType(option.type);
+                                    if (demo) {
+                                        setFormData({ username: demo.username, password: demo.password });
+                                    }
+                                    setError("");
+                                }}
+                                className={`rounded-lg border p-3 text-left transition-colors ${
+                                    selected ? "border-brand-blue bg-brand-blue text-white" : "border-stroke-light bg-gray-50 text-gray-800 hover:border-brand-blue/50"
+                                }`}
+                            >
+                                <span className="block text-sm font-semibold">{option.label}</span>
+                                <span className={`mt-0.5 block text-xs ${selected ? "text-white/80" : "text-gray-600"}`}>{option.caption}</span>
+                                {demo ? <span className={`mt-2 block text-[11px] ${selected ? "text-white/80" : "text-gray-500"}`}>{demo.username}</span> : null}
+                            </button>
+                        );
+                    })}
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <Input

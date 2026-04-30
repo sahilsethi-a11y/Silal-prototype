@@ -8,6 +8,7 @@ import { cleanQueryParams } from "@/lib/utils";
 import { api } from "@/lib/api/client-request";
 import type { SearchParams } from "next/dist/server/request/search-params";
 import dynamic from "next/dynamic";
+import { marketModeToParam, parseMarketMode } from "@/lib/marketplace";
 
 const FilterSidebar = dynamic(() => import("@/components/FilterSideBar"), { ssr: false });
 
@@ -24,6 +25,7 @@ type FilterBarProps = {
     filterRes: Promise<{ data: Record<string, unknown> }>;
     requireMarketSelection?: boolean;
     selectedMarket?: string;
+    modelOptionsByBrand?: Record<string, Option[]>;
 };
 
 export type FilterItem = {
@@ -77,17 +79,18 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
     const brandList = brandsData.data;
     const filterData = filterResponse.data;
     const selectedMarket = typeof props.selectedMarket === "string" ? props.selectedMarket : typeof filters.market === "string" ? filters.market : "";
-    const hasSelectedMarket = selectedMarket === "second_hand" || selectedMarket === "zero_km";
+    const selectedMarketMode = parseMarketMode(selectedMarket);
+    const hasSelectedMarket = Boolean(selectedMarketMode);
 
     const handleSearch = () => {
         if (props.requireMarketSelection && !hasSelectedMarket) {
-            setMarketError("Please select the type of marketplace.");
+            setMarketError("Please select the buying mode.");
             return;
         }
 
         setMarketError("");
-        const query = cleanQueryParams({ ...filters, market: hasSelectedMarket ? selectedMarket : "" });
-        router.push(`/vehicles?${query}`);
+        const query = cleanQueryParams({ ...filters, market: selectedMarketMode ? marketModeToParam(selectedMarketMode) : "" });
+        router.push(`/products?${query}`);
     };
 
     const handleApply = () => {
@@ -98,10 +101,26 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
     const clearAllFilter = () => {
         setShowAdvancedFilters(false);
         setFilters(defaultInitialFilters);
-        router.push("/vehicles");
+        router.push("/products");
     };
 
     const getModelList = async (brandId: string) => {
+        if (!brandId) {
+            setModelList([]);
+            return;
+        }
+
+        const localModelOptions = props.modelOptionsByBrand?.[brandId];
+        if (localModelOptions) {
+            setModelList(
+                localModelOptions.map((option) => ({
+                    id: option.value,
+                    modelName: option.label,
+                }))
+            );
+            return;
+        }
+
         try {
             const res = await api.get<{ data: Model[] }>(`/masters/api/v1/mtoc/brands/models`, { params: { ref: brandId } });
             if (!res.data) throw new Error("Something went wrong");
@@ -118,8 +137,8 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
 
     useEffect(() => {
         if (!props.requireMarketSelection) return;
-        const selectedMarket = props.selectedMarket === "second_hand" || props.selectedMarket === "zero_km" ? props.selectedMarket : "";
-        setFilters((prev) => ({ ...prev, market: selectedMarket }));
+        const selectedMarket = parseMarketMode(props.selectedMarket);
+        setFilters((prev) => ({ ...prev, market: selectedMarket ? marketModeToParam(selectedMarket) : "" }));
         if (selectedMarket) {
             setMarketError("");
         }
@@ -150,21 +169,21 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 xl:grid-cols-5 gap-4 mb-6">
                         <div className="flex flex-col gap-2">
                             <Select
-                                label={isLabel && "Country"}
-                                options={[{ label: "All Country", value: "" }, ...((filterData?.country as Option[]) ?? [])]}
+                                label={isLabel && "Location"}
+                                options={[{ label: "All UAE Locations", value: "" }, ...((filterData?.country as Option[]) ?? [])]}
                                 value={filters.country}
                                 onChange={(value) => handleFilterChange("country", value as string)}
-                                placeholder="Select Country"
+                                placeholder="Select location"
                                 border={props.selectCls}
                             />
                         </div>
                         <div className="flex flex-col gap-2">
                             <Select
-                                label={isLabel && "Body Type"}
-                                options={[{ label: "All Body Type", value: "" }, ...((filterData?.bodyType as Option[]) ?? [])]}
+                                label={isLabel && "Category"}
+                                options={[{ label: "All Categories", value: "" }, ...((filterData?.bodyType as Option[]) ?? [])]}
                                 value={filters.bodyType}
                                 onChange={(value) => handleFilterChange("bodyType", value as string)}
-                                placeholder="Body Type"
+                                placeholder="Category"
                                 border={props.selectCls}
                             />
                         </div>
@@ -172,7 +191,7 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                             <Select
                                 label={isLabel && "Brand"}
                                 options={[
-                                    { label: "All Brand", value: "" },
+                                    { label: "All Brands", value: "" },
                                     ...(brandList?.map((brand) => ({
                                         label: brand.name,
                                         value: brand.name,
@@ -183,16 +202,16 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                                     handleFilterChange("brand", value as string);
                                     getModelList(value as string);
                                 }}
-                                placeholder="Select Brand"
+                                placeholder="Select brand"
                                 border={props.selectCls}
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <Select
-                                label={isLabel && "Model"}
+                                label={isLabel && "Product"}
                                 options={[
-                                    { label: "All Model", value: "" },
+                                    { label: "All Products", value: "" },
                                     ...(modelList?.map((model) => ({
                                         label: model.modelName,
                                         value: model.modelName,
@@ -200,7 +219,7 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                                 ]}
                                 value={filters.model}
                                 onChange={(value) => handleFilterChange("model", value as string)}
-                                placeholder="Select Model"
+                                placeholder="Select product"
                                 noDataMessage="Select brand first"
                                 border={props.selectCls}
                             />
@@ -209,7 +228,7 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                         <div className="flex flex-col gap-2">
                             <Select
                                 label={isLabel && "Price Range"}
-                                options={[{ label: "All Price Range", value: "" }, ...((filterData?.priceRange as Option[]) ?? [])]}
+                                options={[{ label: "All Price Ranges", value: "" }, ...((filterData?.priceRange as Option[]) ?? [])]}
                                 value={filters.priceRange}
                                 onChange={(value) => handleFilterChange("priceRange", value as string)}
                                 placeholder="Price Range"
@@ -233,13 +252,13 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                             onClick={handleSearch}
                             className="inline-flex items-center justify-center gap-1.2 bg-brand-blue h-10 px-4 rounded-lg text-white hover:bg-primary-hover whitespace-nowrap">
                             <SearchIcon className="h-3.5 w-3.5 mr-1 lg:mr-2" />
-                            <span className="text-xs/4.25 font-medium">Search Vehicles</span>
+                            <span className="text-xs/4.25 font-medium">Search Products</span>
                         </button>
                     </div>
                     {isClear && (
                         <button
                             onClick={() => {
-                                router.push("/vehicles");
+                                router.push("/products");
                                 setFilters(defaultInitialFilters);
                             }}
                             className="px-6 text-gray-600 py-2 border border-stroke-light hover:bg-accent hover:text-accent-foreground rounded-md font-medium transition-all text-sm">
@@ -253,7 +272,7 @@ export default function FilterBar({ isLabel = true, brandRes, filterRes, isClear
                     </p>
                 )}
                 {props.requireMarketSelection && !hasSelectedMarket && !marketError ? (
-                    <p className="mt-3 text-sm text-amber-700">Select a marketplace type above, then click Search Vehicles.</p>
+                    <p className="mt-3 text-sm text-amber-700">Select a marketplace type above, then click Search Products.</p>
                 ) : null}
             </div>
             {filterData && (

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import PriceBadge from "@/elements/PriceBadge";
 import { formatPrice } from "@/lib/utils";
-import { scopedStorageKey, type MarketMode } from "@/lib/marketplace";
+import { marketModeToParam, scopedStorageKey, type MarketMode } from "@/lib/marketplace";
 
 export type Content = {
     conversationId: string;
@@ -91,7 +91,7 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
         if (typeof window === "undefined") {
             return {
                 id: String(itemId || ""),
-                brand: "Vehicle",
+                brand: "Product",
                 model: "Listing",
                 variant: "",
                 year: 0,
@@ -111,7 +111,7 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
                 const name = String(hit?.name || "").trim().split(" ");
                 return {
                     id: String(itemId || ""),
-                    brand: hit?.brand || name[0] || "Vehicle",
+                    brand: hit?.brand || name[0] || "Product",
                     model: hit?.model || name[1] || "Listing",
                     variant: hit?.variant || "",
                     year: Number(hit?.year) || 0,
@@ -126,7 +126,7 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
         } catch {}
         return {
             id: String(itemId || ""),
-            brand: fallbackName || "Vehicle",
+            brand: fallbackName || "Product",
             model: "Listing",
             variant: "",
             year: 0,
@@ -253,12 +253,12 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
     }, [data, marketMode]);
 
     const navigateToDetail = (i: Content) => {
-        const url = "/vehicles/" + i.itemId;
+        const url = "/products/" + i.itemId;
         router.push(url);
     };
 
     const navigateToConversation = (i: Content) => {
-        router.push(`/my-negotiations/${i.conversationId}?market=${marketMode}`);
+        router.push(`/my-negotiations/${i.conversationId}?market=${marketModeToParam(marketMode)}`);
     };
 
     return (
@@ -266,7 +266,7 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
             <div className="flex gap-4 p-4 rounded-xl border flex-wrap border-stroke-light mb-6">
                 <div className="relative grow">
                     <SearchIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input type="text" className="pl-10 py-1.5" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by vehicle or buyer name..." />
+                    <Input type="text" className="pl-10 py-1.5" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by product or buyer name..." />
                 </div>
                 <div className="flex gap-2">
                     {filters.map((i) => (
@@ -291,7 +291,7 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
                         const altText = [i.vehicle.year, i.vehicle.brand, i.vehicle.model, i.vehicle.variant]
                             .filter(Boolean)
                             .join(" ")
-                            .trim() || "Vehicle image";
+                            .trim() || "Product image";
                         const currentRole = i.roleType?.toLowerCase();
                         const normalizedName = (i.name || "").trim();
                         const isGenericName = normalizedName.toLowerCase() === "buyer" || normalizedName.toLowerCase() === "seller";
@@ -339,7 +339,7 @@ export default function NegotiationList({ data: initialData, userId, roleType, m
                                             (acc: number, b: any) => acc + (b.totalUnits || 0),
                                             0
                                         )}{" "}
-                                        cars
+                                        units
                                     </div>
                                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-gray-600">
                                         {proposalMap[i.conversationId].bucketSummaries.map((b: any, idx: number) => (

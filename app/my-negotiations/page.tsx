@@ -3,8 +3,6 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { getDemoUserByToken } from "@/lib/localAuth";
 import { MARKET_MODE_COOKIE_KEY, normalizeMarketMode } from "@/lib/marketplace";
-import MarketplaceSwitch from "@/components/MarketplaceSwitch";
-
 export default async function MyNegotiations({ searchParams }: Readonly<PageProps<"/my-negotiations">>) {
     const cookieStore = await cookies();
     const tokenValue = cookieStore.get("userToken")?.value || "";
@@ -31,8 +29,7 @@ export default async function MyNegotiations({ searchParams }: Readonly<PageProp
         <main className="container mx-auto px-4 py-8">
             <div className="mb-8">
                 <h1 className="text-3xl text-brand-blue mb-2">My Negotiations</h1>
-                <MarketplaceSwitch mode={marketMode} compact className="mb-3 max-w-sm" />
-                <p className="text-gray-600">Track your ongoing vehicle negotiations and agreements</p>
+                <p className="text-gray-600">Track your ongoing product negotiations and agreements</p>
             </div>
             <NegotiationList data={data} userId={resolvedUserId} roleType={roleType} marketMode={marketMode} />
             {!data?.content?.length ? (
@@ -40,8 +37,8 @@ export default async function MyNegotiations({ searchParams }: Readonly<PageProp
                     <p className="mb-4">You have no negotiations at the moment.</p>
                     <p>
                         Browse{" "}
-                        <Link className="text-brand-blue underline" href="/vehicles">
-                            vehicles
+                        <Link className="text-brand-blue underline" href="/products">
+                            products
                         </Link>{" "}
                         and start negotiating today!
                     </p>

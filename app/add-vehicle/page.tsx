@@ -1,51 +1,33 @@
-import VehicleForm, { FormState } from "@/components/add-vehicle/VehicleForm";
-import { ArrowLeftIcon } from "@/components/Icons";
-import Link from "next/link";
-import { getBrands, getFilters } from "@/lib/data";
-import { api } from "@/lib/api/server-request";
-import { MarketType } from "@/validation/vehicle-schema";
+import { marketModeToParam, parseMarketMode } from "@/lib/marketplace";
+import { redirect } from "next/navigation";
 
-const data = {
-    title: "Add New Vehicle",
-    subtitle: "Create a new vehicle listing for the marketplace",
+type LegacyAddVehiclePageProps = {
+    searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function AddVehicle({
-    searchParams,
-}: Readonly<{ searchParams: Promise<{ id: string; step: string; marketType?: MarketType }> }>) {
-    const { id, step, marketType } = await searchParams;
-    const initialMarketType = marketType === MarketType.ZERO_KM ? MarketType.ZERO_KM : MarketType.SECOND_HAND;
+const toAddProductQuery = (params: Record<string, string | string[] | undefined>) => {
+    const next = new URLSearchParams();
 
-    const res = api.get<{ data: FormState }>("/inventory/api/v1/inventory/getInventoryById", {
-        params: {
-            vehicleId: id,
-        },
-    });
+    for (const [key, value] of Object.entries(params)) {
+        if (value === undefined) continue;
+        const values = Array.isArray(value) ? value : [value];
 
-    const brandRes = getBrands();
-    const filterRes = getFilters();
-    const resArr = await Promise.allSettled([brandRes, filterRes, ...(id ? [res] : [])]);
-    const brandData = resArr[0].status === "fulfilled" ? resArr[0].value : null;
-    const filterData = resArr[1].status === "fulfilled" ? resArr[1].value : null;
-    const data = resArr[2]?.status === "fulfilled" ? resArr[2].value : null;
+        if (key === "market" || key === "marketType") {
+            const mode = parseMarketMode(values[0]);
+            if (mode) next.set("market", marketModeToParam(mode));
+            continue;
+        }
 
-    return (
-        <main>
-            <div className="container mx-auto px-4 py-8 max-w-4xl">
-                <VehicleForm step={step} topSection={<TopSection />} filterData={filterData?.data} intialData={data?.data} brands={brandData?.data} initialMarketType={initialMarketType} />
-            </div>
-        </main>
-    );
+        for (const item of values) {
+            if (item) next.append(key, item);
+        }
+    }
+
+    return next.toString();
+};
+
+export default async function AddVehicleRedirect({ searchParams }: Readonly<LegacyAddVehiclePageProps>) {
+    const query = toAddProductQuery((await searchParams) ?? {});
+
+    redirect(`/add-product${query ? `?${query}` : ""}`);
 }
-
-const TopSection = () => (
-    <div className="flex md:items-center md:flex-row space-x-4 flex-col gap-4 items-start">
-        <Link title="Back to Login" href="/seller/dashboard" className="rounded-lg hover:bg-accent md:px-2 hover:text-brand-blue flex items-center justify-center gap-2 text-xs py-2 text-brand-blue">
-            <ArrowLeftIcon className="h-3.5 w-3.5" /> Back to Dashboard
-        </Link>
-        <div>
-            <h1 className="text-xl text-brand-blue ">{data.title}</h1>
-            <p className="text-muted-foreground text-sm">{data.subtitle}</p>
-        </div>
-    </div>
-);

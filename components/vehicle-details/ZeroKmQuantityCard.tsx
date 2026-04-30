@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "@/elements/Button";
 import message from "@/elements/message";
-import { type MarketMode } from "@/lib/marketplace";
+import { setClientMarketMode, type MarketMode } from "@/lib/marketplace";
 import { LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY, getDemoUserByToken, type LocalAuthUser } from "@/lib/localAuth";
-import { getClientMarketMode, scopedStorageKey } from "@/lib/marketplace";
+import { scopedStorageKey } from "@/lib/marketplace";
 
 type Props = {
     marketMode: MarketMode;
@@ -63,12 +63,15 @@ const colorHexMap: Record<string, string> = {
 const getColorHex = (color: string) => colorHexMap[color.toLowerCase().trim()] || "#8a93a3";
 
 export default function ZeroKmQuantityCard(props: Readonly<Props>) {
-    const maxUnits = Math.max(1, props.availableUnits || 1);
     const colorOptions = (props.colorOptions && props.colorOptions.length ? props.colorOptions : [props.color].filter(Boolean)) as string[];
     const defaultColor = colorOptions[0] || props.color || "White";
     const [selectedColors, setSelectedColors] = useState<string[]>([defaultColor]);
     const [quantitiesByColor, setQuantitiesByColor] = useState<Record<string, number>>({ [defaultColor]: 1 });
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setClientMarketMode(props.marketMode);
+    }, [props.marketMode]);
 
     const selectedEntries = useMemo(
         () =>
@@ -81,7 +84,7 @@ export default function ZeroKmQuantityCard(props: Readonly<Props>) {
     const updateQty = (color: string, delta: number) => {
         setQuantitiesByColor((prev) => {
             const current = Math.max(1, prev[color] || 1);
-            return { ...prev, [color]: Math.max(1, Math.min(maxUnits, current + delta)) };
+            return { ...prev, [color]: Math.max(1, current + delta) };
         });
     };
 
@@ -93,34 +96,34 @@ export default function ZeroKmQuantityCard(props: Readonly<Props>) {
         setQuantitiesByColor((prev) => ({ ...prev, [color]: Math.max(1, prev[color] || 1) }));
     };
 
-    const isBuyer = () => {
+    const isBusinessBuyer = () => {
         if (typeof window === "undefined") return false;
         try {
             const raw = window.localStorage.getItem(LOCAL_AUTH_STORAGE_KEY);
             const localUser = raw ? (JSON.parse(raw) as LocalAuthUser) : null;
-            if (localUser?.roleType) return localUser.roleType.toLowerCase() === "buyer";
+            if (localUser?.roleType) return localUser.roleType.toLowerCase() === "buyer" && localUser.buyerType !== "individual";
         } catch {}
         const token = document.cookie
             .split("; ")
             .find((row) => row.startsWith(`${LOCAL_AUTH_COOKIE}=`))
             ?.split("=")[1];
         const cookieUser = getDemoUserByToken(token ? decodeURIComponent(token) : null);
-        return cookieUser?.roleType?.toLowerCase() === "buyer";
+        return cookieUser?.roleType?.toLowerCase() === "buyer" && cookieUser.buyerType !== "individual";
     };
 
     const handleAddSelected = () => {
         if (selectedEntries.length < 1) {
-            message.info("Select at least one color");
+            message.info("Select at least one pack style");
             return;
         }
-        if (!isBuyer()) {
-            message.info("Only buyers can add vehicle to quote builder");
+        if (!isBusinessBuyer()) {
+            message.info("Only business buyers can add products to the RFQ builder");
             return;
         }
         setLoading(true);
         try {
             if (typeof window === "undefined") return;
-            const marketMode = getClientMarketMode();
+            const marketMode = props.marketMode;
             const quoteItemsStorageKey = scopedStorageKey("quoteBuilderItems", marketMode);
             const quoteStorageKey = scopedStorageKey("quoteBuilderIds", marketMode);
             const quoteSellerStorageKey = scopedStorageKey("quoteBuilderSellerByVehicle", marketMode);
@@ -153,7 +156,7 @@ export default function ZeroKmQuantityCard(props: Readonly<Props>) {
                     price: Number(props.price) || 0,
                     currency: props.currency || "USD",
                     mainImageUrl: props.mainImageUrl,
-                    sellerCompany: props.sellerCompany || "Unknown Seller",
+                    sellerCompany: props.sellerCompany || "Unknown Supplier",
                     sellerId: props.sellerId,
                     bucketKey,
                     isSelected: true,
@@ -201,9 +204,9 @@ export default function ZeroKmQuantityCard(props: Readonly<Props>) {
                 window.localStorage.setItem(quoteVehicleCompanyStorageKey, JSON.stringify(parsedVehicleCompanyMap));
             }
             window.dispatchEvent(new Event("quoteBuilderUpdated"));
-            message.success("Added selected options to quote builder");
+            message.success("Added selected options to RFQ builder");
         } catch {
-            message.error("Failed to update quote builder");
+            message.error("Failed to update RFQ builder");
         } finally {
             setLoading(false);
         }
@@ -212,17 +215,16 @@ export default function ZeroKmQuantityCard(props: Readonly<Props>) {
     return (
         <div className="bg-white rounded-xl border border-stroke-light p-7.5">
             <div className="mb-4">
-                <h3 className="text-lg font-semibold text-brand-blue">Color Allocation</h3>
-                <p className="text-sm text-gray-600 mt-1">Select multiple colors and define quantity for each one.</p>
+                <h3 className="text-lg font-semibold text-brand-blue">Pack Allocation</h3>
+                <p className="text-sm text-gray-600 mt-1">Select pack styles and define quantity for each one.</p>
             </div>
             <div className="mb-4 rounded-md border border-stroke-light bg-gray-50 px-3 py-2 text-xs text-gray-700">
                 <span>
-                    Selected colors: <span className="font-semibold">{selectedEntries.length}</span>
+                    Selected pack styles: <span className="font-semibold">{selectedEntries.length}</span>
                 </span>
                 <span className="ml-3">
                     Total units: <span className="font-semibold">{selectedEntries.reduce((sum, entry) => sum + entry.quantity, 0)}</span>
                 </span>
-                <span className="ml-3 text-gray-500">Max per color: {maxUnits}</span>
             </div>
             <div className="space-y-2 mb-5 max-h-64 overflow-y-auto pr-1">
                 {colorOptions.map((color) => {
@@ -277,11 +279,11 @@ export default function ZeroKmQuantityCard(props: Readonly<Props>) {
                         {selectedEntries.map((entry) => `${entry.color} (${entry.quantity})`).join(", ")}
                     </span>
                 ) : (
-                    <span>No colors selected</span>
+                    <span>No pack styles selected</span>
                 )}
             </div>
             <Button type="button" fullWidth size="md" loading={loading} onClick={handleAddSelected}>
-                Add Selected to Quote Builder
+                Add Selected to RFQ Builder
             </Button>
         </div>
     );

@@ -27,11 +27,11 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
     const handleCheckboxChange = (type: "fuelType" | "drivetrain", value: string) => {
         setFilterState((prev) => ({
             ...prev,
-            [type]: prev[type]?.includes(value) ? (prev[type] as string[]).filter((v) => v !== value) : [...(prev[type] as string), value],
+            [type]: Array.isArray(prev[type]) && prev[type]?.includes(value) ? (prev[type] as string[]).filter((v) => v !== value) : [...((Array.isArray(prev[type]) ? prev[type] : []) as string[]), value],
         }));
     };
 
-    const count = Object.entries(filterState).reduce((acc, [_, value]) => {
+    const count = Object.values(filterState).reduce((acc, value) => {
         if (Array.isArray(value)) {
             return acc + value.length;
         }
@@ -71,14 +71,14 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                                     userType: value as string,
                                 })
                             }
-                            label="User Type"
-                            placeholder="Select user type"
+                            label="Supplier Type"
+                            placeholder="Select supplier type"
                             border="bg-accent/40"
                             labelCls="text-base/5.25 text-brand-blue"
                         />
 
                         <div className="space-y-3">
-                            <h4 className="text-brand-blue">Colour</h4>
+                            <h4 className="text-brand-blue">Colour / Pack Style</h4>
                             <div className="grid grid-cols-2 gap-2">
                                 {(data?.colors as { label: string; value: string; hex: string }[])?.map((c) => (
                                     <label
@@ -111,7 +111,7 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                         </div>
 
                         <div className="space-y-3">
-                            <h4 className="text-brand-blue">Fuel Type</h4>
+                            <h4 className="text-brand-blue">Product Type</h4>
                             <div className="grid grid-cols-2 gap-3">
                                 {(data?.fuelTypeOptions as Option[])?.map((option) => (
                                     <label key={option.value} className="flex items-center">
@@ -128,7 +128,7 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                         </div>
 
                         <div className="space-y-3">
-                            <h4 className="text-brand-blue">Drivetrain</h4>
+                            <h4 className="text-brand-blue">Supply Channel</h4>
                             <div className="grid grid-cols-2 gap-3">
                                 {(data?.drivetrainOptions as Option[])?.map((option) => (
                                     <label key={option.value} className="flex items-center">
@@ -148,7 +148,7 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                             min={2000}
                             max={new Date().getFullYear()}
                             step={1}
-                            label="Year Range"
+                            label="Season / Launch Year"
                             value={[Number(filterState.yearFrom), Number(filterState.yearTo)]}
                             onChange={([minVal, maxVal]: [number, number]) => {
                                 updateFilterState({
@@ -165,8 +165,8 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                                     regionalSpecs: value as string,
                                 })
                             }
-                            label="Regional Specs"
-                            placeholder="Select regional specs"
+                            label="Certification"
+                            placeholder="Select certification"
                             labelCls="text-base/5.25 text-brand-blue"
                             border="bg-accent/40"
                         />
@@ -179,8 +179,8 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                                     transmission: value as string,
                                 })
                             }
-                            label="Transmission"
-                            placeholder="Select Transmission"
+                            label="Selling Model"
+                            placeholder="Select selling model"
                             labelCls="text-base/5.25 text-brand-blue"
                             border="bg-accent/40"
                         />
@@ -193,8 +193,8 @@ export default function FilterSidebar(props: Readonly<FilterSidebarProps>) {
                                     condition: value as string,
                                 })
                             }
-                            label="Body Condition"
-                            placeholder="Select Condition"
+                            label="Verification Status"
+                            placeholder="Select status"
                             labelCls="text-base/5.25 text-brand-blue"
                             border="bg-accent/40"
                         />

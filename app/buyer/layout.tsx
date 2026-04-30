@@ -1,15 +1,16 @@
 import Tabs from "@/components/Tabs";
 
 const data = {
-    title: " Buyer Dashboard",
+    title: "Buyer Dashboard",
     description:
-        "Manage your purchases, track orders, and explore new vehicles.",
+        "Manage UAE-made product purchases, B2B RFQs, shortlists, and profile verification.",
     tabs: [
         { label: "Dashboard", href: "/buyer/dashboard" },
         { label: "Orders", href: "/buyer/orders" },
         { label: "Shortlisted", href: "/buyer/shortlisted" },
+        { label: "Support", href: "/buyer/support" },
         { label: "Profile", href: "/buyer/profile" },
-        { label: "Negotiations", href: "/my-negotiations" },
+        { label: "RFQs", href: "/my-negotiations" },
     ],
 };
 

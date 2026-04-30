@@ -32,7 +32,7 @@ export default function SellerForm({ setStep, setpersonalData, personalData }: R
     useEffect(() => {
         const fetchCities = async () => {
             try {
-                const res = await api.get<{ data: { id: string }[] }>("/masters/api/v1/locations/roots/CN");
+                const res = await api.get<{ data: { id: string }[] }>("/masters/api/v1/locations/roots/AE");
                 const countryId = res.data?.[0]?.id;
                 if (!countryId) throw new Error("Country ID not found");
 
@@ -45,6 +45,15 @@ export default function SellerForm({ setStep, setpersonalData, personalData }: R
                 setCityList(options);
             } catch (error) {
                 console.error("Failed to fetch emirates:", error);
+                setCityList([
+                    { label: "Abu Dhabi", value: "Abu Dhabi" },
+                    { label: "Dubai", value: "Dubai" },
+                    { label: "Sharjah", value: "Sharjah" },
+                    { label: "Ajman", value: "Ajman" },
+                    { label: "Ras Al Khaimah", value: "Ras Al Khaimah" },
+                    { label: "Fujairah", value: "Fujairah" },
+                    { label: "Umm Al Quwain", value: "Umm Al Quwain" },
+                ]);
             }
         };
         fetchCities();
@@ -112,11 +121,11 @@ export default function SellerForm({ setStep, setpersonalData, personalData }: R
             return false;
         }
         if (personalData.city.trim() === "") {
-            setError("Please enter your City.");
+            setError("Please select your Emirate.");
             return false;
         }
         if (personalData.district.trim() === "") {
-            setError("Please enter your District.");
+            setError("Please enter your area or free zone.");
             return false;
         }
         setError("");
@@ -132,16 +141,16 @@ export default function SellerForm({ setStep, setpersonalData, personalData }: R
                                 <Image alt="Buyer Account (UAE)" src="/assets/briefcase.svg" height={20} width={20} className="invert" />
                             </div>
                             <div className="ml-4 text-left">
-                                <h4 className="font-medium text-[#202C4A] text-lg">Seller Account (China)</h4>
-                                <p className="text-gray-600">Sell and export vehicles to UAE buyers</p>
+                                <h4 className="font-medium text-brand-blue text-lg">Supplier Account</h4>
+                                <p className="text-gray-600">Sell UAE-made products to B2C and B2B buyers</p>
                             </div>
                         </div>
-                        <h3 className="text-lg mb-2 text-[#202C4A]">Personal Information</h3>
-                        <p className="text-gray-600 text-sm">Provide your personal details for account verification</p>
+                        <h3 className="text-lg mb-2 text-brand-blue">Supplier Information</h3>
+                        <p className="text-gray-600 text-sm">Provide business details for KYC, product approval, and payouts</p>
                     </div>
                 </div>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input label="Company Name" name="companyName" value={personalData.companyName} onChange={handleInputChange} required placeholder="Enter your company name" />
+                    <Input label="Company / Farm / Brand Name" name="companyName" value={personalData.companyName} onChange={handleInputChange} required placeholder="Enter your supplier name" />
                     <Input
                         label="Representative Name"
                         required
@@ -161,10 +170,14 @@ export default function SellerForm({ setStep, setpersonalData, personalData }: R
                         onChange={(value, extra) => {
                             setpersonalData((prev) => ({ ...prev, city: value }));
                             setError("");
-                            getDistricts(extra as string);
+                            if (extra) {
+                                getDistricts(extra as string);
+                            } else {
+                                setDistrictList([{ label: "Mainland", value: "Mainland" }]);
+                            }
                         }}
-                        label="City"
-                        placeholder="Select city"
+                        label="Emirate"
+                        placeholder="Select emirate"
                         border="bg-accent/40"
                         required
                     />
@@ -176,8 +189,8 @@ export default function SellerForm({ setStep, setpersonalData, personalData }: R
                             setError("");
                         }}
                         name="district"
-                        label="District"
-                        placeholder="Select district"
+                        label="Area / Free Zone"
+                        placeholder="Select area or free zone"
                         border="bg-accent/40"
                         required
                     />

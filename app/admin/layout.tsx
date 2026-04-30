@@ -1,12 +1,17 @@
 import Tabs from "@/components/Tabs";
 
 const data = {
-    title: "Admin dashboard",
-    description: "Platform management and oversight tools.",
+    title: "Admin Control Center",
+    description: "Marketplace management, vendor governance, KYC operations, finance, logistics, and AI oversight.",
     tabs: [
         { label: "Dashboard", href: "/admin/dashboard" },
-        { label: "Users Management", href: "/admin/users" },
-        { label: "Listings Moderation", href: "/admin/listings" },
+        { label: "Vendor Management", href: "/admin/vendors" },
+        { label: "Product Moderation", href: "/admin/listings" },
+        { label: "Merchandising", href: "/admin/merchandising" },
+        { label: "Finance & Pay", href: "/admin/finance" },
+        { label: "Logistics", href: "/admin/logistics" },
+        { label: "Analytics", href: "/admin/analytics" },
+        { label: "Users", href: "/admin/users" },
     ],
 };
 

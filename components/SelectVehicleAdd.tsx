@@ -1,77 +1,51 @@
 "use client";
 
 import { CheckCircleIcon, CloseIcon, DownloadIcon, FileIcon } from "@/components/Icons";
-import { downloadFile } from "@/lib/utils";
-import { ChangeEvent, useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/elements/Button";
-import { api } from "@/lib/api/client-request";
-import message from "@/elements/message";
-import { FetchError } from "@/lib/api/shared";
-import { setClientMarketMode } from "@/lib/marketplace";
+import { marketModeToParam, setClientMarketMode } from "@/lib/marketplace";
+import { downloadBulkTemplate } from "@/lib/bulk-upload";
+import { MarketType } from "@/validation/vehicle-schema";
 
 type PropsT = {
     onClose: () => void;
 };
 
 const data = {
-    title: "Choose Vehicle Upload Method",
-    subtitle: "Select how you'd like to add your vehicles to the marketplace",
+    title: "Choose Product Upload Method",
+    subtitle: "Select how you'd like to add products to the marketplace",
     types: [
         {
             title: "Form-Based Entry",
-            description: "Add vehicles one at a time using our guided form with step-by-step validation",
-            benefits: ["Easy to use interface", "Real-time validation", "Image upload support", "Multiple vehicle instances"],
-            note: "Best for: Single or few vehicles",
+            description: "Add products one at a time using our guided form with step-by-step validation",
+            benefits: ["Easy to use interface", "Real-time validation", "Image upload support", "Multiple SKU instances"],
+            note: "Best for: Single or few products",
             type: "form-based",
         },
         {
             title: "CSV/Excel Upload",
-            description: "Upload multiple vehicles at once using our template spreadsheet",
+            description: "Upload multiple products at once using our template spreadsheet",
             benefits: ["Bulk upload support", "Fast data entry", "Error validation report", "Template provided"],
-            sampleUrl: "https://preprodblobadp.blob.core.windows.net/preprodblobadp-bucket/User-Documents%2F592fd126-60ed-47ac-8741-c2e885096ffc_Basic%20Details%20Uploader%20format.xlsx",
-            note: "Best for: Multiple vehicles (10+)",
+            note: "Best for: Multiple products (10+)",
             type: "excel-based",
         },
     ],
-    note: "Regardless of the method you choose, all vehicle listings must include a mandatory inspection report (PDF) before they can be published.",
 };
 
 export default function SelectVehicleAdd({ onClose }: Readonly<PropsT>) {
     const [selectedType, setSelectedType] = useState("");
     const [marketType, setMarketType] = useState<"" | "second_hand" | "zero_km">("");
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleTypeSelection = () => {
         if (!marketType) return;
         setClientMarketMode(marketType);
+        const marketParam = marketModeToParam(marketType);
         if (selectedType === "form-based") {
-            router.push(`/add-vehicle?market=${marketType}&marketType=${marketType}`);
+            router.push(`/add-product?market=${marketParam}`);
         } else if (selectedType === "excel-based") {
-            inputRef.current?.click();
-        }
-    };
-
-    const uploadVehicle = async (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        try {
-            setLoading(true);
-            const formData = new FormData();
-            formData.set("file", file);
-            const res = await api.post<{ message: string }>("/inventory/api/v1/inventory/upload-vehicle", { body: formData });
-            message.success(res?.message);
-            setTimeout(() => {
-                router.push("/seller/inventory");
-                setLoading(false);
-                onClose();
-            }, 1000);
-        } catch (err) {
-            message.error((err as FetchError<{ message: string }>).response?.data?.message || "something went wrong");
-            setLoading(false);
-            onClose();
+            router.push(`/add-product/bulk?market=${marketParam}`);
         }
     };
 
@@ -86,7 +60,7 @@ export default function SelectVehicleAdd({ onClose }: Readonly<PropsT>) {
             </div>
             <div className="overflow-auto max-h-[calc(100vh-100px)]">
                 <div className="mb-6 rounded-lg border border-stroke-light p-4">
-                    <p className="text-sm font-medium text-brand-blue mb-3">1. Select Vehicle Type</p>
+                    <p className="text-sm font-medium text-brand-blue mb-3">1. Select Buying Mode</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button
                             type="button"
@@ -96,8 +70,8 @@ export default function SelectVehicleAdd({ onClose }: Readonly<PropsT>) {
                                     ? "border-brand-blue bg-brand-blue text-white"
                                     : "border-stroke-light bg-white text-gray-800 hover:border-brand-blue/50"
                             }`}>
-                            <p className="text-sm font-semibold">Used Vehicle</p>
-                            <p className={`mt-0.5 text-xs ${marketType === "second_hand" ? "text-white/85" : "text-gray-600"}`}>Pre-owned listing</p>
+                            <p className="text-sm font-semibold">B2C Retail</p>
+                            <p className={`mt-0.5 text-xs ${marketType === "second_hand" ? "text-white/85" : "text-gray-600"}`}>Retail product listing</p>
                         </button>
                         <button
                             type="button"
@@ -107,8 +81,8 @@ export default function SelectVehicleAdd({ onClose }: Readonly<PropsT>) {
                                     ? "border-brand-blue bg-brand-blue text-white"
                                     : "border-stroke-light bg-white text-gray-800 hover:border-brand-blue/50"
                             }`}>
-                            <p className="text-sm font-semibold">New Vehicle</p>
-                            <p className={`mt-0.5 text-xs ${marketType === "zero_km" ? "text-white/85" : "text-gray-600"}`}>Zero KM listing</p>
+                            <p className="text-sm font-semibold">B2B Wholesale</p>
+                            <p className={`mt-0.5 text-xs ${marketType === "zero_km" ? "text-white/85" : "text-gray-600"}`}>Wholesale product listing</p>
                         </button>
                     </div>
                 </div>
@@ -147,17 +121,22 @@ export default function SelectVehicleAdd({ onClose }: Readonly<PropsT>) {
                                     </div>
                                 </div>
                             </div>
-                            {t.sampleUrl && (
-                                <div className="mt-4 flex justify-center">
+                            {t.type === "excel-based" && (
+                                <div className="mt-4 flex flex-col items-center gap-1">
                                     <button
-                                        onClick={() => downloadFile(t.sampleUrl)}
-                                        className="flex hover:bg-brand-blue hover:text-white transition-colors gap-4 text-brand-blue text-xs items-center border border-brand-blue rounded-md px-2 py-1">
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (marketType) downloadBulkTemplate(marketType as MarketType);
+                                        }}
+                                        disabled={!marketType}
+                                        title={!marketType ? "Select a buying mode first" : undefined}
+                                        className="flex gap-2 text-brand-blue text-xs items-center border border-brand-blue rounded-md px-2 py-1 transition-colors hover:bg-brand-blue hover:text-white disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-brand-blue">
                                         <DownloadIcon className="h-3 w-3" />
-                                        Download Template
+                                        {marketType === "second_hand" ? "Download B2C Template" : marketType === "zero_km" ? "Download B2B Template" : "Download Template"}
                                     </button>
+                                    {!marketType && <p className="text-xs text-muted-foreground">Select a buying mode to enable</p>}
                                 </div>
                             )}
-                            <input ref={inputRef} disabled={loading} name="stocks" type="file" onChange={uploadVehicle} className="sr-only" accept=".xls,.xlsx" />
                             <div className="mt-4 pt-4 border-t border-gray-200 text-center">
                                 <span className="text-xs text-gray-500 font-medium">{t.note}</span>
                             </div>
@@ -168,15 +147,9 @@ export default function SelectVehicleAdd({ onClose }: Readonly<PropsT>) {
                     <Button type="reset" onClick={onClose} variant="ghost">
                         Cancel
                     </Button>
-                    <Button loading={loading} type="submit" onClick={handleTypeSelection} disabled={!selectedType || !marketType} variant="primary">
+                    <Button type="submit" onClick={handleTypeSelection} disabled={!selectedType || !marketType} variant="primary">
                         Continue
                     </Button>
-                </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-                    <p className="text-sm text-gray-700">
-                        <span className="font-semibold text-brand-blue">Note: </span>
-                        {data.note}
-                    </p>
                 </div>
             </div>
         </div>

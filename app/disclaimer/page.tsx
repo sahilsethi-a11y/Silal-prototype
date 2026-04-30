@@ -12,7 +12,7 @@ export default function page() {
                     <section>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">General Information</h2>
                         <p className="leading-relaxed">
-                            This automarketplace platform is operated by Abu Dhabi Ports Group. The information provided on this website is for general informational purposes only.
+                            This product marketplace platform is operated by Abu Dhabi Ports Group. The information provided on this website is for general informational purposes only.
                         </p>
                     </section>
 

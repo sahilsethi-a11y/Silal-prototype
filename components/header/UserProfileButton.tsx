@@ -24,6 +24,7 @@ const normalizeUser = (raw?: ApiUser): User | undefined => {
         name: raw.name || raw.username || raw.email || raw.emailId || "",
         email: raw.email || raw.emailId || raw.username || "",
         roleType: raw.roleType || "",
+        buyerType: raw.buyerType,
         otpVerified: Boolean(raw.otpVerified),
     };
 };
@@ -128,7 +129,9 @@ export default function UserProfileButton({ user }: Readonly<{ user?: User }>) {
                             <div className="px-3 py-2 border-b border-stroke-light">
                                 <p className="font-medium text-sm">{activeUser.name || activeUser.username}</p>
                                 <p className="text-xs text-muted-foreground">{activeUser.email}</p>
-                                <span className="bg-accent inline-block mt-1 px-2 py-1 rounded-lg text-xs font-medium text-black">{activeUser.roleType}</span>
+                                <span className="bg-accent inline-block mt-1 px-2 py-1 rounded-lg text-xs font-medium text-black">
+                                    {activeUser.buyerType ? `${activeUser.buyerType} ${activeUser.roleType}` : activeUser.roleType}
+                                </span>
                             </div>
                             <ul>
                                 <li className="p-1">

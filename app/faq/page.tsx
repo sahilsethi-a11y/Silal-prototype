@@ -6,7 +6,7 @@ export default function Faq() {
             <div className="text-center mb-12">
                 <h1 className="text-4xl mb-4 text-brand-blue">Frequently Asked Questions</h1>
                 <p className="text-gray-600 max-w-3xl mx-auto">
-                    Find answers to common questions about buying, selling, and using ADPG Auto Marketplace. Can&apos;t find what you&apos;re looking for? Our support team is here to help!
+                    Find answers to common questions about buying, selling, and using Silal Marketplace. Can&apos;t find what you&apos;re looking for? Our support team is here to help!
                 </p>
             </div>
             <div className="space-y-6">

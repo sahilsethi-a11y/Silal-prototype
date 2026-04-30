@@ -26,6 +26,15 @@ export enum Incoterm {
 export const baseSchema = z.object({
     inventoryId: z.string()?.optional(),
     marketType: z.enum(MarketType, { message: "Please select vehicle type" }),
+    vin: z.string().optional(),
+    vinLookupStatus: z.enum(["idle", "found", "not_found"]).optional(),
+    vinLookupMessage: z.string().optional(),
+    vinLookupProvider: z.string().optional(),
+    inspectionSummary: z.string().optional(),
+    inspectionProvider: z.string().optional(),
+    inspectionDateNote: z.string().optional(),
+    vehicleDescription: z.string().optional(),
+    fetchedMileage: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(0).optional()),
     brand: z.string().min(1, "Please select a vehicle make"),
     model: z.string().min(1, "Please select a vehicle model"),
     variant: z.string().min(1, "Please select a vehicle variant"),
@@ -57,12 +66,26 @@ export const VehicleInfoSchema = z.object({
     availableQuantity: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(1, "Quantity must be at least 1").optional()),
     unitPrice: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(1, "Price must be greater than 0").optional()),
     incoterm: z.nativeEnum(Incoterm).optional(),
+    fobPrice: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(1, "FOB price must be greater than 0").optional()),
+    fobPortOfLoading: z.string().optional(),
+    cifPrice: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(1, "CIF price must be greater than 0").optional()),
+    cifPortOfDestination: z.string().optional(),
 });
 
 const VehiclesArraySchema = z.array(VehicleInfoSchema).min(1, "Add at least one vehicle entry");
 
 const VIN_REGEX = /^[A-HJ-NPR-Z0-9a-hj-npr-z]+$/;
 const isValidVin = (vin: string) => vin.length === 17 && VIN_REGEX.test(vin);
+const isValidImagePath = (value: string) => {
+    if (!value) return false;
+    if (value.startsWith("/")) return true;
+    try {
+        new URL(value);
+        return true;
+    } catch {
+        return false;
+    }
+};
 
 //
 // FULL LISTING SCHEMA
@@ -79,7 +102,7 @@ const fullListingObjectSchema = baseSchema.extend({
     numberOfDoors: z.preprocess(Number, z.number().max(5, "Door count can not be more then 5").optional()),
     features: z.array(z.string()).min(1, "Minimum 1 feature is required").max(20, "Maximum 20 features allowed"),
     imageUrls: z.array(z.string()).min(1, "Please upload atleast one image").max(20, "Maximum 10 images allowed"),
-    mainImageUrl: z.url("Please select a main image"),
+    mainImageUrl: z.string().refine(isValidImagePath, "Please select a main image"),
     price: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().min(1, "Price must be greater than 0").optional()),
     allowPriceNegotiations: z.boolean().nullable().optional(),
     negotiationNotes: z.string().nullable().optional(),
@@ -87,7 +110,7 @@ const fullListingObjectSchema = baseSchema.extend({
         .string()
         .refine((val) => val === "" || val.length >= 10, "Description must be at least 10 characters")
         .refine((val) => val === "" || val.length <= 2000, "Description can not be more than 2000 characters"),
-    currency: z.string().min(1, "Please select currency"),
+    currency: z.string().optional(),
     vehicles: VehiclesArraySchema,
 });
 
@@ -118,6 +141,28 @@ export const fullListingSchema = fullListingObjectSchema.superRefine((data, ctx)
             if (!v.numberOfOwners || v.numberOfOwners < 1) {
                 ctx.addIssue({ code: "custom", message: "Please enter number of owners", path: ["vehicles", index, "numberOfOwners"] });
             }
+            const hasFobPrice = typeof v.fobPrice === "number" && v.fobPrice > 0;
+            const hasFobPort = !!v.fobPortOfLoading?.trim();
+            const hasCifPrice = typeof v.cifPrice === "number" && v.cifPrice > 0;
+            const hasCifPort = !!v.cifPortOfDestination?.trim();
+
+            if (v.incoterm === Incoterm.FOB) {
+                if (!hasFobPrice) {
+                    ctx.addIssue({ code: "custom", message: "Enter FOB price", path: ["vehicles", index, "fobPrice"] });
+                }
+                if (!hasFobPort) {
+                    ctx.addIssue({ code: "custom", message: "Enter port of loading for FOB", path: ["vehicles", index, "fobPortOfLoading"] });
+                }
+            }
+
+            if (v.incoterm === Incoterm.CIF) {
+                if (!hasCifPrice) {
+                    ctx.addIssue({ code: "custom", message: "Enter CIF price", path: ["vehicles", index, "cifPrice"] });
+                }
+                if (!hasCifPort) {
+                    ctx.addIssue({ code: "custom", message: "Enter port of destination for CIF", path: ["vehicles", index, "cifPortOfDestination"] });
+                }
+            }
         }
         if (!data.price || data.price < 1) {
             ctx.addIssue({ code: "custom", message: "Price must be greater than 0", path: ["price"] });
@@ -126,6 +171,15 @@ export const fullListingSchema = fullListingObjectSchema.superRefine((data, ctx)
             ctx.addIssue({ code: "custom", message: "Please select color", path: ["color"] });
         }
         return;
+    }
+
+    const vinCount = new Map<string, number>();
+    for (const v of data.vehicles) {
+        for (const vinItem of v.vinList || []) {
+            const normalized = (vinItem || "").trim().toUpperCase();
+            if (!normalized) continue;
+            vinCount.set(normalized, (vinCount.get(normalized) ?? 0) + 1);
+        }
     }
 
     for (const [index, v] of data.vehicles.entries()) {
@@ -142,20 +196,44 @@ export const fullListingSchema = fullListingObjectSchema.superRefine((data, ctx)
                     message: "If provided, VIN must be a valid 17-character value",
                     path: ["vehicles", index, "vinList", vinIndex],
                 });
+            } else if ((vinCount.get(normalized) ?? 0) > 1) {
+                ctx.addIssue({
+                    code: "custom",
+                    message: "This VIN has already been added",
+                    path: ["vehicles", index, "vinList", vinIndex],
+                });
             }
         }
         if (!v.color?.trim()) {
             ctx.addIssue({ code: "custom", message: "Select color for this configuration", path: ["vehicles", index, "color"] });
         }
-        if (!v.incoterm) {
-            ctx.addIssue({ code: "custom", message: "Select incoterm", path: ["vehicles", index, "incoterm"] });
+        const hasFobPrice = typeof v.fobPrice === "number" && v.fobPrice > 0;
+        const hasFobPort = !!v.fobPortOfLoading?.trim();
+        const hasCifPrice = typeof v.cifPrice === "number" && v.cifPrice > 0;
+        const hasCifPort = !!v.cifPortOfDestination?.trim();
+
+        if (hasFobPrice && !hasFobPort) {
+            ctx.addIssue({ code: "custom", message: "Enter port of loading for FOB", path: ["vehicles", index, "fobPortOfLoading"] });
         }
-        if (!v.availableQuantity || v.availableQuantity < 1) {
-            ctx.addIssue({ code: "custom", message: "Quantity must be at least 1", path: ["vehicles", index, "availableQuantity"] });
+        if (hasFobPort && !hasFobPrice) {
+            ctx.addIssue({ code: "custom", message: "Enter FOB price", path: ["vehicles", index, "fobPrice"] });
         }
-        if (!v.unitPrice || v.unitPrice < 1) {
-            ctx.addIssue({ code: "custom", message: "Price must be greater than 0", path: ["vehicles", index, "unitPrice"] });
+        if (hasCifPrice && !hasCifPort) {
+            ctx.addIssue({ code: "custom", message: "Enter port of destination for CIF", path: ["vehicles", index, "cifPortOfDestination"] });
         }
+        if (hasCifPort && !hasCifPrice) {
+            ctx.addIssue({ code: "custom", message: "Enter CIF price", path: ["vehicles", index, "cifPrice"] });
+        }
+    }
+
+    const hasAnyCommercialTerm = data.vehicles.some((v) => {
+        const hasFob = typeof v.fobPrice === "number" && v.fobPrice > 0;
+        const hasCif = typeof v.cifPrice === "number" && v.cifPrice > 0;
+        return hasFob || hasCif;
+    });
+
+    if (hasAnyCommercialTerm && !data.currency?.trim()) {
+        ctx.addIssue({ code: "custom", message: "Please select currency", path: ["currency"] });
     }
 });
 
@@ -163,13 +241,21 @@ export type VehicleFormValues = z.infer<typeof fullListingSchema>;
 
 export const basicInfoFormSchema = fullListingObjectSchema.pick({
     marketType: true,
+    vin: true,
+    vinLookupStatus: true,
+    vinLookupMessage: true,
+    vinLookupProvider: true,
+    inspectionSummary: true,
+    inspectionProvider: true,
+    inspectionDateNote: true,
+    vehicleDescription: true,
+    fetchedMileage: true,
     brand: true,
     model: true,
     variant: true,
     year: true,
     regionalSpecs: true,
     bodyType: true,
-    condition: true,
     color: true,
     country: true,
     city: true,
@@ -185,6 +271,7 @@ export const basicInfoFormSchema = fullListingObjectSchema.pick({
 });
 
 export const detailFormSchema = fullListingObjectSchema.pick({
+    condition: true,
     vehicles: true,
 });
 

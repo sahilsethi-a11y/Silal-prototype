@@ -1,6 +1,6 @@
 "use client";
 
-import type { Content } from "@/app/vehicles/page";
+import type { Content } from "@/app/products/page";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SortedBy from "@/components/SortedBy";
 import VehicleCard from "@/components/VehicleCard";
@@ -14,12 +14,13 @@ import QRShare from "@/components/vehicle-details/QRShare";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PriceBadge from "@/elements/PriceBadge";
+import IndicativePriceBadge from "@/components/vehicle-details/IndicativePriceBadge";
 import Select from "@/elements/Select";
 import message from "@/elements/message";
 import type { BucketMeta } from "@/lib/bucketCache";
 import { toBucketMeta } from "@/lib/bucketing";
 import { getDemoUserByToken, LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY, type LocalAuthUser } from "@/lib/localAuth";
-import { scopedStorageKey, type MarketMode } from "@/lib/marketplace";
+import { marketModeToParam, scopedStorageKey, type MarketMode } from "@/lib/marketplace";
 
 type PropsT = {
   initialData: Content[];
@@ -350,7 +351,7 @@ function UnitCardRow({
     price: Number(inv.price) || 0,
     currency: inv.currency || "USD",
     mainImageUrl: inv.mainImageUrl,
-    sellerCompany: sellerCompany || "Unknown Seller",
+    sellerCompany: sellerCompany || "Unknown Supplier",
     sellerId: sellerId,
     bucketKey:
       marketMode === "zero_km" ? buildZeroKmQuoteKey(inv, chosenColor || "", sellerId) : buildBucketKey(inv),
@@ -371,8 +372,9 @@ function UnitCardRow({
       className="text-foreground flex w-full bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-stroke-light cursor-pointer"
       onClick={() => {
         const sellerId = item?.inventory?.userId || (item as any)?.user?.userId;
-        const query = sellerId ? `?sellerId=${encodeURIComponent(sellerId)}` : "";
-        router.push(`/vehicles/${inv.id}${query}`);
+        const query = new URLSearchParams({ market: marketModeToParam(marketMode) });
+        if (sellerId) query.set("sellerId", sellerId);
+        router.push(`/products/${inv.id}?${query.toString()}`);
       }}
     >
       {/* Thumbnail block like card image */}
@@ -403,17 +405,17 @@ function UnitCardRow({
           <div className="min-w-0">
             <div className="text-sm font-medium text-gray-900 truncate flex items-center gap-2">
               <span className="truncate">
-                {inv.year} {inv.brand} {inv.model}
+                {inv.brand} {inv.model}
               </span>
               {canUseQuoteBuilder && isInQuoteBuilder ? (
                 <span className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-[10px] font-medium w-fit whitespace-nowrap bg-green-50 text-green-700 border-green-200">
-                  In Quote Builder
+                  In RFQ Builder
                 </span>
               ) : null}
             </div>
             <div className="mt-1 text-xs text-gray-500 space-y-1">
-              <div>VIN: {vin || "—"}</div>
-              {marketMode === "zero_km" ? null : <div>Mileage: {mileage || "—"}</div>}
+              <div>Lot code: {vin || inv.id || "—"}</div>
+              {marketMode === "zero_km" ? null : <div>Stock signal: {mileage || "Ready"}</div>}
             </div>
           </div>
 
@@ -421,6 +423,7 @@ function UnitCardRow({
           <div className="shrink-0 text-right">
             <div className="text-base font-semibold flex gap-1 items-center text-gray-900 whitespace-nowrap leading-none">
               {price} <PriceBadge />
+              {marketMode === "zero_km" ? <IndicativePriceBadge /> : null}
             </div>
           </div>
         </div>
@@ -437,32 +440,34 @@ function UnitCardRow({
             disabled={!reportUrl}
             className="h-8 px-3 rounded-md border border-stroke-light text-gray-700 hover:bg-gray-50 transition-all text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            View report
+            View docs
           </button>
 
-          {canUseQuoteBuilder && isInQuoteBuilder ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveFromQuote(inv.id);
-              }}
-              className="h-8 px-3 rounded-md border border-destructive text-destructive hover:bg-destructive hover:text-white transition-all text-xs font-medium"
-            >
-              Remove
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onAddToQuote({ id: inv.id, storageItem });
-              }}
-              className="h-8 px-3 rounded-md bg-brand-blue text-white hover:opacity-90 transition-all text-xs font-medium"
-            >
-              Add to Quote Builder
-            </button>
-          )}
+          {canUseQuoteBuilder ? (
+            isInQuoteBuilder ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveFromQuote(inv.id);
+                }}
+                className="h-8 px-3 rounded-md border border-destructive text-destructive hover:bg-destructive hover:text-white transition-all text-xs font-medium"
+              >
+                Remove
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToQuote({ id: inv.id, storageItem });
+                }}
+                className="h-8 px-3 rounded-md bg-brand-blue text-white hover:opacity-90 transition-all text-xs font-medium"
+              >
+                Add to RFQ
+              </button>
+            )
+          ) : null}
         </div>
       </div>
     </div>
@@ -515,6 +520,7 @@ export default function VehicleCardListing({
     const bodyType = normalize(getParamValues(querySearchParams, "bodyType")[0]);
     const brand = normalize(getParamValues(querySearchParams, "brand")[0]);
     const model = normalize(getParamValues(querySearchParams, "model")[0]);
+    const location = normalize(getParamValues(querySearchParams, "country")[0]);
     const condition = normalize(getParamValues(querySearchParams, "condition")[0]);
     const color = normalize(getParamValues(querySearchParams, "color")[0]);
     const transmission = normalize(getParamValues(querySearchParams, "transmission")[0]);
@@ -536,6 +542,7 @@ export default function VehicleCardListing({
       if (bodyType && normalize(inv.bodyType) !== bodyType) return false;
       if (brand && normalize(inv.brand) !== brand) return false;
       if (model && normalize(inv.model) !== model) return false;
+      if (location && normalize(inv.country) !== location && normalize(inv.city) !== location) return false;
       if (marketMode !== "zero_km" && condition && normalize(inv.condition) !== condition) return false;
       if (color && normalize(inv.color) !== color) return false;
       if (transmission && normalize(inv.transmission) !== transmission) return false;
@@ -648,16 +655,17 @@ export default function VehicleCardListing({
   const quoteIdSet = useMemo(() => new Set(quoteIds), [quoteIds]);
   const [selectedColorByVehicle, setSelectedColorByVehicle] = useState<Record<string, string>>({});
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [buyerType, setBuyerType] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const canUseQuoteBuilder = userRole === "buyer";
+  const canUseQuoteBuilder = userRole === "buyer" && marketMode === "zero_km" && buyerType !== "individual";
   const [modalSort, setModalSort] = useState<"price-asc" | "price-desc" | "mileage-asc" | "mileage-desc">(
     "price-asc"
   );
   const modalSortOptions = [
     { value: "price-asc", label: "Price: Low to High" },
     { value: "price-desc", label: "Price: High to Low" },
-    { value: "mileage-asc", label: "Mileage: Low to High" },
-    { value: "mileage-desc", label: "Mileage: High to Low" },
+    { value: "mileage-asc", label: "Stock: Low to High" },
+    { value: "mileage-desc", label: "Stock: High to Low" },
   ];
   const resolvedModalSortOptions = marketMode === "zero_km" ? modalSortOptions.slice(0, 2) : modalSortOptions;
   useEffect(() => {
@@ -703,6 +711,7 @@ export default function VehicleCardListing({
       const localUser = raw ? (JSON.parse(raw) as LocalAuthUser) : null;
       if (localUser?.roleType) {
         setUserRole(localUser.roleType.toLowerCase());
+        setBuyerType(localUser.buyerType?.toLowerCase() ?? null);
         setIsLoggedIn(true);
         return;
       }
@@ -714,6 +723,7 @@ export default function VehicleCardListing({
     const cookieUser = getDemoUserByToken(token ? decodeURIComponent(token) : null);
     if (cookieUser?.roleType) {
       setUserRole(cookieUser.roleType.toLowerCase());
+      setBuyerType(cookieUser.buyerType?.toLowerCase() ?? null);
       setIsLoggedIn(true);
       try {
         window.localStorage.setItem(LOCAL_AUTH_STORAGE_KEY, JSON.stringify(cookieUser));
@@ -721,6 +731,7 @@ export default function VehicleCardListing({
       return;
     }
     setUserRole(null);
+    setBuyerType(null);
     setIsLoggedIn(false);
   }, []);
 
@@ -882,12 +893,16 @@ export default function VehicleCardListing({
   };
 
   const allowQuoteBuilderAction = () => {
-    if (userRole === "buyer") return true;
+    if (canUseQuoteBuilder) return true;
     if (isLoggedIn === false || isLoggedIn === null) {
-      message.info("Please log in to add to quote.");
+      message.info("Please log in as a business buyer to use RFQ.");
       return false;
     }
-    message.info("Only buyers can add to quote.");
+    if (userRole === "buyer" && buyerType === "individual") {
+      message.info("RFQ is available for B2B business buyers only.");
+      return false;
+    }
+    message.info("Only business buyers can add to RFQ.");
     return false;
   };
 
@@ -1047,7 +1062,7 @@ export default function VehicleCardListing({
       <div className="flex items-center justify-between gap-4 mb-6 mt-8">
         <div className="flex items-center gap-2">
           <span className="text-sm text-[#4d4f53]">
-            <span className="font-semibold text-black">Showing {totalCount} vehicles</span>
+            <span className="font-semibold text-black">Showing {totalCount} products</span>
             {marketMode === "zero_km" ? null : (
               <>
                 {" "}
@@ -1070,12 +1085,12 @@ export default function VehicleCardListing({
                   <div className="font-semibold text-black mb-2">Buckets are based on:</div>
                   <ul className="list-disc pl-4 space-y-1">
                     <li>Brand</li>
-                    <li>Model</li>
-                    <li>Variant</li>
-                    <li>Color</li>
-                    <li>Year</li>
-                    <li>Condition</li>
-                    <li>Body Type</li>
+                    <li>Product</li>
+                    <li>Pack size</li>
+                    <li>Colour or pack style</li>
+                    <li>Season</li>
+                    <li>Verification status</li>
+                    <li>Category</li>
                   </ul>
                 </div>
               ) : null}
@@ -1083,7 +1098,7 @@ export default function VehicleCardListing({
           )}
         </div>
 
-        {/* Remove "Showing X vehicles" from inside SortedBy.tsx if it exists */}
+        {/* Remove duplicate count from inside SortedBy.tsx if it exists */}
         <div className="w-52">
           <SortedBy count={totalCount} handleSortChange={handleSortChange} sortBy={sortBy} />
         </div>
@@ -1093,17 +1108,16 @@ export default function VehicleCardListing({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {virtualBuckets.map((bucket) => {
           const bucketAddedCount = bucketAddedCountMap.get(bucket.key) ?? 0;
+          const detailHref = `/products/${bucket.representative.inventory.id}?market=${marketModeToParam(marketMode)}${
+            marketMode === "zero_km" ? `&units=${bucket.count}` : ""
+          }`;
           return (
             <div key={bucket.key} className="space-y-2">
               <VehicleCard
                 item={bucket.representative}
-                detailHref={
-                  marketMode === "zero_km"
-                    ? `/vehicles/${bucket.representative.inventory.id}?market=zero_km&units=${bucket.count}`
-                    : undefined
-                }
+                detailHref={detailHref}
                 bucketCount={bucket.count}
-                bucketAddedCount={bucketAddedCount}
+                bucketAddedCount={canUseQuoteBuilder ? bucketAddedCount : undefined}
                 bucketVariant={bucket.variant}
                 bucketPriceRange={
                   marketMode === "zero_km"
@@ -1114,14 +1128,11 @@ export default function VehicleCardListing({
                         currency: bucket.currency ?? bucket.representative.inventory.currency,
                       }
                 }
-                viewAllLabel={marketMode === "zero_km" ? "View details" : bucket.count > 1 ? `View all ${bucket.count} units` : "View details"}
+                viewAllLabel={marketMode === "zero_km" ? "View details" : "View description"}
                 onViewAllClick={
                   marketMode === "zero_km"
-                    ? () =>
-                        router.push(
-                          `/vehicles/${bucket.representative.inventory.id}?market=zero_km&units=${bucket.count}`
-                        )
-                    : () => setOpenBucketKey(bucket.key)
+                    ? () => setOpenBucketKey(bucket.key)
+                    : () => router.push(detailHref)
                 }
               />
             </div>
@@ -1144,13 +1155,13 @@ export default function VehicleCardListing({
         title={
           activeBucket ? (
             <div className="flex items-center gap-2 min-w-0">
-              <div className="font-semibold text-black truncate">Vehicle Group Details</div>
+              <div className="font-semibold text-black truncate">Product Group Details</div>
               <span className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-[10px] font-medium text-gray-700 px-2 py-0.5 whitespace-nowrap">
-                {activeBucket.count} unit{activeBucket.count === 1 ? "" : "s"}
+                {activeBucket.count} SKU{activeBucket.count === 1 ? "" : "s"}
               </span>
             </div>
           ) : (
-            "Vehicle Group Details"
+            "Product Group Details"
           )
         }
         onClose={() => {
@@ -1177,7 +1188,7 @@ export default function VehicleCardListing({
 
                 <div className="absolute top-3 left-3">
                   <span className="inline-flex items-center justify-center font-medium text-white text-[10px] px-2 py-1 rounded-md bg-brand-blue">
-                    Verified Dealer
+                    Verified Supplier
                   </span>
                 </div>
 
@@ -1191,7 +1202,7 @@ export default function VehicleCardListing({
 
                 <div className="absolute bottom-3 left-3 flex items-center bg-black/70 text-white text-xs px-2 py-1 rounded-md">
                   <EyeIcon className="h-3 w-3 mr-1" />
-                  <span className="text-[10px]">{0} viewing</span>
+                  <span className="text-[10px]">AI checked</span>
                 </div>
 
                 {/* Favorite button moved to unit cards */}
@@ -1202,7 +1213,7 @@ export default function VehicleCardListing({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-base font-medium text-gray-900 truncate">
-                      {activeBucket.year} {activeBucket.brand} {activeBucket.model}
+                      {activeBucket.brand} {activeBucket.model}
                     </div>
                     <div className="mt-1 text-xs text-gray-500 line-clamp-2" />
                   </div>
@@ -1210,19 +1221,40 @@ export default function VehicleCardListing({
                   <div className="shrink-0 text-right">
                     <div className="text-lg font-semibold flex gap-1 items-center text-gray-900 whitespace-nowrap leading-none">
                       {priceRangeText(activeBucket)} <PriceBadge />
+                      {marketMode === "zero_km" ? <IndicativePriceBadge /> : null}
                     </div>
                     <div className="text-[11px] text-gray-500 mt-1">Price range</div>
                   </div>
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {activeBucket.bodyType ? <CommonPill label={`Body: ${activeBucket.bodyType}`} /> : null}
-                  {activeBucket.variant ? <CommonPill label={`Variant: ${activeBucket.variant}`} /> : null}
-                  {activeBucket.color ? <CommonPill label={`Color: ${activeBucket.color}`} /> : null}
-                  {activeBucket.condition ? <CommonPill label={`Grade: ${activeBucket.condition}`} /> : null}
-                  {activeBucket.year ? <CommonPill label={`Year: ${activeBucket.year}`} /> : null}
-                  {mileageRangeText(activeBucket) ? <CommonPill label={`Mileage: ${mileageRangeText(activeBucket)}`} /> : null}
+                  {activeBucket.bodyType ? <CommonPill label={`Category: ${activeBucket.bodyType}`} /> : null}
+                  {activeBucket.variant ? <CommonPill label={`Pack: ${activeBucket.variant}`} /> : null}
+                  {activeBucket.color ? <CommonPill label={`Style: ${activeBucket.color}`} /> : null}
+                  {activeBucket.condition ? <CommonPill label={`Status: ${activeBucket.condition}`} /> : null}
+                  {activeBucket.year ? <CommonPill label={`Season: ${activeBucket.year}`} /> : null}
+                  {mileageRangeText(activeBucket) ? <CommonPill label={`Stock: ${mileageRangeText(activeBucket)}`} /> : null}
                 </div>
+
+                {activeBucket.representative.inventory?.description ? (
+                  <p className="mt-4 text-sm leading-6 text-gray-600 line-clamp-3">
+                    {activeBucket.representative.inventory.description}
+                  </p>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/products/${activeBucket.representative.inventory.id}?market=${marketModeToParam(marketMode)}${
+                        marketMode === "zero_km" ? `&units=${activeBucket.count}` : ""
+                      }`
+                    )
+                  }
+                  className="mt-4 inline-flex h-9 items-center justify-center rounded-md border border-brand-blue px-4 text-sm font-medium text-brand-blue hover:bg-brand-blue hover:text-white"
+                >
+                  Open description page
+                </button>
 
                 {/* Location + share (same as card bottom) */}
                 <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
@@ -1233,7 +1265,7 @@ export default function VehicleCardListing({
                     </span>
                   </div>
                   <QRShare
-                    vehicleUrl={`/vehicles/${activeBucket.representative.inventory?.id}`}
+                    vehicleUrl={`/products/${activeBucket.representative.inventory?.id}`}
                     btnCls="h-auto"
                     iconCls="w-4 h-4 text-brand-blue"
                   />
@@ -1272,69 +1304,71 @@ export default function VehicleCardListing({
                       cls="w-full"
                     />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!allowQuoteBuilderAction()) return;
-                      const allInQuote = activeBucket.items.every((it) =>
-                        quoteIdSet.has(normalizeId(it.inventory.id))
-                      );
-                      if (allInQuote) {
-                        activeBucket.items.forEach((it) => removeQuoteLocal(it.inventory.id));
-                        return;
-                      }
-                      activeBucket.items.forEach((it) => {
-                        if (!quoteIdSet.has(normalizeId(it.inventory.id))) {
-                          const inv = it.inventory as InventoryMaybeExtended;
-                          const sellerId = it?.inventory?.userId || (it as any)?.user?.userId;
-                          const sellerCompany =
-                            it?.user?.roleMetaData?.companyName || it?.user?.roleMetaData?.dealershipName;
-                          addQuoteLocal({
-                            id: inv.id,
-                            storageItem: {
-                              id: inv.id,
-                              name: `${inv.brand ?? ""} ${inv.model ?? ""}`.trim(),
-                              year: Number(inv.year) || 0,
-                              location: `${inv.city ?? ""}${inv.country ? `, ${inv.country}` : ""}`.trim(),
-                              quantity: 1,
-                              price: Number(inv.price) || 0,
-                              currency: inv.currency || "USD",
-                              mainImageUrl: inv.mainImageUrl,
-                              sellerCompany: sellerCompany || "Unknown Seller",
-                              sellerId: sellerId,
-                              bucketKey:
-                                marketMode === "zero_km"
-                                  ? buildZeroKmQuoteKey(
-                                      inv,
-                                      selectedColorByVehicle[normalizeId(inv.id || it.id)] || inv.color || "",
-                                      sellerId
-                                    )
-                                  : buildBucketKey(inv),
-                              isSelected: true,
-                              mileage: marketMode === "zero_km" ? "" : getMileage(inv, (it as any)?.inventoryData),
-                              brand: inv.brand,
-                              model: inv.model,
-                              variant: inv.variant,
-                              color: selectedColorByVehicle[normalizeId(inv.id || it.id)] || inv.color,
-                              condition: marketMode === "zero_km" ? "" : inv.condition,
-                              bodyType: inv.bodyType,
-                              marketType: marketMode,
-                              colorOptions: (inv as any)?.colorOptions || [inv.color].filter(Boolean),
-                            },
-                          });
+                  {canUseQuoteBuilder ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!allowQuoteBuilderAction()) return;
+                        const allInQuote = activeBucket.items.every((it) =>
+                          quoteIdSet.has(normalizeId(it.inventory.id))
+                        );
+                        if (allInQuote) {
+                          activeBucket.items.forEach((it) => removeQuoteLocal(it.inventory.id));
+                          return;
                         }
-                      });
-                    }}
-                    className={`h-8 px-3 rounded-md transition-all text-xs font-medium ${
-                      activeBucket.items.every((it) => quoteIdSet.has(normalizeId(it.inventory.id)))
-                        ? "border border-destructive text-destructive hover:bg-destructive hover:text-white"
-                        : "bg-brand-blue text-white hover:opacity-90"
-                    }`}
-                  >
-                    {activeBucket.items.every((it) => quoteIdSet.has(normalizeId(it.inventory.id)))
-                      ? "Remove all"
-                      : "Add all to Quote Builder"}
-                  </button>
+                        activeBucket.items.forEach((it) => {
+                          if (!quoteIdSet.has(normalizeId(it.inventory.id))) {
+                            const inv = it.inventory as InventoryMaybeExtended;
+                            const sellerId = it?.inventory?.userId || (it as any)?.user?.userId;
+                            const sellerCompany =
+                              it?.user?.roleMetaData?.companyName || it?.user?.roleMetaData?.dealershipName;
+                            addQuoteLocal({
+                              id: inv.id,
+                              storageItem: {
+                                id: inv.id,
+                                name: `${inv.brand ?? ""} ${inv.model ?? ""}`.trim(),
+                                year: Number(inv.year) || 0,
+                                location: `${inv.city ?? ""}${inv.country ? `, ${inv.country}` : ""}`.trim(),
+                                quantity: 1,
+                                price: Number(inv.price) || 0,
+                                currency: inv.currency || "USD",
+                                mainImageUrl: inv.mainImageUrl,
+                                sellerCompany: sellerCompany || "Unknown Supplier",
+                                sellerId: sellerId,
+                                bucketKey:
+                                  marketMode === "zero_km"
+                                    ? buildZeroKmQuoteKey(
+                                        inv,
+                                        selectedColorByVehicle[normalizeId(inv.id || it.id)] || inv.color || "",
+                                        sellerId
+                                      )
+                                    : buildBucketKey(inv),
+                                isSelected: true,
+                                mileage: marketMode === "zero_km" ? "" : getMileage(inv, (it as any)?.inventoryData),
+                                brand: inv.brand,
+                                model: inv.model,
+                                variant: inv.variant,
+                                color: selectedColorByVehicle[normalizeId(inv.id || it.id)] || inv.color,
+                                condition: marketMode === "zero_km" ? "" : inv.condition,
+                                bodyType: inv.bodyType,
+                                marketType: marketMode,
+                                colorOptions: (inv as any)?.colorOptions || [inv.color].filter(Boolean),
+                              },
+                            });
+                          }
+                        });
+                      }}
+                      className={`h-8 px-3 rounded-md transition-all text-xs font-medium ${
+                        activeBucket.items.every((it) => quoteIdSet.has(normalizeId(it.inventory.id)))
+                          ? "border border-destructive text-destructive hover:bg-destructive hover:text-white"
+                          : "bg-brand-blue text-white hover:opacity-90"
+                      }`}
+                    >
+                      {activeBucket.items.every((it) => quoteIdSet.has(normalizeId(it.inventory.id)))
+                        ? "Remove all"
+                        : "Add all to RFQ"}
+                    </button>
+                  ) : null}
                 </div>
               </div>
 

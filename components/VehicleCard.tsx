@@ -7,9 +7,9 @@ import Link from "next/link";
 import ShortList from "@/components/vehicle-details/ShortList";
 import Image from "@/elements/Image";
 import PriceBadge from "@/elements/PriceBadge";
-import type { Content } from "@/app/vehicles/page";
+import type { Content } from "@/app/products/page";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 
 type Props = Readonly<{
     item: Content;
@@ -46,7 +46,7 @@ export default function VehicleCard({
 }: Props) {
     const router = useRouter();
     const [imageLoaded, setImageLoaded] = useState(false);
-    const resolvedHref = detailHref || `/vehicles/${item.inventory.id}`;
+    const resolvedHref = detailHref || `/products/${item.inventory.id}`;
     const handleCardClick = () => {
         if (onViewAllClick) {
             onViewAllClick();
@@ -71,7 +71,7 @@ export default function VehicleCard({
         const label =
             addedCount > 0
                 ? `${addedCount} of ${bucketCount} added`
-                : `${bucketCount} unit${bucketCount === 1 ? "" : "s"}`;
+                : `${bucketCount} SKU${bucketCount === 1 ? "" : "s"}`;
         return (
             <span className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-[10px] font-medium text-gray-700 px-2 py-0.5 whitespace-nowrap">
                 {label}
@@ -81,8 +81,8 @@ export default function VehicleCard({
     const quoteStatusLabel =
         typeof bucketAddedCount === "number"
             ? bucketAddedCount > 0
-                ? "Added to Quote Builder"
-                : "Not in Quote Builder"
+                ? "Added to RFQ Builder"
+                : "Not in RFQ Builder"
             : null;
 
     /**
@@ -133,7 +133,7 @@ export default function VehicleCard({
 
                     <div className="absolute top-3 left-3">
                         <span className="inline-flex items-center justify-center font-medium text-white text-[10px] px-2 py-1 rounded-md bg-brand-blue">
-                            Verified Dealer
+                            Verified Supplier
                         </span>
                     </div>
 
@@ -148,7 +148,7 @@ export default function VehicleCard({
                     {item.inventory?.model && (
                         <div className="absolute bottom-3 left-3 flex items-center bg-black/70 text-white text-xs px-2 py-1 rounded-md">
                             <EyeIcon className="h-3 w-3 mr-1" />
-                            <span className="text-[10px]">{0} viewing</span>
+                            <span className="text-[10px]">AI checked</span>
                         </div>
                     )}
 
@@ -176,7 +176,7 @@ export default function VehicleCard({
                                     }
                                 }}
                             >
-                                {item.inventory?.year} {item.inventory?.brand} {item.inventory?.model}
+                                {item.inventory?.brand} {item.inventory?.model}
                             </Link>
                         </h3>
                         {unitsLabel}
@@ -217,7 +217,7 @@ export default function VehicleCard({
                             size="md"
                             fullWidth={true}
                             className="mb-2.5"
-                            onClick={(e: any) => {
+                            onClick={(e: MouseEvent<HTMLButtonElement>) => {
                                 e.stopPropagation(); // prevent card click (which navigates)
                                 onViewAllClick();
                             }}
@@ -232,12 +232,12 @@ export default function VehicleCard({
                             size="md"
                             fullWidth={true}
                             disabled={isInQuoteBuilder}
-                            onClick={(e: any) => {
+                            onClick={(e: MouseEvent<HTMLButtonElement>) => {
                                 e.stopPropagation();
                                 onAddToQuote?.();
                             }}
                         >
-                            {isInQuoteBuilder ? "In Quote Builder" : "Add to Quote Builder"}
+                            {isInQuoteBuilder ? "In RFQ Builder" : "Add to RFQ"}
                         </Button>
                     ) : null}
 
@@ -248,7 +248,7 @@ export default function VehicleCard({
                                 {item.inventory?.city}, {item.inventory?.country}
                             </span>
                         </div>
-                        <QRShare vehicleUrl={`/vehicles/${item.inventory?.id}`} btnCls="h-auto" iconCls="w-4 h-4 text-brand-blue" />
+                        <QRShare vehicleUrl={`/products/${item.inventory?.id}`} btnCls="h-auto" iconCls="w-4 h-4 text-brand-blue" />
                     </div>
 
                     <div className="text-sm text-gray-500 mt-1">
