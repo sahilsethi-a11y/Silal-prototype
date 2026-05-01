@@ -4,24 +4,24 @@ import { useRouter } from "next/navigation";
 
 const data = [
     {
-        imgUrl: "https://unsplash.com/photos/an-orange-and-white-car-parked-in-front-of-a-body-of-water-Ynycw1OzZdI",
-        title: "2023 Mercedes-Benz E-Class",
+        imgUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e",
+        title: "Hydroponic Tomato Box",
         details: "ORD-001 • 2024-01-15",
-        price: "AED 195,000",
+        price: "AED 180",
         status: "DELIVERED",
     },
     {
-        imgUrl: "https://unsplash.com/photos/an-orange-and-white-car-parked-in-front-of-a-body-of-water-Ynycw1OzZdI",
-        title: "2022 Toyota Land Cruiser",
+        imgUrl: "https://images.unsplash.com/photo-1601493700631-2b16ec4b4716",
+        title: "Premium Dates Selection",
         details: "ORD-002 • 2024-01-10",
-        price: "AED 285,000",
+        price: "AED 660",
         status: "IN TRANSIT",
     },
     {
-        imgUrl: "https://unsplash.com/photos/an-orange-and-white-car-parked-in-front-of-a-body-of-water-Ynycw1OzZdI",
-        title: "2024 Ferrari LaFerrari",
+        imgUrl: "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09",
+        title: "Arabic STEM Board Game",
         details: "ORD-003 • 2024-01-08",
-        price: "AED 4,850,000",
+        price: "AED 275",
         status: "PROCESSING",
     },
 ];

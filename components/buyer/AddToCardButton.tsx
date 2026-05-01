@@ -241,7 +241,7 @@ export default function AddToCartButton({
             return;
         }
         if (!isBuyer) {
-            message.info("Only buyers can add vehicle to quote builder");
+            message.info("Only buyers can add products to quote builder");
             setDisabled(true);
             return;
         }

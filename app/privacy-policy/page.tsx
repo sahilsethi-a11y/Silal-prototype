@@ -9,7 +9,7 @@ export default function page() {
                 <div className="space-y-8 text-gray-600">
                     <section>
                         <p className="leading-relaxed mb-4">
-                            Abu Dhabi Ports PSJC (AD Ports Group) (the “Company”) is committed to ensuring that your privacy is protected. We have developed a Privacy Policy that covers how we collect, use, disclose, transfer, and store your personal information.
+                            Silal Marketplace (the “Company”) is committed to ensuring that your privacy is protected. We have developed a Privacy Policy that covers how we collect, use, disclose, transfer, and store your personal information.
                         </p>
                         <p className="leading-relaxed mb-4">
                             Should we ask you to provide certain information by which you can be identified when using this website, then you can be assured that it will only be used in accordance with this privacy statement.
@@ -127,13 +127,13 @@ export default function page() {
                         <p className="mb-4">You may choose to restrict the collection or use of your personal information in the following ways:</p>
                         <ul className="list-disc pl-6 space-y-2 mb-4">
                             <li>whenever you are asked to fill in a form on the website, look for the box that you can click to indicate that you do not want the information to be used by anybody for direct marketing purposes</li>
-                            <li>if you have previously agreed to us using your personal information for direct marketing purposes, you may change your mind at any time by writing to or emailing us at <a href="mailto:customerservice@adports.ae" className="text-brand-blue hover:underline">customerservice@adports.ae</a></li>
+                            <li>if you have previously agreed to us using your personal information for direct marketing purposes, you may change your mind at any time by writing to or emailing us at <a href="mailto:support@silal.ae" className="text-brand-blue hover:underline">support@silal.ae</a></li>
                         </ul>
                         <p className="leading-relaxed mb-4">
                             We will not sell, distribute or lease your personal information to third parties unless we have your permission or are required by law to do so. We may use your personal information to send you promotional information about third parties which we think you may find interesting if you tell us that you wish this to happen.
                         </p>
                         <p className="leading-relaxed mb-4">
-                            You may request details of personal information which we hold about you under UAE laws. A small fee will be payable. If you would like a copy of the information held on you please write to AD Ports Group P.O. Box 54477, Abu Dhabi.
+                            You may request details of personal information which we hold about you under UAE laws. A small fee may be payable. If you would like a copy of the information held on you please contact Silal Marketplace support.
                         </p>
                         <p className="leading-relaxed">
                             If you believe that any information we are holding on you is incorrect or incomplete, please write to or email us as soon as possible, at the above address. We will promptly correct any information found to be incorrect.
@@ -143,17 +143,17 @@ export default function page() {
                     <section>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Digital Millennium Copyright Act (“DMCA”)</h2>
                         <p className="leading-relaxed mb-4">
-                            Abu Dhabi Ports and subsidiaries (“Abu Dhabi Ports”) comply with the provisions of the Digital Millennium Copyright Act (“DMCA”) applicable to internet service providers. As between Abu Dhabi Ports and you, we are the sole owner of the content and products on our websites, and all associated technology and intellectual property rights. We do not grant you any rights or licenses under any of our technology or intellectual property rights, except as expressly granted in an agreement.
+                            Silal Marketplace and its subsidiaries comply with the provisions of the Digital Millennium Copyright Act (“DMCA”) applicable to internet service providers. As between Silal Marketplace and you, we are the sole owner of the content and products on our websites, and all associated technology and intellectual property rights. We do not grant you any rights or licenses under any of our technology or intellectual property rights, except as expressly granted in an agreement.
                         </p>
                         <p className="leading-relaxed mb-4">
-                            Abu Dhabi Ports respects the intellectual property rights of others, and we require our customers to do the same. Abu Dhabi Ports designated copyright agent and DMCA contact information is as follows: <a href="mailto:customerservice@adports.ae" className="text-brand-blue hover:underline">customerservice@adports.ae</a>.
+                            Silal Marketplace respects the intellectual property rights of others, and we require our customers to do the same. Silal Marketplace designated copyright agent and DMCA contact information is as follows: <a href="mailto:support@silal.ae" className="text-brand-blue hover:underline">support@silal.ae</a>.
                         </p>
                         <p className="mb-4">
-                            If you are a copyright owner or an agent thereof and believe that any Abu Dhabi Ports content infringes upon your copyright, you may submit a notification pursuant to the DMCA by providing the Agent with the following information in writing:
+                            If you are a copyright owner or an agent thereof and believe that any Silal Marketplace content infringes upon your copyright, you may submit a notification pursuant to the DMCA by providing the Agent with the following information in writing:
                         </p>
                         <ul className="list-disc pl-6 space-y-2">
                             <li>Identification of the copyrighted work claimed to have been infringed;</li>
-                            <li>Identification of the material that is claimed to be infringing or to be the subject of infringing activity and that is to be removed or access to which is to be disabled and information reasonably sufficient to permit Abu Dhabi Ports to locate the material;</li>
+                            <li>Identification of the material that is claimed to be infringing or to be the subject of infringing activity and that is to be removed or access to which is to be disabled and information reasonably sufficient to permit Silal Marketplace to locate the material;</li>
                             <li>A statement that you have a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law;</li>
                             <li>A statement that the information in the notification is accurate, and under penalty of perjury, that you are, or are authorized to act on behalf of, the owner of an exclusive right that is allegedly infringed;</li>
                             <li>Your name, mailing address, telephone number, and e-mail address; and</li>

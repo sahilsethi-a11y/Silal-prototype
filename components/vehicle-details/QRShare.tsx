@@ -14,14 +14,14 @@ import Link from "next/link";
 import QRCode from "react-qr-code";
 
 type PropsT = {
-    vehicleUrl: string;
+    productUrl: string;
     iconCls?: string;
     btnCls?: string;
 };
 
 export default function QRShare({
     btnCls,
-    vehicleUrl,
+    productUrl,
     iconCls = "h-5 w-5 text-brand-blue",
 }: Readonly<PropsT>) {
     const [isQROpen, setIsQROpen] = useState(false);
@@ -33,7 +33,7 @@ export default function QRShare({
             setTimeout(() => setCopied(false), 2000);
         });
     };
-    const url = globalThis.window?.location.origin + vehicleUrl;
+    const url = globalThis.window?.location.origin + productUrl;
     const encodedUrl = encodeURIComponent(url);
     const text = encodeURIComponent("Check this product!");
 
@@ -97,7 +97,7 @@ export default function QRShare({
                             <QRCode value={url} />
                         </div>
                         <p className="text-sm text-gray-600 text-center">
-                            Scan to view 2023 Mercedes-Benz E-Class
+                            Scan to view this product
                         </p>
                     </div>
                     <div>

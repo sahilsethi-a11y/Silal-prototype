@@ -9,8 +9,8 @@ export default function page() {
 
                 <div className="text-gray-600 max-w-3xl mx-auto bg-gray-200 p-10 rounded-lg mt-10">
                     Thanks for your interest in our platform and services.
-                    <div> Please send an email to <a href="mailto:support@support@adpg.com" className="ml-2  text-black hover:text-gray-700">
-                        support@adpg.com
+                    <div> Please send an email to <a href="mailto:support@silal.ae" className="ml-2  text-black hover:text-gray-700">
+                        support@silal.ae
                     </a> with your query along with applicable screenshots.</div>  We will get back to you at the earliest.
                 </div>
 

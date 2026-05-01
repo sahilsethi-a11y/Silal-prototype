@@ -24,13 +24,13 @@ const list = [
         id: "priceDropAlerts",
         icon: <TrendingUpIcon className="h-4 w-4" />,
         label: "Price Drop Alerts",
-        description: "Alert when prices drop on saved vehicles",
+        description: "Alert when prices drop on saved products",
     },
     {
         id: "promotionalEmails",
         icon: "",
         label: "Promotional Emails",
-        description: "Special deals and new vehicle listings",
+        description: "Special deals and new product listings",
     },
 ];
 

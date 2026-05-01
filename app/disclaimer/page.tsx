@@ -12,7 +12,7 @@ export default function page() {
                     <section>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">General Information</h2>
                         <p className="leading-relaxed">
-                            This product marketplace platform is operated by Abu Dhabi Ports Group. The information provided on this website is for general informational purposes only.
+                            This product marketplace platform is operated by Silal Marketplace. The information provided on this website is for general informational purposes only.
                         </p>
                     </section>
 
@@ -26,7 +26,7 @@ export default function page() {
                     <section>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Limitation of Liability</h2>
                         <p className="leading-relaxed">
-                            Abu Dhabi Ports Group shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your use of this platform or any transactions conducted through it.
+                            Silal Marketplace shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your use of this platform or any transactions conducted through it.
                         </p>
                     </section>
 
@@ -66,9 +66,9 @@ export default function page() {
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contact Information</h2>
                         <p className="leading-relaxed mb-2">For questions regarding this disclaimer, please contact:</p>
                         <p className="leading-relaxed">
-                            <strong>Abu Dhabi Ports Group</strong><br />
-                            Email: <a href="mailto:contact@adports.ae" className="text-brand-blue hover:underline">contact@adports.ae</a><br />
-                            Website: <a href="https://www.adportsgroup.com" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">www.adportsgroup.com</a>
+                            <strong>Silal Marketplace</strong><br />
+                            Email: <a href="mailto:support@silal.ae" className="text-brand-blue hover:underline">support@silal.ae</a><br />
+                            Website: <a href="https://www.silal.ae" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:underline">www.silal.ae</a>
                         </p>
                     </section>
                 </div>

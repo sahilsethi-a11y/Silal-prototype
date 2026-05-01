@@ -10,7 +10,7 @@ export default function page() {
                     <section>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Introduction</h2>
                         <p className="leading-relaxed">
-                            Welcome to our website. The following terms and conditions apply to all visitors and/or users of this platform. If you continue to browse and use Abu Dhabi Ports’ PJSC (AD Ports Group) (The Company) website, you are agreeing to comply with and be bound by the following terms and conditions of use, which together with our privacy policy govern the Company relationship with you in relation to this website. If you have any objection to any part of these terms and conditions, please refrain from using this website.
+                            Welcome to our website. The following terms and conditions apply to all visitors and/or users of this platform. If you continue to browse and use Silal Marketplace (the Company) website, you are agreeing to comply with and be bound by the following terms and conditions of use, which together with our privacy policy govern the Company relationship with you in relation to this website. If you have any objection to any part of these terms and conditions, please refrain from using this website.
                         </p>
                     </section>
 

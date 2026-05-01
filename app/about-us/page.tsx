@@ -6,7 +6,7 @@ import CustomerReviews from "@/components/about-us/CustomerReviews";
 
 const data = {
     topBanner: {
-        title: "AD PORTS GROUP",
+        title: "SILAL MARKETPLACE",
         subTitle: "Our Story",
         description:
             "Building the UAE's trusted marketplace for locally made products with verified suppliers, integrated 3PL logistics, and secure UAE payment rails.",

@@ -238,7 +238,7 @@ export default async function page({
                                     </div>
                                     <div className="flex items-center justify-between mt-6">
                                         <ShortList inventoryId={productSlug} isLike={data?.isFavourite} />
-                                        <QRShare vehicleUrl={`/products/${productSlug}`} />
+                                        <QRShare productUrl={`/products/${productSlug}`} />
                                     </div>
                                     <div className="space-y-6">
                                         <VehicleSpecs data={data.specificationIcons} />

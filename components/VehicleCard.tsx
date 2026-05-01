@@ -254,7 +254,7 @@ export default function VehicleCard({
                                 {item.inventory?.city}, {item.inventory?.country}
                             </span>
                         </div>
-                        <QRShare vehicleUrl={`/products/${item.inventory?.id}`} btnCls="h-auto" iconCls="w-4 h-4 text-brand-blue" />
+                        <QRShare productUrl={`/products/${item.inventory?.id}`} btnCls="h-auto" iconCls="w-4 h-4 text-brand-blue" />
                     </div>
 
                     <div className="text-sm text-gray-500 mt-1">

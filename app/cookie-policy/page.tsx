@@ -50,7 +50,7 @@ export default function page() {
                     <section>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contact Us</h2>
                         <p className="leading-relaxed">
-                            If you have questions about our use of cookies, please contact us at <a href="mailto:email@adports.ae" className="text-brand-blue hover:underline">email@adports.ae</a>
+                            If you have questions about our use of cookies, please contact us at <a href="mailto:support@silal.ae" className="text-brand-blue hover:underline">support@silal.ae</a>
                         </p>
                     </section>
                 </div>

@@ -11,9 +11,9 @@ const data = [
         icon: "🚀",
         id: "gettingStarted",
         faq: [
-            { q: "How does Silal Marketplace work?", a: "Silal Marketplace is a comprehensive platform connecting verified buyers, sellers, and suppliers across the UAE. We facilitate secure product transactions with professional inspections, escrow payments, and logistics support. Simply browse our inventory, add products to your cart, schedule inspections, and complete your purchase with confidence." },
-            { q: "Do I need to create an account to browse products?", a: "No, you can browse our product inventory without creating an account. However, to add items to your cart, schedule inspections, make purchases, or list products for sale, you'll need to create a free account and complete our verification process." },
-            { q: "What makes Silal Marketplace different from other product marketplaces?", a: "Silal Marketplace offers end-to-end services including professional product inspections, escrow payment protection, verified seller network, comprehensive logistics support, and integration with AD Ports Group's infrastructure. We ensure every transaction is secure, transparent, and hassle-free." },
+            { q: "How does Silal Marketplace work?", a: "Silal Marketplace connects verified buyers, sellers, and suppliers across the UAE. Browse products, compare offers, add items to cart, and complete secure checkout with integrated logistics support." },
+            { q: "Do I need to create an account to browse products?", a: "No, you can browse product listings without an account. To place orders, save items, negotiate, or list products for sale, create a free account and complete verification." },
+            { q: "What makes Silal Marketplace different from other marketplaces?", a: "Silal Marketplace combines verified suppliers, secure payment workflows, and UAE-focused 3PL logistics in one platform. This keeps transactions transparent, reliable, and easy to manage." },
         ],
     },
     {
@@ -28,39 +28,39 @@ const data = [
             },
             {
                 q: "What payment methods do you accept?",
-                a: "We accept major credit cards, debit cards, bank transfers, and certified checks. All payments are processed through our secure escrow system to protect both buyers and sellers. You can pay a 10% token to reserve a product or pay the full amount immediately."
+                a: "We accept major credit cards, debit cards, and bank transfers. Payments are processed through secure payment gateways to protect buyers and sellers."
             },
             {
                 q: "Can I negotiate the price of a product?",
-                a: "Yes! Our platform includes built-in negotiation tools that allow you to communicate directly with sellers and make counter-offers. Many sellers are open to reasonable negotiations, especially for cash buyers or quick transactions."
+                a: "Yes. Our platform includes negotiation tools that let you communicate with sellers and submit counter-offers."
             },
             {
                 q: "What if I'm not satisfied with the product after inspection?",
-                a: "If the product doesn't match the description or fails to meet your expectations during the professional inspection, you can withdraw from the purchase without penalty. Your deposit will be fully refunded through our buyer protection program. "
+                a: "If the product does not match the listing details or agreed quality terms, you can raise a dispute through support and request resolution under buyer protection policies."
             },
         ],
     },
     {
-        title: "Product Inspection",
-        description: "Comprehensive product evaluation services to ensure quality and transparency in every purchase",
+        title: "Product Quality",
+        description: "Quality assurance and compliance checks for transparent marketplace transactions",
         icon: "🔍",
-        id: "vehicleInspection",
+        id: "productQuality",
         faq: [
             {
-                q: "Are product inspections mandatory?",
-                a: "While not mandatory, we highly recommend professional inspections for all products. Our certified inspectors provide comprehensive 150-point checks covering engine, transmission, brakes, electrical systems, body condition, and more. Inspection reports help you make informed decisions.",
+                q: "Are product quality checks mandatory?",
+                a: "Quality checks depend on product category and seller program. For applicable categories, suppliers provide quality and compliance documentation before orders are confirmed.",
             },
             {
-                q: "How much do inspections cost?",
-                a: "Inspection fees are included in our service at no additional cost to buyers. This is part of our commitment to transparency and ensuring every product meets quality standards before purchase.",
+                q: "How much do quality checks cost?",
+                a: "Where quality checks apply, costs are included in seller onboarding and marketplace operations.",
             },
             {
-                q: "How long does an inspection take?",
-                a: "Standard inspections take 2-4 hours depending on the product type and condition. Rush inspections can be completed within 24 hours for an additional fee. You'll receive a detailed report with photos and videos within 6 hours of completion.",
+                q: "How long does quality verification take?",
+                a: "Verification timelines vary by category and supplier readiness. Most checks are completed before listing activation.",
             },
             {
-                q: "Can I be present during the inspection?",
-                a: "Absolutely! We encourage buyers to attend inspections when possible. You can also request live video calls during the inspection process if you cannot be physically present. This ensures complete transparency in the evaluation process.",
+                q: "Can I request proof of quality verification?",
+                a: "Yes. Buyers can request category-specific certificates, quality notes, and listing evidence where available.",
             },
         ],
     },
@@ -76,7 +76,7 @@ const data = [
             },
             {
                 q: "What are the seller fees?",
-                a: "Individual sellers pay a 3% commission only when the product is sold. Suppliers have subscription plans starting from AED 299/month. There are no upfront listing fees - you only pay when you successfully sell your product.",
+                a: "Seller fees depend on account type and service package. Contact supplier support for the latest pricing and commission structure.",
             },
             {
                 q: "How long does it take to sell a product?",

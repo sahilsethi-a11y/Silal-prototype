@@ -1275,7 +1275,7 @@ export default function VehicleCardListing({
                     </span>
                   </div>
                   <QRShare
-                    vehicleUrl={`/products/${activeBucket.representative.inventory?.id}`}
+                    productUrl={`/products/${activeBucket.representative.inventory?.id}`}
                     btnCls="h-auto"
                     iconCls="w-4 h-4 text-brand-blue"
                   />
