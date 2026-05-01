@@ -20,7 +20,11 @@ const toBase64 = (str: string) => (globalThis.window === undefined ? Buffer.from
 
 export default function Image({ height, width, fill = false, ...props }: Readonly<PropsT>) {
     const hasDimensions = typeof width === "number" && typeof height === "number";
-    const placeholder = props.preload || !hasDimensions || fill
+    const srcValue = typeof props.src === "string" ? props.src : "";
+    const isSvg = srcValue.toLowerCase().endsWith(".svg");
+    const isSmallImage = hasDimensions && width < 40 && height < 40;
+
+    const placeholder = props.preload || !hasDimensions || fill || isSvg || isSmallImage
         ? "empty"
         : `data:image/svg+xml;base64,${toBase64(shimmer(width, height))}`;
     const placeholderValue = placeholder === "empty" ? "empty" : "blur";

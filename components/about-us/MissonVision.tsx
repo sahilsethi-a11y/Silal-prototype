@@ -68,7 +68,7 @@ export default function MissonVision({ data }: Readonly<PropsT>) {
                             <Image
                                 width={392}
                                 height={500}
-                                src="/assets/home-banner.avif"
+                                src="https://cloudfront-eu-central-1.images.arcpublishing.com/thenational/QPBS4Z4QGCD5T6J2WIHWR3G6GU.jpg"
                                 alt="UAE-made products marketplace"
                                 className="w-full h-full object-cover"
                             />

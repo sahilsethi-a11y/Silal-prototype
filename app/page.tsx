@@ -51,8 +51,8 @@ export default function Home() {
         <main className="bg-white text-brand-blue">
             <section className="relative min-h-[82vh] overflow-hidden">
                 <Image
-                    src="https://images.unsplash.com/photo-1518843875459-f738682238a6?auto=format&fit=crop&w=1800&q=85"
-                    alt="Fresh UAE marketplace produce"
+                    src="/hero-farm.jpeg"
+                    alt="UAE farmer inspecting crops"
                     fill
                     priority
                     className="object-cover"
@@ -141,20 +141,20 @@ export default function Home() {
                 </div>
             </section>
 
-            <section className="bg-[#102618] text-white">
+            <section className="bg-accent">
                 <div className="container mx-auto grid gap-10 px-4 py-14 lg:grid-cols-[0.85fr_1.15fr] lg:px-6">
                     <div>
-                        <h2 className="text-3xl font-bold">Comprehensive Flows For Every User</h2>
-                        <p className="mt-3 text-[#dfe8d9]">
+                        <h2 className="text-3xl font-bold text-brand-blue">Comprehensive Flows For Every User</h2>
+                        <p className="mt-3 text-gray-700">
                             The platform supports household checkout, enterprise RFQs, supplier catalog operations, and admin trust workflows in one marketplace.
                         </p>
                     </div>
                     <div className="grid gap-4 md:grid-cols-3">
                         {flows.map((flow) => (
-                            <Link key={flow.title} href={flow.href} className="rounded-lg border border-white/10 bg-white/5 p-5 hover:bg-white/10">
-                                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-white text-brand-blue">{flow.icon}</div>
-                                <h3 className="font-semibold">{flow.title}</h3>
-                                <p className="mt-2 text-sm leading-6 text-[#dfe8d9]">{flow.detail}</p>
+                            <Link key={flow.title} href={flow.href} className="rounded-lg border border-stroke-light bg-white p-5 shadow-sm hover:shadow-md">
+                                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-accent text-brand-blue">{flow.icon}</div>
+                                <h3 className="font-semibold text-gray-950">{flow.title}</h3>
+                                <p className="mt-2 text-sm leading-6 text-gray-600">{flow.detail}</p>
                             </Link>
                         ))}
                     </div>

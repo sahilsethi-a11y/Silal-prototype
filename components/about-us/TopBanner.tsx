@@ -12,7 +12,7 @@ export default function TopBanner({ data }: Readonly<PropsT>) {
         <section
             className="relative h-screen min-h-[700px] overflow-hidden"
             style={{
-                backgroundImage: `linear-gradient(rgba(32, 44, 74, 0.8), rgba(32, 44, 74, 0.8)), url(${data.image})`,
+                backgroundImage: `linear-gradient(rgba(31, 129, 124, 0.82), rgba(23, 105, 100, 0.82)), url(${data.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center center",
             }}
@@ -22,7 +22,7 @@ export default function TopBanner({ data }: Readonly<PropsT>) {
                     className="w-full h-full"
                     style={{
                         backgroundImage:
-                            "radial-gradient(circle at 20% 50%, rgba(32, 139, 201, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(32, 139, 201, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(32, 139, 201, 0.3) 0%, transparent 50%)",
+                            "radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.22) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.18) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.16) 0%, transparent 50%)",
                     }}
                 ></div>
             </div>

@@ -22,7 +22,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className="bg-[#102618] text-[#dfe8d9]">
+        <footer className="bg-[#1f817c] text-[#e7f6f4]">
             <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     <div>
@@ -50,12 +50,12 @@ export default function Footer() {
                     <div>
                         <h3 className="text-white font-extrabold text-xl mb-4">Silal Marketplace</h3>
                         <Image src="/assets/silal-logo.jpg" alt="Silal Marketplace" width={320} height={78} className="h-16 w-auto mb-4 rounded-sm bg-white p-1" />
-                        <p className="text-gray-300 leading-relaxed">{footerData.siteDescription}</p>
+                        <p className="text-[#d8efec] leading-relaxed">{footerData.siteDescription}</p>
                     </div>
                 </div>
                 <div className="mt-8 border-t border-white/10 pt-6">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div className="flex items-center justify-center gap-4 text-gray-300">
+                        <div className="flex items-center justify-center gap-4 text-[#d8efec]">
                             <span className="whitespace-nowrap">Connect:</span>
                             <div className="flex items-center gap-1">
                                 {footerData.socialLinks.map((s) => (
@@ -65,7 +65,7 @@ export default function Footer() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         aria-label={s.label}
-                                        className="p-2 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        className="p-2 rounded-full hover:bg-[#176964] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/40">
                                         {renderIcon(s.icon)}
                                         <span className="sr-only">{s.label}</span>
                                     </a>
@@ -73,7 +73,7 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        <div className="text-sm text-[#b8c9b1]">&copy; {year} Silal Marketplace. All rights reserved.</div>
+                        <div className="text-sm text-[#c8e7e3]">&copy; {year} Silal Marketplace. All rights reserved.</div>
                     </div>
                 </div>
             </div>

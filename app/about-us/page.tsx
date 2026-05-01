@@ -10,7 +10,7 @@ const data = {
         subTitle: "Our Story",
         description:
             "Building the UAE's trusted marketplace for locally made products with verified suppliers, integrated 3PL logistics, and secure UAE payment rails.",
-        image: "/assets/home-banner.avif",
+        image: "https://cloudfront-eu-central-1.images.arcpublishing.com/thenational/QPBS4Z4QGCD5T6J2WIHWR3G6GU.jpg",
     },
     visions: {
         title: "Our Mission & Vision",
