@@ -9,7 +9,7 @@ import VehicleViewTracker from "@/components/vehicle-details/VehicleViewTracker"
 import VehicleDetails, { type VehicleDetailsData } from "@/components/vehicle-details/VehicleDetails";
 import type { Specification } from "@/components/vehicle-details/VehicleSpecs";
 import PriceBadge from "@/elements/PriceBadge";
-import { formatPrice } from "@/lib/utils";
+import { convertPrice, formatPrice } from "@/lib/utils";
 import { marketModeToParam, normalizeMarketMode } from "@/lib/marketplace";
 import ZeroKmQuantityCard from "@/components/vehicle-details/ZeroKmQuantityCard";
 import IndicativePriceBadge from "@/components/vehicle-details/IndicativePriceBadge";
@@ -17,6 +17,8 @@ import B2CAddToCartButton from "@/components/buyer/B2CAddToCartButton";
 import { notFound } from "next/navigation";
 import { uaeProductCatalog } from "@/data/uaeProducts";
 import MarketModeSync from "@/components/MarketModeSync";
+import { getCurrency } from "@/lib/serverActions";
+import RatingsReviews, { type ReviewItem } from "@/components/RatingsReviews";
 
 type Data = {
     id: string;
@@ -158,6 +160,29 @@ const toLocalDetailsData = (seed: SeedVehicle, marketMode: "second_hand" | "zero
     };
 };
 
+const buildProductReviews = (productName: string, sellerName: string): ReviewItem[] => [
+    {
+        id: "product-review-1",
+        author: "Mariam A.",
+        role: "Retail buyer",
+        rating: 5,
+        title: "Quality matched the listing",
+        body: `${productName} arrived in the condition described, with clear packaging details and responsive supplier updates.`,
+        date: "Apr 2026",
+        verified: true,
+    },
+    {
+        id: "product-review-2",
+        author: "Omar K.",
+        role: "Procurement lead",
+        rating: 4,
+        title: "Reliable for repeat orders",
+        body: `${sellerName} confirmed availability quickly and the product specifications were easy to validate before checkout.`,
+        date: "Mar 2026",
+        verified: true,
+    },
+];
+
 export default async function page({
     params,
     searchParams,
@@ -170,11 +195,13 @@ export default async function page({
     const sellerIdFromQuery =
         typeof resolvedSearchParams?.sellerId === "string" ? decodeURIComponent(resolvedSearchParams.sellerId) : undefined;
     const marketMode = normalizeMarketMode(resolvedSearchParams?.market);
+    const selectedCurrency = await getCurrency();
     const availableUnits = Math.max(1, Number(resolvedSearchParams?.units || "1") || 1);
 
     const seedVehicle = (uaeProductCatalog as SeedVehicle[]).find((v) => String(v?.inventory?.id || v?.id) === String(productSlug));
     if (!seedVehicle) notFound();
     const data = toLocalDetailsData(seedVehicle, marketMode);
+    const displayPrice = convertPrice(data.price, data.currency, selectedCurrency);
     const marketplaceHref = `/products?market=${marketModeToParam(marketMode)}`;
     return (
         <main className="container mx-auto px-4 lg:px-6">
@@ -221,6 +248,13 @@ export default async function page({
                                         </div>
                                         <VehicleDetails data={data.vehicleDetails} hideInspectionReport={true} />
                                         {data.features.length > 0 && <FeaturesTable data={data.features} />}
+                                        <RatingsReviews
+                                            title="Product Ratings & Reviews"
+                                            subtitle="Feedback from verified buyers who ordered or evaluated this product."
+                                            rating={4.7}
+                                            reviewCount={128}
+                                            reviews={buildProductReviews(data.name, data.sellerInformation.name)}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -229,7 +263,7 @@ export default async function page({
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="text-right">
                                             <div className="flex gap-1 items-center justify-end">
-                                                <div className="text-[30px] font-bold text-brand-blue">{formatPrice(data.price, data.currency)}</div>
+                                                <div className="text-[30px] font-bold text-brand-blue">{formatPrice(displayPrice, selectedCurrency)}</div>
                                                 <PriceBadge />
                                                 {marketMode === "zero_km" ? <IndicativePriceBadge /> : null}
                                             </div>
@@ -257,8 +291,8 @@ export default async function page({
                                         name={data.name}
                                         year={data.year}
                                         location={data.sellerInformation?.address || ""}
-                                        price={Number(data.price) || 0}
-                                        currency={data.currency || "USD"}
+                                        price={displayPrice}
+                                        currency={selectedCurrency || "USD"}
                                         mainImageUrl={data.imageUrls?.[0] || ""}
                                         sellerId={data.sellerInformation?.id || sellerIdFromQuery}
                                         sellerCompany={data.sellerInformation?.name || "Unknown Supplier"}
@@ -275,8 +309,8 @@ export default async function page({
                                         <B2CAddToCartButton
                                             productId={data.id}
                                             name={data.name}
-                                            price={Number(data.price) || 0}
-                                            currency={data.currency || "AED"}
+                                            price={displayPrice}
+                                            currency={selectedCurrency || "AED"}
                                             imageUrl={data.imageUrls?.[0] || ""}
                                             supplier={data.sellerInformation?.name || ""}
                                         />

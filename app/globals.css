@@ -3,17 +3,17 @@
 :root {
   --background: #fff;
   --foreground: oklch(0.145 0 0);
-  --brand-blue: #174f2a;
-  --accent: #eef5e8;
-  --primary-hover: #0f3b1f;
+  --brand-blue: #0f5a54;
+  --accent: #eef6f5;
+  --primary-hover: #0b4742;
   --stroke-light: #0000001a;
   --destructive: #d4183d;
-  --input-background: #f6f8f2;
-  --muted-foreground: #697368;
-  --accent-foreground: #102618;
-  --muted: #edf2e8;
-  --silal-leaf: #75a843;
-  --silal-gold: #c79a2b;
+  --input-background: #f4f8f7;
+  --muted-foreground: #5f716f;
+  --accent-foreground: #0c3a36;
+  --muted: #e8f1ef;
+  --silal-leaf: #3d8a68;
+  --silal-gold: #c2a763;
 }
 
 @theme inline {

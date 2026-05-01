@@ -11,6 +11,7 @@ import { getFilters } from "@/lib/data";
 import { getCurrency } from "@/lib/serverActions";
 import { cookies } from "next/headers";
 import { getDemoUserByToken } from "@/lib/localAuth";
+import Image from "next/image";
 
 export type User = {
     name: string;
@@ -69,11 +70,7 @@ export default async function Header() {
             <div className="container mx-auto px-4 lg:px-6">
                 <div className="flex items-center justify-between py-2.5 gap-2">
                     <Link title="Silal Marketplace" href="/" className="flex items-center gap-2 text-brand-blue">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-blue text-sm font-bold text-white">S</span>
-                        <span className="hidden leading-tight sm:block">
-                            <span className="block text-base font-bold">Silal Marketplace</span>
-                            <span className="block text-[10px] font-medium uppercase text-silal-leaf">Made in UAE</span>
-                        </span>
+                        <Image src="/assets/silal-logo.jpg" alt="Silal Marketplace" width={300} height={72} className="h-14 w-auto sm:h-15" priority />
                     </Link>
                     <DesktopNav isLoggedIn={userData.data?.userId} />
                     <div className="flex gap-2 md:gap-4 items-center">

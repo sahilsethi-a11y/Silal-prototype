@@ -7,11 +7,37 @@ const currencyLocaleMap: Record<string, string> = {
     EUR: "de-DE", // Euro (Germany format)
     USD: "en-US", // US Dollar
     AED: "ar-AE", // UAE Dirham
+    OMR: "ar-OM", // Omani Rial
+    SAR: "ar-SA", // Saudi Riyal
+};
+
+const currencyUsdRateMap: Record<string, number> = {
+    USD: 1,
+    AED: 1 / 3.6725,
+    SAR: 1 / 3.75,
+    OMR: 1 / 0.3845,
+};
+
+const normalizeCurrency = (currency?: string) =>
+    typeof currency === "string" && currency.trim().length === 3 ? currency.trim().toUpperCase() : "USD";
+
+export const convertPrice = (price: number | string, sourceCurrency = "USD", targetCurrency = sourceCurrency) => {
+    const source = normalizeCurrency(sourceCurrency);
+    const target = normalizeCurrency(targetCurrency);
+    const value = Number(price) || 0;
+
+    if (source === target) return value;
+
+    const sourceUsdRate = currencyUsdRateMap[source];
+    const targetUsdRate = currencyUsdRateMap[target];
+    if (!sourceUsdRate || !targetUsdRate) return value;
+
+    return (value * sourceUsdRate) / targetUsdRate;
 };
 
 export const queryStringify = (params: Record<string, string | string[]>): string => {
     const query = Object.entries(params)
-        .filter(([_, value]) => value !== "" || value.length !== 0)
+        .filter(([, value]) => value !== "" || value.length !== 0)
         .map(([key, value]) => {
             if (Array.isArray(value)) {
                 return value.map((val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`);
@@ -84,8 +110,7 @@ export const getDaysBetween = (date1: string | Date, date2: string | Date): numb
 };
 
 export const formatPrice = (price: number | string, currency: string = "USD") => {
-    const safeCurrency =
-        typeof currency === "string" && currency.trim().length === 3 ? currency.trim().toUpperCase() : "USD";
+    const safeCurrency = normalizeCurrency(currency);
     try {
         return new Intl.NumberFormat(currencyLocaleMap[safeCurrency] || "en-US", {
             style: "currency",

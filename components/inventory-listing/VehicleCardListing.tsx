@@ -21,6 +21,7 @@ import type { BucketMeta } from "@/lib/bucketCache";
 import { toBucketMeta } from "@/lib/bucketing";
 import { getDemoUserByToken, LOCAL_AUTH_COOKIE, LOCAL_AUTH_STORAGE_KEY, type LocalAuthUser } from "@/lib/localAuth";
 import { marketModeToParam, scopedStorageKey, type MarketMode } from "@/lib/marketplace";
+import { convertPrice } from "@/lib/utils";
 
 type PropsT = {
   initialData: Content[];
@@ -32,6 +33,7 @@ type PropsT = {
   pageSize: number;
   cartInventoryIds?: string[];
   marketMode: MarketMode;
+  displayCurrency?: string;
 };
 
 type InventoryMaybeExtended = Content["inventory"] & {
@@ -290,6 +292,7 @@ function UnitCardRow({
   selectedColor,
   onAddToQuote,
   onRemoveFromQuote,
+  displayCurrency,
 }: {
   item: Content;
   isInQuoteBuilder: boolean;
@@ -323,6 +326,7 @@ function UnitCardRow({
     };
   }) => void;
   onRemoveFromQuote: (id: string) => void;
+  displayCurrency?: string;
 }) {
   const router = useRouter();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -337,7 +341,8 @@ function UnitCardRow({
       : (inv as any)?.inspectionReportUrl ??
         (inv as any)?.inventoryData?.inspectionReportUrl ??
         (item as any)?.inventoryData?.inspectionReportUrl;
-  const price = formatPriceNoDecimals(inv.price, inv.currency);
+  const targetCurrency = displayCurrency || inv.currency || "USD";
+  const price = formatPriceNoDecimals(convertPrice(inv.price, inv.currency, targetCurrency), targetCurrency);
   const sellerId = item?.inventory?.userId || (item as any)?.user?.userId;
   const sellerCompany =
     item?.user?.roleMetaData?.companyName || item?.user?.roleMetaData?.dealershipName;
@@ -483,6 +488,7 @@ export default function VehicleCardListing({
   totalPages,
   pageSize,
   marketMode,
+  displayCurrency,
 }: Readonly<PropsT>) {
   const router = useRouter();
   const filterKeys = [
@@ -1044,9 +1050,12 @@ export default function VehicleCardListing({
 
   const priceRangeText = (b?: Bucket) => {
     if (!b) return "";
-    const currency = b.currency ?? b.representative.inventory.currency;
-    if (b.minPrice === b.maxPrice) return formatPriceNoDecimals(Math.round(b.minPrice), currency);
-    return `${formatPriceNoDecimals(Math.round(b.minPrice), currency)} - ${formatPriceNoDecimals(Math.round(b.maxPrice), currency)}`;
+    const sourceCurrency = b.currency ?? b.representative.inventory.currency;
+    const targetCurrency = displayCurrency || sourceCurrency || "USD";
+    const minPrice = convertPrice(b.minPrice, sourceCurrency, targetCurrency);
+    const maxPrice = convertPrice(b.maxPrice, sourceCurrency, targetCurrency);
+    if (b.minPrice === b.maxPrice) return formatPriceNoDecimals(Math.round(minPrice), targetCurrency);
+    return `${formatPriceNoDecimals(Math.round(minPrice), targetCurrency)} - ${formatPriceNoDecimals(Math.round(maxPrice), targetCurrency)}`;
   };
   const mileageRangeText = (b?: Bucket) => {
     if (!b || b.minMileage === undefined || b.maxMileage === undefined) return "";
@@ -1128,6 +1137,7 @@ export default function VehicleCardListing({
                         currency: bucket.currency ?? bucket.representative.inventory.currency,
                       }
                 }
+                displayCurrency={displayCurrency}
                 viewAllLabel={marketMode === "zero_km" ? "View details" : "View description"}
                 onViewAllClick={
                   marketMode === "zero_km"
@@ -1385,6 +1395,7 @@ export default function VehicleCardListing({
                     addQuoteLocal(payload);
                   }}
                   onRemoveFromQuote={removeQuoteLocal}
+                  displayCurrency={displayCurrency}
                 />
               ))}
             </div>

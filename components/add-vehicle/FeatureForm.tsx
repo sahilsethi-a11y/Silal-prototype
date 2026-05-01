@@ -12,9 +12,10 @@ type PropsT = {
     setStep: Dispatch<SetStateAction<number>>;
     handleSubmit: () => void;
     errors?: ZodTreeError;
+    isMarketplaceProduct?: boolean;
 };
 
-export default function FeatureForm({ formState, errors, updateFormField, setStep, handleSubmit }: Readonly<PropsT>) {
+export default function FeatureForm({ formState, errors, updateFormField, setStep, handleSubmit, isMarketplaceProduct = false }: Readonly<PropsT>) {
     const [feature, setFeature] = useState("");
     const [features, setFeatures] = useState<string[]>(formState.features ?? []);
     const [error, setError] = useState<string>("");
@@ -56,8 +57,8 @@ export default function FeatureForm({ formState, errors, updateFormField, setSte
     };
 
     const handleFetchFeatures = async () => {
-        if (!formState.brand || !formState.model || !formState.variant || !formState.year) {
-            message.error("Select make, model, variant and year before fetching features.");
+        if (!formState.brand || !formState.model || (!isMarketplaceProduct && !formState.variant)) {
+            message.error(isMarketplaceProduct ? "Select supplier brand and product name before fetching features." : "Select make, model, variant and year before fetching features.");
             return;
         }
 
@@ -83,7 +84,7 @@ export default function FeatureForm({ formState, errors, updateFormField, setSte
         setFeatures(merged);
         updateFormField("features", merged);
         setIsFetching(false);
-        message.success("Product features fetched from the prototype catalogue step.");
+        message.success(isMarketplaceProduct ? "Suggested product highlights added." : "Product features fetched from the prototype catalogue step.");
     };
 
     return (
@@ -91,11 +92,15 @@ export default function FeatureForm({ formState, errors, updateFormField, setSte
             <div className="border rounded-xl p-4 mb-6 border-stroke-light">
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h3 className="text-brand-blue">Product Features</h3>
-                        <p className="text-xs text-muted-foreground mt-1">Add features manually or fetch a starter list from the prototype catalogue step.</p>
+                        <h3 className="text-brand-blue">{isMarketplaceProduct ? "Product Highlights" : "Product Features"}</h3>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {isMarketplaceProduct
+                                ? "Add key product highlights buyers should see first."
+                                : "Add features manually or fetch a starter list from the prototype catalogue step."}
+                        </p>
                     </div>
                     <Button type="button" loading={isFetching} onClick={handleFetchFeatures} variant="outline" className="border-brand-blue text-brand-blue">
-                        Fetch
+                        {isMarketplaceProduct ? "Suggest" : "Fetch"}
                     </Button>
                 </div>
                 <div className="flex space-x-2 mb-2">
@@ -107,7 +112,7 @@ export default function FeatureForm({ formState, errors, updateFormField, setSte
                         onKeyDown={handleKeyboardEvent}
                         maxLength={50}
                         parentClassName="flex-1"
-                        placeholder="Add a feature (e.g., Leather Seats, Navigation)"
+                        placeholder={isMarketplaceProduct ? "Add a highlight (e.g., UAE origin, organic, bulk discounts)" : "Add a feature (e.g., Leather Seats, Navigation)"}
                     />
                     <Button type="button" onClick={addFeature} className="whitespace-nowrap">
                         Add Feature
@@ -131,7 +136,9 @@ export default function FeatureForm({ formState, errors, updateFormField, setSte
                         ))}
                     </div>
                 ) : (
-                    <p className="text-muted-foreground text-center py-8">No features added yet. Add some features to make your listing more attractive.</p>
+                    <p className="text-muted-foreground text-center py-8">
+                        {isMarketplaceProduct ? "No highlights added yet. Add optional highlights to improve discoverability." : "No features added yet. Add some features to make your listing more attractive."}
+                    </p>
                 )}
             </div>
             <div className="pt-6 border-t border-stroke-light">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import footerData, { SiteLink } from "@/data/footerData";
 import { FacebookIcon, XIcon, YoutubeIcon, InstagramIcon } from "@/components/Icons";
+import Image from "next/image";
 
 export default function Footer() {
     const year = new Date().getFullYear();
@@ -48,6 +49,7 @@ export default function Footer() {
 
                     <div>
                         <h3 className="text-white font-extrabold text-xl mb-4">Silal Marketplace</h3>
+                        <Image src="/assets/silal-logo.jpg" alt="Silal Marketplace" width={320} height={78} className="h-16 w-auto mb-4 rounded-sm bg-white p-1" />
                         <p className="text-gray-300 leading-relaxed">{footerData.siteDescription}</p>
                     </div>
                 </div>

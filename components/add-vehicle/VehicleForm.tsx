@@ -39,6 +39,7 @@ type PropsT = {
     listingId?: string;
     step: string;
     initialMarketType?: MarketType;
+    isMarketplaceProduct?: boolean;
 };
 
 export type Step = {
@@ -107,20 +108,39 @@ function formReducer(state: FormState, action: FormAction): FormState {
             return state;
     }
 }
-const steps: Step[] = [
-    { label: "Basic Info", icon: <FileIcon className="h-4.5 w-4.5" /> },
-    { label: "Details", icon: <SettingIcon className="h-4.5 w-4.5" /> },
-    { label: "Features", icon: <StarIcon className="h-4.5 w-4.5" /> },
-    { label: "Images", icon: <UploadIcon className="h-4.5 w-4.5" /> },
-    { label: "Pricing & Options", icon: <DollerIcon className="h-4.5 w-4.5" /> },
-];
+const getSteps = (isMarketplaceProduct: boolean): Step[] =>
+    isMarketplaceProduct
+        ? [
+              { label: "Basic Info", icon: <FileIcon className="h-4.5 w-4.5" /> },
+              { label: "Inventory", icon: <SettingIcon className="h-4.5 w-4.5" /> },
+              { label: "Highlights", icon: <StarIcon className="h-4.5 w-4.5" /> },
+              { label: "Images", icon: <UploadIcon className="h-4.5 w-4.5" /> },
+              { label: "Pricing", icon: <DollerIcon className="h-4.5 w-4.5" /> },
+          ]
+        : [
+              { label: "Basic Info", icon: <FileIcon className="h-4.5 w-4.5" /> },
+              { label: "Details", icon: <SettingIcon className="h-4.5 w-4.5" /> },
+              { label: "Features", icon: <StarIcon className="h-4.5 w-4.5" /> },
+              { label: "Images", icon: <UploadIcon className="h-4.5 w-4.5" /> },
+              { label: "Pricing & Options", icon: <DollerIcon className="h-4.5 w-4.5" /> },
+          ];
 
-export default function VehicleForm({ topSection, brands, filterData, intialData, listingId, step: initialStep, initialMarketType = MarketType.SECOND_HAND }: Readonly<PropsT>) {
+export default function VehicleForm({
+    topSection,
+    brands,
+    filterData,
+    intialData,
+    listingId,
+    step: initialStep,
+    initialMarketType = MarketType.SECOND_HAND,
+    isMarketplaceProduct = false,
+}: Readonly<PropsT>) {
     const [step, setStep] = useState(initialStep ? Number(initialStep) : 1);
-    const [formState, dispatch] = useReducer(formReducer, intialData ?? { ...initialFormState, marketType: initialMarketType });
+    const [formState, dispatch] = useReducer(formReducer, intialData ?? { ...initialFormState, marketType: initialMarketType, year: isMarketplaceProduct ? new Date().getFullYear() : 0 });
     const [errors, setErrors] = useState<ZodTreeError>();
     const [draftLoading, setDraftLoading] = useState(false);
     const [publishLoading, setpublishLoading] = useState(false);
+    const steps = getSteps(isMarketplaceProduct);
 
     const router = useRouter();
     const pathname = usePathname();
@@ -157,6 +177,20 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
     }, [intialData, listingId]);
 
     useEffect(() => {
+        if (!isMarketplaceProduct) return;
+        const currentYear = new Date().getFullYear();
+        if (!formState.model) dispatch({ type: "UPDATE_FIELD", field: "model", value: "Default Product" });
+        if (!formState.variant) dispatch({ type: "UPDATE_FIELD", field: "variant", value: "Standard" });
+        if (!formState.regionalSpecs) dispatch({ type: "UPDATE_FIELD", field: "regionalSpecs", value: "UAE Origin" });
+        if (!formState.fuelType) dispatch({ type: "UPDATE_FIELD", field: "fuelType", value: "N/A" });
+        if (!formState.transmission) dispatch({ type: "UPDATE_FIELD", field: "transmission", value: "N/A" });
+        if (!formState.drivetrain) dispatch({ type: "UPDATE_FIELD", field: "drivetrain", value: "N/A" });
+        if (!formState.engineSize) dispatch({ type: "UPDATE_FIELD", field: "engineSize", value: "N/A" });
+        if (!formState.bodyType) dispatch({ type: "UPDATE_FIELD", field: "bodyType", value: "Food" });
+        if (Number(formState.year) <= 0) dispatch({ type: "UPDATE_FIELD", field: "year", value: currentYear });
+    }, [formState.bodyType, formState.drivetrain, formState.engineSize, formState.fuelType, formState.model, formState.regionalSpecs, formState.transmission, formState.variant, formState.year, isMarketplaceProduct]);
+
+    useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [step]);
 
@@ -184,7 +218,9 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
     };
 
     const validateFull = () => {
-        const result = fullListingSchema.safeParse(getPreparedPayload(Status.LIVE));
+        const payload = getPreparedPayload(Status.LIVE);
+        const validationPayload = isMarketplaceProduct && payload.marketType === MarketType.SECOND_HAND ? { ...payload, marketType: MarketType.ZERO_KM } : payload;
+        const result = fullListingSchema.safeParse(validationPayload);
         if (!result.success) {
             const errors = result.error;
             const formattedErrors = z.treeifyError(errors);
@@ -263,6 +299,33 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
 
     const handleDetailFormSubmit = (e: FormEvent) => {
         e.preventDefault();
+        if (isMarketplaceProduct) {
+            const currentVehicles = formState.vehicles?.length ? formState.vehicles : [{ availableQuantity: undefined }];
+            const hasValidQuantity = currentVehicles.some((vehicle) => Number(vehicle?.availableQuantity) > 0);
+
+            if (!hasValidQuantity) {
+                message.error("Please enter available quantity before proceeding");
+                return;
+            }
+
+            // Normalize marketplace rows to keep the shape stable and avoid legacy vehicle-field validation conflicts.
+            const normalizedVehicles = currentVehicles.map((vehicle) => ({
+                ...vehicle,
+                mileage: undefined,
+                numberOfOwners: undefined,
+                vin: "",
+                vinList: [],
+                registrationNumber: "",
+                warrantyRemaining: "",
+                inspectionReportUrl: "",
+            }));
+
+            dispatch({ type: "UPDATE_FIELD", field: "vehicles", value: normalizedVehicles });
+            setErrors(undefined);
+            setStep((prev) => prev + 1);
+            return;
+        }
+
         const result = detailFormSchema.safeParse(formState);
 
         if (!result.success) {
@@ -277,6 +340,12 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
     };
 
     const handleFeatureFormSubmit = () => {
+        if (isMarketplaceProduct) {
+            setErrors(undefined);
+            setStep((prev) => prev + 1);
+            return;
+        }
+
         const result = featureFormSchema.safeParse(formState);
 
         if (!result.success) {
@@ -315,6 +384,7 @@ export default function VehicleForm({ topSection, brands, filterData, intialData
             filterData,
             brands,
             errors,
+            isMarketplaceProduct,
         };
 
         switch (step) {

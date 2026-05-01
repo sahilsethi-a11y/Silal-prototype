@@ -19,10 +19,24 @@ type PropsT = {
     draftLoading: boolean;
     handleSaveDraft: () => void;
     errors?: ZodTreeError;
+    isMarketplaceProduct?: boolean;
 };
 
-export default function PriceForm({ formState, filterData, updateFormField, updateVehicleField, setStep, handleSubmit, handleSaveDraft, draftLoading, publishLoading, errors }: Readonly<PropsT>) {
+export default function PriceForm({
+    formState,
+    filterData,
+    updateFormField,
+    updateVehicleField,
+    setStep,
+    handleSubmit,
+    handleSaveDraft,
+    draftLoading,
+    publishLoading,
+    errors,
+    isMarketplaceProduct = false,
+}: Readonly<PropsT>) {
     const isZeroKm = formState.marketType === "zero_km";
+    const isRetailVehicleFlow = !isZeroKm && !isMarketplaceProduct;
     const usedCarVehicle = formState.vehicles?.[0];
     const zeroKmPricingRows = (formState.vehicles || [])
         .filter((item) => item.color || item.fobPrice || item.cifPrice)
@@ -52,7 +66,7 @@ export default function PriceForm({ formState, filterData, updateFormField, upda
     const includeFobPricing = selectedCommercialTerm === "fob";
     const includeCifPricing = selectedCommercialTerm === "cif";
     const hasSelectedCommercialTerm = includeFobPricing || includeCifPricing;
-    const requiresCurrency = !isZeroKm || includeFobPricing || includeCifPricing;
+    const requiresCurrency = isMarketplaceProduct || isRetailVehicleFlow || includeFobPricing || includeCifPricing;
     const usedCarCommercialTerm = usedCarVehicle?.incoterm === Incoterm.FOB ? "fob" : usedCarVehicle?.incoterm === Incoterm.CIF ? "cif" : selectedCommercialTerm;
 
     const updateZeroKmCommercialField = (index: number, field: "fobPrice" | "cifPrice" | "fobPortOfLoading" | "cifPortOfDestination", rawValue: string) => {
@@ -210,14 +224,14 @@ export default function PriceForm({ formState, filterData, updateFormField, upda
     return (
         <div>
             <div className="border rounded-xl p-4 mb-6 border-stroke-light">
-                <h3 className="text-brand-blue mb-4">Pricing Information</h3>
-                {isZeroKm ? (
+                <h3 className="text-brand-blue mb-4">{isMarketplaceProduct ? "Product Pricing" : "Pricing Information"}</h3>
+                {isZeroKm && !isMarketplaceProduct ? (
                     <p className="text-xs text-muted-foreground mb-3">
                         For B2B wholesale listings, choose which commercial terms you want to offer, then enter the relevant unit price and port details below.
                     </p>
                 ) : null}
                 <div className={`grid grid-cols-1 ${isZeroKm ? "md:grid-cols-1" : "md:grid-cols-2"} gap-4`}>
-                    {!isZeroKm ? (
+                    {isRetailVehicleFlow ? (
                         <Select
                             label="Incoterm"
                             required
@@ -250,7 +264,29 @@ export default function PriceForm({ formState, filterData, updateFormField, upda
                         errors={errors?.properties?.currency?.errors}
                     />
                 </div>
-                {!isZeroKm ? (
+                {isMarketplaceProduct ? (
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Input
+                            errors={errors?.properties?.price?.errors}
+                            label="Unit Price"
+                            type="number"
+                            name="price"
+                            value={formState.price || ""}
+                            onChange={(e) => updateFormField("price", e.target.value)}
+                            placeholder={`e.g., ${formState.currency ? `${formState.currency} amount` : "amount"}`}
+                            required
+                        />
+                        <Input
+                            label="Offer Notes (Optional)"
+                            type="text"
+                            name="negotiationNotes"
+                            value={formState.negotiationNotes || ""}
+                            onChange={(e) => updateFormField("negotiationNotes", e.target.value)}
+                            placeholder="e.g., Volume discounts available for bulk orders"
+                        />
+                    </div>
+                ) : null}
+                {isRetailVehicleFlow ? (
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                         {usedCarCommercialTerm === "fob" ? (
                             <>
@@ -302,7 +338,7 @@ export default function PriceForm({ formState, filterData, updateFormField, upda
                         ) : null}
                     </div>
                 ) : null}
-                {isZeroKm && zeroKmPricingRows.length > 0 ? (
+                {isZeroKm && !isMarketplaceProduct && zeroKmPricingRows.length > 0 ? (
                     <>
                         <div className="border-t border-stroke-light my-6" />
                         <div className="mb-6 rounded-xl border border-stroke-light p-4 bg-white">

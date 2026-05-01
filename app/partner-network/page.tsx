@@ -17,93 +17,62 @@ type PartnerData = {
 
 export default async function PartnerNetwork() {
     const data = {
-        title: "Partner Networks",
+        title: "Supplier Network",
         description:
-            "We collaborate with leading service providers to deliver exceptional marketplace, logistics, quality, and payment solutions for UAE-made products.",
-        inspection: {
-            title: "Quality Partners",
-            subtitle: "Certified product quality and compliance providers",
-            items: [
-                {
-                    isFeatured: true,
-                    image: "/assets/elite.jpeg",
-                    title: "Elite Quality Inspection",
-                    description: "Product quality and compliance services with deep UAE market experience.",
-                    link: "https://www.google.com/search?q=Elite Auto Inspection",
-                },
-                {
-                    image: "/assets/vehicle-assessment.jpeg",
-                    title: "Premium Product Assessment",
-                    description: "Comprehensive product assessment and certification services across the Middle East.",
-                    link: "https://www.google.com/search",
-                },
-                {
-                    image: "/assets/gulf-inspection.jpeg",
-                    title: "Gulf Inspection Services",
-                    description: "Specialized in commercial product inspections with certified specialists.",
-                    link: "https://www.google.com",
-                },
-            ],
-        },
+            "We work with trusted UAE service providers to support fulfillment, payments, and secure marketplace operations for local products.",
         logistics: {
-            title: "Logistics Partners",
-            subtitle: "Trusted shipping and transportation providers Featured",
+            title: "UAE 3PL Logistics Providers",
+            subtitle: "Delivery, warehousing, and fulfillment partners for marketplace orders",
             items: [
                 {
                     isFeatured: true,
                     image: "/assets/global-auto-transport.jpeg",
-                    title: "Global Product Transport",
-                    description: "Worldwide product shipping with insurance coverage and real-time tracking.",
-                    link: "https://www.google.com",
+                    title: "Aramex",
+                    description: "UAE-wide last-mile and cross-border delivery operations with tracking and fulfillment services.",
+                    link: "https://www.aramex.com",
                 },
                 {
                     image: "/assets/emirates-logistics-hub.jpeg",
-                    title: "Emirates Logistics Hub",
-                    description: "Regional logistics expert specializing in marketplace fulfillment.",
-                    link: "https://www.google.com",
+                    title: "Emirates Post",
+                    description: "Nationwide logistics and parcel network supporting reliable marketplace distribution.",
+                    link: "https://www.epg.gov.ae",
+                },
+                {
+                    image: "/assets/secure-auto-delivery.jpeg",
+                    title: "Shipa Delivery",
+                    description: "Ecommerce-focused 3PL services for same-day and scheduled UAE deliveries.",
+                    link: "https://shipa.com",
                 },
             ],
         },
-        financing: {
-            title: "Financing Partners",
-            subtitle: "Financial institutions and payment solutions",
+        payments: {
+            title: "UAE Payment Gateway Services",
+            subtitle: "Secure payment processing options for B2C and B2B marketplace transactions",
             items: [
                 {
                     isFeatured: true,
-                    image: "/assets/uae-national-bank.jpeg",
-                    title: "UAE National Bank",
-                    description: "Leading bank offering competitive trade finance solutions and payment processing.",
-                    link: "https://www.google.com",
+                    image: "/assets/gulf-finance-corporation.jpeg",
+                    title: "Telr",
+                    description: "PCI-compliant online payment gateway widely used by UAE commerce businesses.",
+                    link: "https://telr.com",
                 },
                 {
                     image: "/assets/gulf-finance-corporation.jpeg",
-                    title: "Gulf Finance Corporation",
-                    description: "Specialized commerce financing with flexible payment terms.",
-                    link: "https://www.google.com",
-                },
-            ],
-        },
-        technology: {
-            title: "Technology Partners",
-            subtitle: "Technology and data integration partners",
-            items: [
-                {
-                    image: "/assets/car-tech-systems.jpeg",
-                    title: "Marketplace Data Solutions",
-                    description: "Product data and market analytics platform providing real-time insights.",
-                    link: "https://www.google.com",
+                    title: "PayTabs",
+                    description: "Regional payment platform supporting cards, wallets, and local payment methods.",
+                    link: "https://paytabs.com",
                 },
                 {
-                    image: "/assets/car-tech-systems.jpeg",
-                    title: "CommerceTech Systems",
-                    description: "Advanced marketplace technology solutions and integration services.",
-                    link: "https://www.google.com",
+                    image: "/assets/uae-national-bank.jpeg",
+                    title: "Network International",
+                    description: "Enterprise-grade payment acceptance and acquiring infrastructure across the UAE.",
+                    link: "https://network.ae",
                 },
             ],
         },
         benifits: {
             title: "Why Partner With Us",
-            description: "Join our ecosystem of trusted service providers and grow your business",
+            description: "Join a UAE-first commerce ecosystem focused on dependable fulfillment and secure payments",
             items: [
                 {
                     title: "Access to Network",
@@ -126,20 +95,12 @@ export default async function PartnerNetwork() {
 
     const tabs = [
         {
-            label: "Inspection Partners",
-            panel: <TabPanel data={data.inspection} />,
-        },
-        {
-            label: "Logistics Partners",
+            label: "3PL Logistics",
             panel: <TabPanel data={data.logistics} />,
         },
         {
-            label: "Financing Partners",
-            panel: <TabPanel data={data.financing} />,
-        },
-        {
-            label: "Technology Partners",
-            panel: <TabPanel data={data.technology} />,
+            label: "Payment Gateways",
+            panel: <TabPanel data={data.payments} />,
         },
     ];
 

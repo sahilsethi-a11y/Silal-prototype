@@ -6,9 +6,9 @@ import Image from "@/elements/Image";
 
 const data = {
     topBanner: {
-        title: "Join Silal Marketplace",
-        description: "Create a buyer or supplier account for UAE-made products across food, clothing, games, and future local categories.",
-        image: "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1800&q=85",
+        title: "Join Marketplace",
+        description: "Create a buyer or supplier account for UAE-made food, fashion, games, and local categories ready for retail and bulk procurement.",
+        image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1800&q=85",
         link: "#signup",
     },
     buyers: {
@@ -21,18 +21,18 @@ const data = {
                 subTitle: "Buyer Types",
             },
             {
-                icon: "/assets/car.svg",
-                title: "1",
-                subTitle: "Core Categories",
+                icon: "/assets/marketplace.svg",
+                title: "3+",
+                subTitle: "Product Categories",
             },
             {
                 icon: "/assets/star.svg",
-                title: "2",
+                title: "4",
                 subTitle: "AI Trust Features",
             },
             {
                 icon: "/assets/trend-up.svg",
-                title: "3",
+                title: "2",
                 subTitle: "Marketplace Modes",
             },
         ],

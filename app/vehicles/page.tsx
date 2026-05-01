@@ -19,6 +19,17 @@ const toProductsQuery = (params: Record<string, string | string[] | undefined>) 
             if (mode) next.set("market", marketModeToParam(mode));
             continue;
         }
+        if (key === "mode") {
+            const mode = parseMarketMode(values[0]);
+            if (mode) next.set("market", marketModeToParam(mode));
+            continue;
+        }
+        if (key === "category") {
+            for (const item of values) {
+                if (item) next.append("bodyType", item);
+            }
+            continue;
+        }
 
         for (const item of values) {
             if (item) next.append(key, item);

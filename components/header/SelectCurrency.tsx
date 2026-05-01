@@ -1,9 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowDownIcon } from "@/components/Icons";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { usePathname } from "next/navigation";
-import { api } from "@/lib/api/client-request";
+import { usePathname, useRouter } from "next/navigation";
 
 type Currency = {
     label: string;
@@ -36,17 +35,37 @@ export default function CurrencySelector({ filters, selectedCurrency }: Readonly
 
 const SelectCurrency = ({ currencies, selectedCurrency }: { currencies: Currency[]; selectedCurrency: string }) => {
     const [open, setOpen] = useState(false);
+    const [localSelectedCurrency, setLocalSelectedCurrency] = useState(selectedCurrency);
+    const [isPending, startTransition] = useTransition();
     const ref = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        setLocalSelectedCurrency(selectedCurrency);
+    }, [selectedCurrency]);
 
     useOutsideClick(ref, () => setOpen(false));
 
     const select = async (opt: Currency) => {
-        await api.get("/api/v1/auth/setCurrency", { params: { value: opt.value } });
-        globalThis.window.location.reload();
+        setLocalSelectedCurrency(opt.value);
         setOpen(false);
+        const res = await fetch("/api/currency", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currency: opt.value }),
+        });
+
+        if (!res.ok) {
+            setLocalSelectedCurrency(selectedCurrency);
+            return;
+        }
+
+        startTransition(() => {
+            router.refresh();
+        });
     };
 
-    const selected = currencies.find((o) => o.value === selectedCurrency) || currencies[0];
+    const selected = currencies.find((o) => o.value === localSelectedCurrency) || currencies[0];
 
     return (
         <div className="relative" ref={ref}>
@@ -54,6 +73,7 @@ const SelectCurrency = ({ currencies, selectedCurrency }: { currencies: Currency
                 type="button"
                 aria-haspopup="listbox"
                 aria-expanded={open}
+                disabled={isPending}
                 onClick={() => setOpen((o) => !o)}
                 className="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-primary-600">
                 <span className="text-sm">
@@ -63,12 +83,13 @@ const SelectCurrency = ({ currencies, selectedCurrency }: { currencies: Currency
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 p-1 w-40 border-black/10 bg-white rounded-md border shadow-md overflow-hidden z-1">
+                <div className="absolute right-0 mt-2 p-1 w-40 border-black/10 bg-white rounded-md border shadow-md overflow-hidden z-50">
                     {currencies.map((opt) => (
                         <button
                             key={opt.value}
                             type="button"
                             title={opt.label}
+                            disabled={isPending}
                             onClick={() => select(opt)}
                             className={`w-full flex items-center text-brand-blue justify-between gap-2 px-2 py-1.5 text-left text-sm rounded-sm ${
                                 opt.value === selected.value ? "bg-accent" : "hover:bg-accent"

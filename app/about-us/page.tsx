@@ -9,7 +9,7 @@ const data = {
         title: "AD PORTS GROUP",
         subTitle: "Our Story",
         description:
-            "Building the UAE's trusted marketplace for locally made products with transparency, quality, and exceptional service at our core.",
+            "Building the UAE's trusted marketplace for locally made products with verified suppliers, integrated 3PL logistics, and secure UAE payment rails.",
         image: "/assets/home-banner.avif",
     },
     visions: {
@@ -17,12 +17,12 @@ const data = {
         mission: {
             title: "Mission",
             description:
-                "To support UAE-made commerce with a transparent, efficient, and trustworthy platform that connects buyers with verified local products and trusted suppliers.",
+                "To support UAE-made commerce with a transparent and efficient platform that connects buyers to verified suppliers, reliable fulfillment partners, and secure checkout experiences.",
         },
         vision: {
             title: "Vision",
             description:
-                "To become the most trusted marketplace for UAE-made products, setting new standards for supplier transparency, product quality, and customer satisfaction.",
+                "To become the most trusted UAE marketplace for locally made products, setting standards for supplier transparency, fulfillment reliability, and payment security.",
             list: [
                 "Local Supply Chains",
                 "Digital Innovation",
@@ -96,7 +96,7 @@ const data = {
                 year: "2024",
                 title: "Innovation Hub",
                 description:
-                    "Launched AI-powered features and advanced logistics solutions for seamless experiences.",
+                    "Launched marketplace automations and strengthened UAE 3PL and payment gateway integrations.",
             },
             {
                 year: "2023",
@@ -108,7 +108,7 @@ const data = {
                 year: "2022",
                 title: "Inspection Network",
                 description:
-                    "Established supplier verification and product quality workflows across all seven emirates.",
+                    "Established supplier verification and operational workflows across all seven emirates.",
             },
             {
                 year: "2021",

@@ -2,6 +2,7 @@ import FilterBar from "@/components/FilterBar";
 import VehicleCardListing from "@/components/inventory-listing/VehicleCardListing";
 import { marketModeToParam, normalizeMarketMode, type MarketMode } from "@/lib/marketplace";
 import { getUaeProductBrands, getUaeProductModelOptionsByBrand, uaeProductCatalog, uaeProductFilterData } from "@/data/uaeProducts";
+import { getCurrency } from "@/lib/serverActions";
 
 export type Content = {
     id: string;
@@ -61,8 +62,27 @@ export type Inventory = {
     features?: string[];
 };
 
+const mapLegacyCategoryToBodyType = (category?: string) => {
+    if (!category) return "";
+    const normalized = category.trim().toLowerCase();
+    if (!normalized) return "";
+    if (["food", "fresh produce", "fresh-produce", "produce", "farm", "farms", "grocery", "groceries", "dates", "pantry"].includes(normalized)) return "Food";
+    if (["clothing", "textile", "textiles", "fashion", "apparel", "garments"].includes(normalized)) return "Clothing";
+    if (["games", "game", "toy", "toys", "gaming"].includes(normalized)) return "Games";
+    return category;
+};
+
 export default async function ProductListing({ searchParams }: Readonly<PageProps<"/products">>) {
-    const querySearchParams = await searchParams;
+    const rawQuerySearchParams = (await searchParams) as Record<string, string | string[] | undefined>;
+    const categoryParam = typeof rawQuerySearchParams.category === "string" ? rawQuerySearchParams.category : "";
+    const legacyMode = typeof rawQuerySearchParams.mode === "string" ? rawQuerySearchParams.mode : undefined;
+    const normalizedBodyType = typeof rawQuerySearchParams.bodyType === "string" ? rawQuerySearchParams.bodyType : mapLegacyCategoryToBodyType(categoryParam);
+    const querySearchParams: Record<string, string | string[] | undefined> = {
+        ...rawQuerySearchParams,
+        bodyType: normalizedBodyType || rawQuerySearchParams.bodyType,
+        market: rawQuerySearchParams.market ?? legacyMode,
+    };
+    const selectedCurrency = await getCurrency();
     const marketMode = normalizeMarketMode((querySearchParams as Record<string, string | undefined>).market);
     const newQuery = {
         ...querySearchParams,
@@ -155,6 +175,7 @@ export default async function ProductListing({ searchParams }: Readonly<PageProp
                 pageSize={data.size}
                 cartInventoryIds={cartInventoryIds}
                 marketMode={marketMode}
+                displayCurrency={selectedCurrency}
             />
         </main>
     );

@@ -17,9 +17,10 @@ type PropsT = {
     setStep: Dispatch<SetStateAction<number>>;
     handleSubmit: () => void;
     errors?: ZodTreeError;
+    isMarketplaceProduct?: boolean;
 };
 
-export default function ImageForm({ formState, updateFormField, setStep, handleSubmit, errors }: Readonly<PropsT>) {
+export default function ImageForm({ formState, updateFormField, setStep, handleSubmit, errors, isMarketplaceProduct = false }: Readonly<PropsT>) {
     const isZeroKm = formState.marketType === "zero_km";
     const images = formState.imageUrls || [];
     const mainImage = formState.mainImageUrl || "";
@@ -96,7 +97,7 @@ export default function ImageForm({ formState, updateFormField, setStep, handleS
                         Upload up to {MAX_IMAGE_COUNT} images ({images.length}/{MAX_IMAGE_COUNT})
                     </p>
                     <div className="flex items-center gap-2">
-                        {isZeroKm ? (
+                        {isZeroKm && !isMarketplaceProduct ? (
                             <Button type="button" variant="ghost" onClick={applyManufacturerImages}>
                                 Use JATO Images
                             </Button>
@@ -110,8 +111,8 @@ export default function ImageForm({ formState, updateFormField, setStep, handleS
                         </label>
                     </div>
                 </div>
-                {hasChaboschiImages ? <p className="mb-2 text-xs text-sky-700">Supplier product images were preloaded from the catalogue lookup. You can keep them or upload replacements.</p> : null}
-                {isZeroKm ? <p className="text-xs text-muted-foreground mb-2">For B2B wholesale listings, you can preload catalogue images based on selected color and pack details.</p> : null}
+                {!isMarketplaceProduct && hasChaboschiImages ? <p className="mb-2 text-xs text-sky-700">Supplier product images were preloaded from the catalogue lookup. You can keep them or upload replacements.</p> : null}
+                {!isMarketplaceProduct && isZeroKm ? <p className="text-xs text-muted-foreground mb-2">For B2B wholesale listings, you can preload catalogue images based on selected color and pack details.</p> : null}
                 <div className="mb-2">
                     {errors?.properties?.mainImageUrl?.errors?.map((err: string) => (
                         <span key={err} className="text-xs text-destructive mt-1 block">

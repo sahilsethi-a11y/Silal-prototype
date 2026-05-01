@@ -20,9 +20,10 @@ type PropsT = {
     setStep: Dispatch<SetStateAction<number>>;
     errors?: ZodTreeError;
     handleSubmit: (e: FormEvent) => void;
+    isMarketplaceProduct?: boolean;
 };
 
-export default function BasicInfoForm({ brands, formState, errors, updateFormField, handleInputChange, filterData, handleSubmit }: Readonly<PropsT>) {
+export default function BasicInfoForm({ brands, formState, errors, updateFormField, handleInputChange, filterData, handleSubmit, isMarketplaceProduct = false }: Readonly<PropsT>) {
     const [modals, setModals] = useState<Model[]>();
     const [variants, setVariants] = useState<Variant[]>();
     const [cities, setCities] = useState<Option[]>();
@@ -116,8 +117,8 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
         setIsValidating(false);
     };
 
-    const canLookupVin = !isZeroKm && !!formState.vin && !!formState.brand && !!formState.model && !!formState.variant && !!formState.year && !!formState.regionalSpecs;
-    const isEngineSectionLocked = !isZeroKm && formState.vinLookupStatus !== "found";
+    const canLookupVin = !isMarketplaceProduct && !isZeroKm && !!formState.vin && !!formState.brand && !!formState.model && !!formState.variant && !!formState.year && !!formState.regionalSpecs;
+    const isEngineSectionLocked = !isMarketplaceProduct && !isZeroKm && formState.vinLookupStatus !== "found";
 
     const handleVinLookup = async () => {
         if (!canLookupVin) {
@@ -196,7 +197,7 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                 <h2 className="text-brand-blue mb-4">Product Basic Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Select
-                        label="Brand"
+                        label={isMarketplaceProduct ? "Supplier Brand" : "Brand"}
                         required
                         name="brand"
                         errors={errors?.properties?.brand?.errors}
@@ -210,12 +211,12 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                             updateFormField("model", "");
                             updateFormField("variant", "");
                         }}
-                        placeholder="Select Make"
+                        placeholder={isMarketplaceProduct ? "Select supplier brand" : "Select Make"}
                         border="bg-input-background"
                         labelCls="text-sm font-medium"
                     />
                     <Select
-                        label="Model"
+                        label={isMarketplaceProduct ? "Product Name" : "Model"}
                         name="model"
                         required={true}
                         errors={errors?.properties?.model?.errors}
@@ -228,12 +229,12 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                             updateFormField("model", value);
                             updateFormField("variant", "");
                         }}
-                        placeholder="Select Model"
-                        noDataMessage="Select model found"
+                        placeholder={isMarketplaceProduct ? "Select product name" : "Select Model"}
+                        noDataMessage={isMarketplaceProduct ? "Select a brand first" : "Select model found"}
                         border="bg-input-background"
                         labelCls="text-sm font-medium"
                     />
-                    <div>
+                    {!isMarketplaceProduct ? <div>
                         {isManualVariant ? (
                             <Input
                                 label={
@@ -278,25 +279,42 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                                 </div>
                             </>
                         )}
-                    </div>
+                    </div> : null}
 
-                    <Input label="Year" type="number" name="year" errors={errors?.properties?.year?.errors} value={formState.year || ""} onChange={handleInputChange} placeholder="2023" required />
-                    <Select
-                        label="Regional Specs"
-                        required
-                        name="regionalSpecs"
-                        errors={errors?.properties?.regionalSpecs?.errors}
-                        options={(filterData?.regionalSpecsOptions as Option[])?.map((item) => ({
-                            value: item.value,
-                            label: item.label,
-                        }))}
-                        value={formState.regionalSpecs}
-                        onChange={(value) => updateFormField("regionalSpecs", value)}
-                        placeholder="Select regional specs"
-                        border="bg-input-background"
-                        labelCls="text-sm font-medium"
-                    />
-                    {!isZeroKm ? (
+                    {isMarketplaceProduct ? (
+                        <Select
+                            label="Category"
+                            required
+                            name="bodyType"
+                            errors={errors?.properties?.bodyType?.errors}
+                            options={(filterData?.bodyType as Option[])?.map((item) => ({
+                                value: item.value,
+                                label: item.label,
+                            }))}
+                            value={formState.bodyType}
+                            onChange={(value) => updateFormField("bodyType", value)}
+                            placeholder="Select category"
+                            border="bg-input-background"
+                            labelCls="text-sm font-medium"
+                        />
+                    ) : (
+                        <Select
+                            label="Regional Specs"
+                            required
+                            name="regionalSpecs"
+                            errors={errors?.properties?.regionalSpecs?.errors}
+                            options={(filterData?.regionalSpecsOptions as Option[])?.map((item) => ({
+                                value: item.value,
+                                label: item.label,
+                            }))}
+                            value={formState.regionalSpecs}
+                            onChange={(value) => updateFormField("regionalSpecs", value)}
+                            placeholder="Select regional specs"
+                            border="bg-input-background"
+                            labelCls="text-sm font-medium"
+                        />
+                    )}
+                    {!isMarketplaceProduct && !isZeroKm ? (
                         <Input
                             label="VIN"
                             type="text"
@@ -308,7 +326,7 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                             required
                         />
                     ) : null}
-                    {!isZeroKm ? (
+                    {!isMarketplaceProduct && !isZeroKm ? (
                         <fieldset className="md:col-span-2">
                             <legend className="text-sm font-medium mb-2">Color</legend>
                             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
@@ -363,7 +381,7 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                         labelCls="text-sm font-medium"
                     />
                 </div>
-                {!isZeroKm ? (
+                {!isMarketplaceProduct && !isZeroKm ? (
                     <div className="mt-5 rounded-xl border border-stroke-light bg-slate-50 p-4">
                         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                             <div>
@@ -400,7 +418,7 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                         ) : null}
                     </div>
                 ) : null}
-                <div className="mt-6 mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {!isMarketplaceProduct ? <div className="mt-6 mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs text-muted-foreground">
                         Engine, performance, and description fields below are autoloaded when you click Validate (prototype JATO mock).
                         {isEngineSectionLocked ? " Complete a successful VIN lookup first." : ""}
@@ -414,9 +432,9 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                         className="border-brand-blue text-brand-blue">
                         Validate
                     </Button>
-                </div>
-                <div className="border-t border-stroke-light my-6" />
-                <div className={isEngineSectionLocked ? "opacity-50" : ""}>
+                </div> : null}
+                {!isMarketplaceProduct ? <div className="border-t border-stroke-light my-6" /> : null}
+                {!isMarketplaceProduct ? <div className={isEngineSectionLocked ? "opacity-50" : ""}>
                 <h2 className="text-brand-blue mb-4">Engine & Performance</h2>
                 <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${isEngineSectionLocked ? "pointer-events-none" : ""}`}>
                     <Select
@@ -543,7 +561,7 @@ export default function BasicInfoForm({ brands, formState, errors, updateFormFie
                     disabled={isEngineSectionLocked}
                     placeholder="Describe your product's condition, history, and any special features..."
                 />
-                </div>
+                </div> : null}
             </div>
             <div className="flex justify-end items-center pt-6 border-t border-stroke-light">
                 <div className="flex space-x-3">

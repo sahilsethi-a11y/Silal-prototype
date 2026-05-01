@@ -3,7 +3,6 @@ import { ArrowLeftIcon } from "@/components/Icons";
 import Link from "next/link";
 import { getBrands, getFilters } from "@/lib/data";
 import { MarketType } from "@/validation/vehicle-schema";
-import { parseMarketMode } from "@/lib/marketplace";
 
 const data = {
     title: "Add New Product",
@@ -13,9 +12,8 @@ const data = {
 export default async function AddVehicle({
     searchParams,
 }: Readonly<{ searchParams: Promise<{ id: string; step: string; market?: string; marketType?: MarketType }> }>) {
-    const { id, step, market, marketType } = await searchParams;
-    const marketMode = parseMarketMode(market) ?? parseMarketMode(marketType);
-    const initialMarketType = marketMode === "zero_km" ? MarketType.ZERO_KM : MarketType.SECOND_HAND;
+    const { id, step } = await searchParams;
+    const initialMarketType = MarketType.ZERO_KM;
 
     const brandRes = getBrands();
     const filterRes = getFilters();
@@ -26,7 +24,7 @@ export default async function AddVehicle({
     return (
         <main>
             <div className="container mx-auto px-4 py-8 max-w-4xl">
-                <VehicleForm step={step} topSection={<TopSection />} filterData={filterData?.data} listingId={id} brands={brandData?.data} initialMarketType={initialMarketType} />
+                <VehicleForm step={step} topSection={<TopSection />} filterData={filterData?.data} listingId={id} brands={brandData?.data} initialMarketType={initialMarketType} isMarketplaceProduct />
             </div>
         </main>
     );

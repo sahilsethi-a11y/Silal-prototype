@@ -10,6 +10,7 @@ import PriceBadge from "@/elements/PriceBadge";
 import type { Content } from "@/app/products/page";
 import { useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
+import { convertPrice } from "@/lib/utils";
 
 type Props = Readonly<{
     item: Content;
@@ -20,6 +21,7 @@ type Props = Readonly<{
     bucketAddedCount?: number;
     bucketVariant?: string;
     bucketPriceRange?: { min: number; max: number; currency?: string };
+    displayCurrency?: string;
 
     // Bucket modal trigger button
     viewAllLabel?: string;
@@ -38,6 +40,7 @@ export default function VehicleCard({
     bucketAddedCount,
     bucketVariant,
     bucketPriceRange,
+    displayCurrency,
     viewAllLabel,
     onViewAllClick,
     showQuoteButton,
@@ -94,20 +97,23 @@ export default function VehicleCard({
      * ✅ Price range display (kept one-line, with responsive font size)
      */
     const priceText = (() => {
+        const targetCurrency = displayCurrency || item.inventory?.currency || "USD";
         if (!bucketPriceRange) {
             const price = Math.round(Number(item.inventory?.price) || 0);
-            return formatPriceNoDecimals(price, item.inventory?.currency);
+            return formatPriceNoDecimals(convertPrice(price, item.inventory?.currency, targetCurrency), targetCurrency);
         }
 
-        const currency = bucketPriceRange.currency ?? item.inventory?.currency;
+        const sourceCurrency = bucketPriceRange.currency ?? item.inventory?.currency;
+        const minPrice = convertPrice(bucketPriceRange.min, sourceCurrency, targetCurrency);
+        const maxPrice = convertPrice(bucketPriceRange.max, sourceCurrency, targetCurrency);
 
         if (bucketPriceRange.min === bucketPriceRange.max) {
-            return formatPriceNoDecimals(Math.round(bucketPriceRange.min), currency);
+            return formatPriceNoDecimals(Math.round(minPrice), targetCurrency);
         }
 
-        return `${formatPriceNoDecimals(Math.round(bucketPriceRange.min), currency)} - ${formatPriceNoDecimals(
-            Math.round(bucketPriceRange.max),
-            currency
+        return `${formatPriceNoDecimals(Math.round(minPrice), targetCurrency)} - ${formatPriceNoDecimals(
+            Math.round(maxPrice),
+            targetCurrency
         )}`;
     })();
 

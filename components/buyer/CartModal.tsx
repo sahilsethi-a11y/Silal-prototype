@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "@/elements/Image";
-import { CarIcon, CartIcon, CheckCircleIcon, DollerIcon, MapPinIcon } from "@/components/Icons";
+import { CartIcon, CheckCircleIcon, DollerIcon, MapPinIcon, PackageIcon } from "@/components/Icons";
 import { useState } from "react";
 import Select from "@/elements/Select";
 import Button from "@/elements/Button";
@@ -223,7 +223,7 @@ export default function CartModel({ cartData, quantity = 1, onClose, vehicleId, 
                 </div>
                 <div className="bg-white text-foreground flex flex-col gap-6 rounded-xl border border-stroke-light p-6">
                     <h4 className="leading-none text-brand-blue flex items-center gap-2">
-                        <CarIcon className="h-4 w-4" />
+                        <PackageIcon className="h-4 w-4" />
                         Logistics Service
                     </h4>
                     <Select

@@ -16,6 +16,7 @@ type PropsT = {
     handleSubmit: (e: FormEvent) => void;
     errors?: ZodTreeError;
     filterData?: Record<string, unknown>;
+    isMarketplaceProduct?: boolean;
 };
 
 type NumericVehicleField = "mileage" | "numberOfOwners" | "availableQuantity" | "unitPrice" | "fobPrice" | "cifPrice";
@@ -100,8 +101,9 @@ const getVinStats = (vinList: string[]) => {
     return { valid, duplicate, invalid };
 };
 
-export default function DetailForm({ formState, errors, updateFormField, setStep, handleSubmit, filterData }: Readonly<PropsT>) {
+export default function DetailForm({ formState, errors, updateFormField, setStep, handleSubmit, filterData, isMarketplaceProduct = false }: Readonly<PropsT>) {
     const isZeroKm = formState.marketType === "zero_km";
+    const isRetailVehicleFlow = !isZeroKm && !isMarketplaceProduct;
     const fetchedMileage = Number(formState.fetchedMileage) || 0;
     const colorOptions = ((filterData?.colors as { label: string; value: string }[]) ?? []).map((c) => ({ label: c.label || c.value, value: c.value }));
     const vehicles = useMemo(() => (formState.vehicles?.length > 0 ? formState.vehicles : [createVehicle(isZeroKm, formState.color || "")]), [formState.color, formState.vehicles, isZeroKm]);
@@ -200,17 +202,23 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
         <form onSubmit={handleSubmit} noValidate>
             <div className="mb-4 flex items-center gap-4 justify-end">
                 <div className="me-auto">
-                    <h3 className="text-brand-blue">{isZeroKm ? "Product Specifications" : "Product Details & Specifications"}</h3>
-                    <p className="text-sm text-muted-foreground">{isZeroKm ? "Add color-wise configurations with quantity and optional FOB/CIF pricing" : "Add the details for this retail product listing"}</p>
+                    <h3 className="text-brand-blue">{isMarketplaceProduct ? "Product Specifications" : isZeroKm ? "Product Specifications" : "Product Details & Specifications"}</h3>
+                    <p className="text-sm text-muted-foreground">
+                        {isMarketplaceProduct
+                            ? "Add stock quantity and fulfillment details for this marketplace listing."
+                            : isZeroKm
+                              ? "Add color-wise configurations with quantity and optional FOB/CIF pricing"
+                              : "Add the details for this retail product listing"}
+                    </p>
                 </div>
-                {isZeroKm ? (
+                {isZeroKm && !isMarketplaceProduct ? (
                     <Button type="button" leftIcon={<AddIcon className="h-3.5 w-3.5" />} onClick={appendVehicle} variant="primary">
                         Add Color Config
                     </Button>
                 ) : null}
             </div>
             {vehicles.map((item, index) => {
-                if (!isZeroKm && index > 0) return null;
+                if (isRetailVehicleFlow && index > 0) return null;
                 const configuredQuantity = Number(item.availableQuantity);
                 const manualVinFieldCount = configuredQuantity > 0 ? configuredQuantity : Math.max((item.vinList || []).length, 1);
                 const vinList = (item.vinList || []).slice(0, manualVinFieldCount);
@@ -225,7 +233,7 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                     <div key={item.id || index} className="border rounded-xl p-4 mb-6 border-stroke-light">
                         <div className="flex items-center justify-between">
                             <h3 className="text-brand-blue mb-4">{isZeroKm ? `Product #${index + 1}` : "Product Detail"}</h3>
-                            {isZeroKm && index > 0 && (
+                            {!isRetailVehicleFlow && index > 0 && (
                                 <div className="mb-4 text-right">
                                     <Button
                                         onClick={() => {
@@ -242,31 +250,33 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                             )}
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {isZeroKm ? (
+                            {!isRetailVehicleFlow ? (
                                 <>
-                                    <Select
-                                        label="Color"
-                                        required
-                                        name="color"
-                                        options={colorOptions}
-                                        value={item.color || ""}
-                                        onChange={(value) => {
-                                            updateVehicleAt(index, (vehicle) => ({ ...vehicle, color: value }), ["vehicles", index, "color"]);
-                                        }}
-                                        placeholder="Select color"
-                                        border="bg-input-background"
-                                        labelCls="text-sm font-medium"
-                                        errors={errors?.properties?.vehicles?.items?.[index]?.properties?.color?.errors}
+                                    {!isMarketplaceProduct ? (
+                                        <Select
+                                            label="Color"
+                                            required
+                                            name="color"
+                                            options={colorOptions}
+                                            value={item.color || ""}
+                                            onChange={(value) => {
+                                                updateVehicleAt(index, (vehicle) => ({ ...vehicle, color: value }), ["vehicles", index, "color"]);
+                                            }}
+                                            placeholder="Select color"
+                                            border="bg-input-background"
+                                            labelCls="text-sm font-medium"
+                                            errors={errors?.properties?.vehicles?.items?.[index]?.properties?.color?.errors}
+                                        />
+                                    ) : null}
+                                    <Input
+                                        label="Available Quantity"
+                                        type="number"
+                                        name="availableQuantity"
+                                        errors={errors?.properties?.vehicles?.items?.[index]?.properties?.availableQuantity?.errors}
+                                        value={item.availableQuantity || ""}
+                                        onChange={(e) => handleVehicleInputChange(e, index)}
+                                        placeholder="e.g., 25"
                                     />
-                                            <Input
-                                                label="Available Quantity (Optional)"
-                                                type="number"
-                                                name="availableQuantity"
-                                                errors={errors?.properties?.vehicles?.items?.[index]?.properties?.availableQuantity?.errors}
-                                                value={item.availableQuantity || ""}
-                                                onChange={(e) => handleVehicleInputChange(e, index)}
-                                                placeholder="e.g., 25"
-                                            />
                                 </>
                             ) : (
                                 <>
@@ -304,7 +314,7 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                                     />
                                 </>
                             )}
-                            {!isZeroKm ? (
+                            {isRetailVehicleFlow ? (
                                 <Input
                                     label="VIN"
                                     type="text"
@@ -317,7 +327,7 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                                     required
                                 />
                             ) : null}
-                            {!isZeroKm ? (
+                            {isRetailVehicleFlow ? (
                                 <>
                                     <Input
                                         required
@@ -346,7 +356,7 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                         ) : null}
                         {!isZeroKm && fetchedMileage > 0 ? <p className="mt-3 text-xs text-muted-foreground">Fetched mileage: {fetchedMileage.toLocaleString()} kms. You can only increase this value.</p> : null}
 
-                        {isZeroKm ? (
+                        {!isMarketplaceProduct && isZeroKm ? (
                             <>
                                 <div className="mt-6 rounded-xl border border-stroke-light p-4">
                                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -472,8 +482,8 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                             </>
                         ) : null}
 
-                        {!isZeroKm ? <div className="border-t border-stroke-light my-6" /> : null}
-                        {!isZeroKm && formState.vinLookupStatus === "not_found" ? (
+                        {isRetailVehicleFlow ? <div className="border-t border-stroke-light my-6" /> : null}
+                        {isRetailVehicleFlow && formState.vinLookupStatus === "not_found" ? (
                             <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
                                 <div className="flex items-start gap-2">
                                     <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0" />
@@ -484,7 +494,7 @@ export default function DetailForm({ formState, errors, updateFormField, setStep
                                 </div>
                             </div>
                         ) : null}
-                        {!isZeroKm && formState.vinLookupStatus === "found" && formState.inspectionSummary ? (
+                        {isRetailVehicleFlow && formState.vinLookupStatus === "found" && formState.inspectionSummary ? (
                             <div className="mt-4 rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
                                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                                     <Shield className="h-4 w-4" />
